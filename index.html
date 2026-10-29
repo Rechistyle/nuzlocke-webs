@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NUZLOCKE-TOOLS</title>
+<link rel="icon" href="renplat/favicon.ico">
+<style>
+  :root { --fondo: #f6f7f9; --carta: #fff; --texto: #1d2129; --suave: #5f6673; --borde: #dde1e7; --acento: #c0392b; --acento-texto: #fff; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fondo: #15171b; --carta: #1f2228; --texto: #e7e9ee; --suave: #9aa1ad; --borde: #30343c; --acento: #e0574a; --acento-texto: #fff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1000px; margin: 0 auto; padding: 32px 16px 48px; }
+  h1 { margin: 0 0 4px; font-size: 28px; }
+  .sub { margin: 0 0 24px; color: var(--suave); }
+  input { width: 100%; max-width: 360px; padding: 10px 12px; margin-bottom: 24px; border: 1px solid var(--borde); border-radius: 8px; background: var(--carta); color: var(--texto); font: inherit; }
+  .lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .juego { background: var(--carta); border: 1px solid var(--borde); border-radius: 12px; padding: 18px; }
+  .juego h2 { margin: 0; font-size: 18px; }
+  .meta { margin: 4px 0 14px; color: var(--suave); font-size: 14px; }
+  nav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  nav a { text-align: center; padding: 8px 12px; border-radius: 6px; background: var(--acento); color: var(--acento-texto); text-decoration: none; font-size: 14px; font-weight: 600; }
+  nav a:hover, nav a:focus-visible { filter: brightness(1.1); outline: 2px solid var(--texto); outline-offset: 2px; }
+  .nada { color: var(--suave); display: none; }
+  footer { margin-top: 40px; color: var(--suave); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>NUZLOCKE-TOOLS</h1>
+  <p class="sub">Choose a hackrom</p>
+  
+  <section class="lista">
+    <article class="juego" data-busca="pokémon renegade platinum renplat">
+      <h2>Pokémon Renegade Platinum</h2>
+      <p class="meta">v1.3.0 · Gen 4 · 97 areas · 782 trainers</p>
+      <nav><a href="renplat/index.html">Pokédex</a><a href="renplat/tracker.html">Tracker</a><a href="renplat/src/roark_split.html">Trainer Sheet</a><a href="renplat/calculadora/index.html">Calculator</a></nav>
+    </article>
+    <article class="juego" data-busca="pokémon unbound (difficult) unbound-difficult">
+      <h2>Pokémon Unbound (Difficult)</h2>
+      <p class="meta">v2.1.1.1 · Gen 8 · 170 areas · 524 trainers</p>
+      <nav><a href="unbound-difficult/index.html">Pokédex</a><a href="unbound-difficult/tracker.html">Tracker</a><a href="unbound-difficult/src/mirskle_split.html">Trainer Sheet</a><a href="unbound-difficult/calculadora/index.html">Calculator</a></nav>
+    </article>
+    <article class="juego" data-busca="pokémon unbound (expert) unbound-expert">
+      <h2>Pokémon Unbound (Expert)</h2>
+      <p class="meta">v2.1.1.1 · Gen 8 · 170 areas · 524 trainers</p>
+      <nav><a href="unbound-expert/index.html">Pokédex</a><a href="unbound-expert/tracker.html">Tracker</a><a href="unbound-expert/src/mirskle_split.html">Trainer Sheet</a><a href="unbound-expert/calculadora/index.html">Calculator</a></nav>
+    </article>
+    <article class="juego" data-busca="pokémon unbound (insane) unbound-insane">
+      <h2>Pokémon Unbound (Insane)</h2>
+      <p class="meta">v2.1.1.1 · Gen 8 · 170 areas · 524 trainers</p>
+      <nav><a href="unbound-insane/index.html">Pokédex</a><a href="unbound-insane/tracker.html">Tracker</a><a href="unbound-insane/src/mirskle_split.html">Trainer Sheet</a><a href="unbound-insane/calculadora/index.html">Calculator</a></nav>
+    </article>
+    <article class="juego" data-busca="pokémon unbound (vanilla) unbound-vanilla">
+      <h2>Pokémon Unbound (Vanilla)</h2>
+      <p class="meta">v2.1.1.1 · Gen 8 · 170 areas · 524 trainers</p>
+      <nav><a href="unbound-vanilla/index.html">Pokédex</a><a href="unbound-vanilla/tracker.html">Tracker</a><a href="unbound-vanilla/src/mirskle_split.html">Trainer Sheet</a><a href="unbound-vanilla/calculadora/index.html">Calculator</a></nav>
+    </article>
+  </section>
+  <p class="nada" id="nada">No hackrom matches.</p>
+  <footer>Fan-made tools, not affiliated with Nintendo, Game Freak or the authors of each hackrom. Your progress is saved in this browser, separately for each game.</footer>
+</main>
+<script>
+  var b = document.getElementById('busca');
+  if (b) b.addEventListener('input', function () {
+    var q = b.value.trim().toLowerCase(), n = 0;
+    document.querySelectorAll('.juego').forEach(function (j) {
+      var si = j.getAttribute('data-busca').indexOf(q) >= 0; j.style.display = si ? '' : 'none'; if (si) n++;
+    });
+    document.getElementById('nada').style.display = n ? 'none' : 'block';
+  });
+</script>
+</body>
+</html>

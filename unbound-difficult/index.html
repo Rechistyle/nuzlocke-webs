@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html><head>
+
+	<meta charset="utf-8" />
+	<link rel="icon" href="favicon.ico" />
+
+	<title>Pokémon Unbound (Difficult)</title>
+
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=IE8" />
+	<link rel="stylesheet" href="style/font-awesome.css" />
+	<link rel="stylesheet" href="theme/panels.css?b1" />
+	<link rel="stylesheet" href="theme/main.css?b1" />
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="stylesheet" href="style/utilichart.css?b359" />
+	<link rel="stylesheet" href="theme/pokedex.css?b359" />
+
+	<!-- Workarounds for IE bugs to display trees correctly. -->
+	<!--[if lte IE 6]><style> li.tree { height: 1px; } </style><![endif]-->
+	<!--[if IE 7]><style> li.tree { zoom: 1; } </style><![endif]-->
+
+</head><body>
+
+	<div class="pfx-topbar"><nav class="nzt-nav"><style>nav.nzt-nav{box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;gap:6px;height:50px;width:100%;margin:0;padding:0 12px;overflow-x:auto;overflow-y:hidden;white-space:nowrap;background:#2a3550;border-bottom:2px solid #1b2338;text-align:left;font-family:Verdana,Arial,sans-serif}nav.nzt-nav .nzt-marca{flex:none;margin-right:8px;color:#fff;font-size:14px;font-weight:700;text-shadow:none}nav.nzt-nav a.nzt-b{flex:none;box-sizing:border-box;padding:8px 14px;border:1px solid #aeb8d0;border-radius:5px;background:#e8ecf6;color:#2a3550;font-size:13px;font-weight:700;line-height:1;text-decoration:none;text-shadow:none}nav.nzt-nav a.nzt-b:hover,nav.nzt-nav a.nzt-b:focus-visible{background:#fff;color:#2a3550;text-decoration:none;outline:2px solid #fff;outline-offset:1px}nav.nzt-nav a.nzt-b.on{background:#fff;box-shadow:inset 0 -3px 0 #c0392b}body{margin-top:0}@media (max-width:720px){nav.nzt-nav .nzt-marca{display:none}}</style><span class="nzt-marca">Pokémon Unbound (Difficult)</span><a class="nzt-b on" aria-current="page" href="index.html">Pokédex</a><a class="nzt-b" href="calculadora/index.html">Calculator</a><a class="nzt-b" href="src/mirskle_split.html">Trainer Sheet</a><a class="nzt-b" href="tracker.html">Tracker</a><a class="nzt-b" href="documentos.html">Documentos</a></nav></div>
+	<div class="pfx-panel"><div class="pfx-body">
+		<noscript><p>
+			<strong>Requires JavaScript!</strong>
+		</p></noscript>
+		<p>
+			Loading...
+		</p>
+	</div></div>
+	<script src="js/lib/jquery-1.12.4.min.js"></script>
+	<script src="js/lib/lodash.min.js"></script>
+	<script src="js/lib/backbone-min.js"></script>
+	<script src="js/panels.js"></script>
+
+    <!-- Dependencies from the original Showdown dex; these are very explicitly unmodified for compatibility -->
+	<script src="config/config.js?v0.9xy31"></script>
+	<script src="js/battledata.js?v0.9xy31"></script>"
+	<script src="data/search-index.js?v0.9xy31"></script> <!-- This guy needs to be generated using the client repo -->
+	<script src="data/teambuilder-tables.js?v0.9xy31"></script>
+	<script src="data/typechart.js?v0.9xy31"></script>
+	<script src="data/aliases.js?v0.9xy31"></script>
+	<script src="js/battle-dex-search.js?v0.9xy31"></script>
+	<script src="js/search.js?v0.9xy31"></script>
+
+    <!-- Custom data files pulled from porydex extraction -->
+    <script src="data/species.js?v0.9xy31"></script>
+    <script src="data/learnsets.js?v0.9xy31"></script>
+    <script src="data/encounters.js?v0.9xy31"></script>
+    <script src="data/moves.js?v0.9xy31"></script>
+    <script src="data/abilities.js?v0.9xy31"></script>
+    <script src="data/items.js?v0.9xy31"></script>
+
+	<script src="js/pokedex.js?b359"></script>
+	<script src="js/pokedex-pokemon.js?b359"></script>
+	<script src="js/pokedex-moves.js?b359"></script>
+    <script src="js/pokedex-encounters.js?b359"></script>
+	<script src="js/pokedex-search.js?b359"></script>
+	<script src="js/router.js?b359"></script>
+
+</body></html>

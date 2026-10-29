@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuzlocke · Pokémon Unbound (Expert)</title>
+<style>
+:root{--ink:#101820;--box:#f8f8f0;--box-2:#e8e8d8;--bin:#3860a8;--bg-1:#182848;--bg-2:#283860;
+--accent:#f8d030;--red:#d02828;--green:#38a038}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Courier New",ui-monospace,Menlo,Consolas,monospace;font-weight:700;
+ background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 2px,rgba(0,0,0,0) 2px 4px),
+ linear-gradient(160deg,var(--bg-1) 0%,var(--bg-2) 60%,#101830 100%);
+ background-attachment:fixed;color:var(--ink);min-height:100vh;padding:12px;font-size:13px;line-height:1.45}
+.box{background:var(--box);border:3px solid var(--ink);
+ box-shadow:inset 0 0 0 3px var(--bin),inset 0 0 0 6px var(--box),4px 4px 0 rgba(0,0,0,.55);
+ padding:13px 15px;margin-bottom:13px}
+h1,h2{letter-spacing:1px;text-transform:uppercase}
+h1{font-size:18px}
+h2{font-size:14px;border-bottom:3px solid var(--ink);padding-bottom:5px;margin-bottom:11px;
+ display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wrap{max-width:1180px;margin:0 auto}
+header.hdr{display:flex;justify-content:space-between;align-items:center;gap:13px;flex-wrap:wrap}
+.hdr small{display:block;font-size:11px;letter-spacing:0;text-transform:none;color:#48607f;margin-top:3px}
+.counters{display:flex;gap:6px;flex-wrap:wrap}
+.counter{background:var(--ink);color:var(--box);padding:5px 9px;border:2px solid var(--ink);
+ box-shadow:2px 2px 0 rgba(0,0,0,.5);font-size:10px;text-align:center;min-width:62px}
+.counter b{display:block;font-size:15px;color:var(--accent);line-height:1.2}
+.counter.g b{color:#7ce87c}.counter.r b{color:#ff8a8a}
+button{font-family:inherit;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.6px;
+ background:var(--box-2);color:var(--ink);border:2px solid var(--ink);padding:6px 11px;cursor:pointer;box-shadow:2px 2px 0 #000}
+button:hover{background:var(--accent)}
+button:active{transform:translate(2px,2px);box-shadow:0 0 0 #000}
+button.primary{background:var(--bin);color:#fff}button.primary:hover{background:#5080d0}
+button.danger{background:var(--red);color:#fff}button.danger:hover{background:#f04848}
+button.mini{font-size:10px;padding:2px 7px;box-shadow:1px 1px 0 #000}
+button:disabled{opacity:.35;cursor:not-allowed}
+input,select,textarea{font-family:inherit;font-weight:700;font-size:12px;background:#fff;color:var(--ink);
+ border:2px solid var(--ink);padding:4px 6px;width:100%}
+input:focus,select:focus,textarea:focus{outline:3px solid var(--accent);outline-offset:-1px}
+label.fld{display:block;font-size:10px;text-transform:uppercase;color:#48607f;margin-bottom:3px}
+.field{margin-bottom:8px}.inline{display:flex;gap:7px;flex-wrap:wrap;align-items:flex-end}
+.inline .field{margin-bottom:0}
+nav.tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:-3px;position:relative;z-index:2}
+nav.tabs button{border-bottom-width:3px;padding:8px 15px;font-size:12px;background:var(--bg-2);color:#c8d8f0}
+nav.tabs button.on{background:var(--box);color:var(--ink);border-bottom-color:var(--box);box-shadow:2px -2px 0 #000}
+section.tab{display:none}section.tab.on{display:block}
+.type{display:inline-block;padding:1px 5px;font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:#fff;
+ border:2px solid var(--ink);text-shadow:1px 1px 0 rgba(0,0,0,.55);white-space:nowrap}
+.types{display:inline-flex;gap:3px;vertical-align:middle}
+.tag{display:inline-block;padding:1px 5px;font-size:9px;border:2px solid var(--ink);text-transform:uppercase}
+.tag.err{background:var(--red);color:#fff}.tag.form{background:#6848a8;color:#fff}
+.loc{border:3px solid var(--ink);background:var(--box);margin-bottom:9px;box-shadow:3px 3px 0 rgba(0,0,0,.4)}
+.loc.done{background:#dcf0dc}.loc.none{background:#e8e8e8}.loc.rip{background:#efdcdc}
+.loc.empty{opacity:.55}
+.loc>.lh{display:flex;align-items:center;gap:9px;padding:7px 10px;cursor:pointer;flex-wrap:wrap;border-bottom:3px solid transparent}
+.loc.open>.lh{border-bottom-color:var(--ink)}
+.loc .chk{width:19px;height:19px;flex:0 0 19px;border:2px solid var(--ink);background:#fff;text-align:center;line-height:15px;font-size:13px}
+.loc.done .chk{background:var(--green);color:#fff}.loc.none .chk{background:#909090;color:#fff}
+.loc.rip .chk{background:#803030;color:#fff}
+.loc .lname{font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+.loc .pick{font-size:12px;background:var(--ink);color:var(--accent);padding:2px 8px;border:2px solid var(--ink)}
+.loc .pick.no{background:#707070;color:#fff}.loc .pick.dead{background:#803030;color:#fff;text-decoration:line-through}
+.loc .avail{font-size:10px;color:#586878;font-weight:400;text-transform:none;letter-spacing:0}
+.loc .sp{flex:1}
+.lb{padding:9px 10px 11px;display:none}.loc.open .lb{display:block}
+.meth{margin-bottom:9px}
+.meth h4{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;background:var(--bin);color:#fff;
+ padding:3px 7px;border:2px solid var(--ink);display:flex;justify-content:space-between;gap:8px}
+.meth h4 span{font-weight:400;letter-spacing:0;text-transform:none;font-size:10px;opacity:.9}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:3px;margin-top:4px}
+.slot{display:flex;align-items:center;gap:6px;border:2px solid var(--ink);background:#fff;padding:2px 5px;font-size:11px}
+.slot .pc{background:var(--ink);color:var(--accent);padding:1px 4px;font-size:10px;flex:0 0 36px;text-align:center}
+.slot .lv{color:#586878;font-size:10px;font-weight:400;flex:0 0 auto;white-space:nowrap}
+.slot .nm{flex:1 1 auto;min-width:88px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot .types,.slot button{flex:0 0 auto}
+.slot.blocked{background:#dcdcdc;color:#909090;text-decoration:line-through}
+.slot.blocked .pc{background:#a0a0a0;color:#e8e8e8}
+.slot.blocked .type{filter:grayscale(1) opacity(.55)}
+.slot.chosen{background:var(--accent);border-width:3px}
+.slot.unknown .nm{color:var(--red)}
+.locfoot{display:flex;gap:6px;flex-wrap:wrap;border-top:2px dashed #b0b8c0;padding-top:8px;margin-top:4px}
+.alert{border:3px solid var(--ink);padding:8px 11px;margin-bottom:11px;font-size:11px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+.alert.warn{background:var(--accent)}.alert.err{background:#ffc0c0}.alert.info{background:#c8dcf8}
+.alert.ok{background:#c0f0c0}
+.alert ul{margin:5px 0 0 17px;font-weight:400}
+.muted{color:#68788a;font-size:11px;font-weight:400;letter-spacing:0;text-transform:none}
+.spacer{flex:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:8px}
+.card{border:2px solid var(--ink);background:var(--box-2);padding:7px;box-shadow:2px 2px 0 rgba(0,0,0,.35)}
+.card.team{background:var(--accent)}
+.card.dead{background:#e0cccc;border-color:#803030}
+.card.dead .nm{text-decoration:line-through;color:#803030}
+.card .nm{font-size:12px;text-transform:uppercase}
+.card .rt{font-size:10px;color:#48607f;font-weight:400}
+.card .btns{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.cov{width:100%;border-collapse:collapse;font-size:10px}
+.cov th,.cov td{border:2px solid var(--ink);padding:3px 4px;text-align:center;background:#fff}
+.cov th.rowh{text-align:left;padding:0;width:100px}
+.cov th.colh{font-size:9px;writing-mode:vertical-rl;transform:rotate(180deg);padding:5px 2px;background:var(--ink);color:var(--box)}
+.cov td{min-width:44px}
+.cov td.m4{background:#a01818;color:#fff}.cov td.m2{background:#f06060;color:#fff}
+.cov td.m1{background:#fff;color:#a8b0b8}.cov td.mh{background:#a0d8a0}
+.cov td.mq{background:#48a048;color:#fff}.cov td.m0{background:#404850;color:#fff}
+.cov td.sum{background:var(--box-2);width:60px}.cov td.sum.bad{background:#f0a0a0}.cov td.sum.good{background:#a8e0a8}
+.cov-wrap{overflow-x:auto}
+.legend{display:flex;gap:9px;flex-wrap:wrap;font-size:10px;margin-top:7px}
+.legend i{display:inline-block;width:12px;height:12px;border:2px solid var(--ink);vertical-align:-2px;margin-right:3px}
+.rule{border:2px solid var(--ink);background:var(--box-2);padding:7px 9px;display:flex;gap:8px;align-items:flex-start}
+.rule input{width:18px;height:18px;flex:0 0 18px;margin-top:1px;accent-color:#3860a8}
+.slotrow{display:flex;align-items:center;gap:8px;border:2px solid var(--ink);background:#fff;
+ padding:4px 7px;margin-bottom:4px;font-size:11px;flex-wrap:wrap}
+.slotrow.on{background:var(--accent)}
+.slotrow .nm{text-transform:uppercase;letter-spacing:.5px;min-width:108px}
+.slotrow .ct{font-weight:400;color:#586878;font-size:10px}
+.rule .t{display:block;font-size:11px;text-transform:uppercase}
+.rule .d{display:block;font-size:10px;color:#586878;font-weight:400;text-transform:none;margin-top:2px}
+#toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--ink);color:var(--accent);
+ border:3px solid var(--accent);padding:8px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;
+ box-shadow:3px 3px 0 rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .18s;z-index:99}
+#toast.on{opacity:1}
+footer{text-align:center;color:#8fa4c4;font-size:10px;font-weight:400;padding:5px 0 15px}
+code{background:#e0e4e8;padding:0 3px;border:1px solid #b0b8c0;font-size:11px}
+@media (max-width:640px){body{padding:6px}.slots{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="nzt-fuera"><nav class="nzt-nav"><style>nav.nzt-nav{box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;gap:6px;height:50px;width:100%;margin:0;padding:0 12px;overflow-x:auto;overflow-y:hidden;white-space:nowrap;background:#2a3550;border-bottom:2px solid #1b2338;text-align:left;font-family:Verdana,Arial,sans-serif}nav.nzt-nav .nzt-marca{flex:none;margin-right:8px;color:#fff;font-size:14px;font-weight:700;text-shadow:none}nav.nzt-nav a.nzt-b{flex:none;box-sizing:border-box;padding:8px 14px;border:1px solid #aeb8d0;border-radius:5px;background:#e8ecf6;color:#2a3550;font-size:13px;font-weight:700;line-height:1;text-decoration:none;text-shadow:none}nav.nzt-nav a.nzt-b:hover,nav.nzt-nav a.nzt-b:focus-visible{background:#fff;color:#2a3550;text-decoration:none;outline:2px solid #fff;outline-offset:1px}nav.nzt-nav a.nzt-b.on{background:#fff;box-shadow:inset 0 -3px 0 #c0392b}body{margin-top:0}@media (max-width:720px){nav.nzt-nav .nzt-marca{display:none}}</style><span class="nzt-marca">Pokémon Unbound (Expert)</span><a class="nzt-b" href="index.html">Pokédex</a><a class="nzt-b" href="calculadora/index.html">Calculator</a><a class="nzt-b" href="src/mirskle_split.html">Trainer Sheet</a><a class="nzt-b on" aria-current="page" href="tracker.html">Tracker</a><a class="nzt-b" href="documentos.html">Documentos</a></nav></div><style>.nzt-fuera{margin:-12px -12px 12px}@media (max-width:640px){.nzt-fuera{margin:-6px -6px 6px}}</style>
+<div class="wrap">
+
+  <div class="box">
+    <header class="hdr">
+      <div><h1>▶ <span id="hGame">Pokémon Unbound (Expert)</span></h1><small id="hSub">—</small></div>
+      <div class="counters">
+        <div class="counter g"><b id="cAlive">0</b>Vivos</div>
+        <div class="counter r"><b id="cDead">0</b>Muertos</div>
+        <div class="counter"><b id="cMark">0</b>Marcadas</div>
+        <div class="counter"><b id="cLeft">0</b>Pendientes</div>
+        <div class="counter"><b id="cPct">0%</b>Progreso</div>
+      </div>
+    </header>
+  </div>
+
+  <nav class="tabs">
+    <button data-tab="enc" class="on">Encuentros</button>
+    <button data-tab="cap">Equipo y capturados</button>
+    <button data-tab="rip">R.I.P.</button>
+    <button data-tab="dat">Datos</button>
+  </nav>
+
+  <section class="tab on" id="tab-enc">
+    <div class="box">
+      <div class="inline" style="margin-bottom:10px">
+        <div class="field" style="flex:2;min-width:170px">
+          <label class="fld">Buscar ubicación o Pokémon</label>
+          <input id="q" placeholder="ej. Route 110, Ralts…">
+        </div>
+        <div class="field" style="min-width:158px">
+          <label class="fld">Mostrar</label>
+          <select id="fmode">
+            <option value="all">Todas las ubicaciones</option>
+            <option value="pend">Solo pendientes</option>
+            <option value="done">Solo resueltas</option>
+            <option value="stuck">Sin opciones libres</option>
+          </select>
+        </div>
+        <button id="bHide">Ocultar bloqueados: NO</button>
+        <button id="bExpand">Desplegar</button>
+        <button id="bCollapse">Plegar</button>
+      </div>
+      <div id="locs"></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-cap">
+    <div class="box">
+      <h2>Añadir a mano <span class="muted">— intercambios, shinies, regalos, huevos</span></h2>
+      <div class="inline">
+        <div class="field" style="flex:1;min-width:150px">
+          <label class="fld">Pokémon</label>
+          <input id="mSp" list="dexList" placeholder="ej. Vulpix-A">
+        </div>
+        <div class="field" style="min-width:110px"><label class="fld">Mote</label><input id="mNick"></div>
+        <div class="field" style="width:70px"><label class="fld">Nivel</label><input id="mLv"></div>
+        <div class="field" style="min-width:130px">
+          <label class="fld">Origen</label>
+          <select id="mOri"><option>Intercambio</option><option>Shiny</option><option>Regalo</option>
+            <option>Huevo</option><option>Estático</option><option>Otro</option></select>
+        </div>
+        <label class="rule" style="margin-bottom:0"><input type="checkbox" id="mNoDupe">
+          <span class="t">Sin dupes</span></label>
+        <button id="mAdd" class="primary">+ Añadir</button>
+      </div>
+      <p class="muted" style="margin-top:7px">«Sin dupes» = este Pokémon no bloquea a su línea evolutiva en las rutas. Útil para un shiny que capturaste además del encuentro normal.</p>
+      <div id="mErr"></div>
+    </div>
+
+    <div class="box">
+      <h2>Vivos <span class="muted" id="capCount"></span><span class="spacer"></span>
+        <span class="muted">Marca hasta 6 como equipo</span></h2>
+      <div class="grid" id="capGrid"></div>
+    </div>
+
+    <div class="box">
+      <h2>Cobertura defensiva del equipo</h2>
+      <div class="cov-wrap"><table class="cov" id="cov"></table></div>
+      <div class="legend"><span><i style="background:#a01818"></i>x4</span><span><i style="background:#f06060"></i>x2</span>
+      <span><i style="background:#fff"></i>x1</span><span><i style="background:#a0d8a0"></i>x½</span>
+      <span><i style="background:#48a048"></i>x¼</span><span><i style="background:#404850"></i>Inmune</span></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-rip">
+    <div class="box">
+      <h2>✝ Cementerio <span class="muted" id="ripCount"></span></h2>
+      <p class="muted" style="margin-bottom:10px">Los caídos siguen bloqueando a su línea evolutiva en las rutas mientras la regla «los muertos siguen bloqueando» esté activa en Datos.</p>
+      <div class="grid" id="ripGrid"></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-dat">
+    <div class="box">
+      <h2>Guardar y exportar</h2>
+      <div class="inline">
+        <button id="bSaveJ">⭳ Guardar partida (JSON)</button>
+        <button id="bLoadJ">⭱ Cargar partida (JSON)</button>
+        <button id="bCsv">⭳ Resumen .csv</button>
+        <button id="bReset" class="danger">✖ Reiniciar partida</button>
+      </div>
+      <input type="file" id="fj" accept=".json" style="display:none">
+      <p class="muted" style="margin-top:8px">Cargar un JSON solo repone <b>tus elecciones</b>; las tablas de encuentros de este archivo no se tocan nunca. Para otro hackrom, genera otro tracker con el generador.</p>
+      <div id="storeWarn"></div>
+      <div id="huerfWarn"></div>
+    </div>
+
+    <div class="box">
+      <h2>Ranura de guardado</h2>
+      <p class="muted">La partida <b>no vive dentro del .html</b>: vive en el almacenamiento del navegador, bajo una clave derivada del nombre del juego — <b>no</b> del nombre del archivo ni de la carpeta. Por eso, si regeneras o duplicas este tracker, la partida te sigue. Usa una ranura distinta para llevar dos partidas del mismo juego en paralelo.</p>
+      <div id="slotList" style="margin-top:9px"></div>
+      <div class="inline" style="margin-top:9px">
+        <div class="field" style="flex:1;min-width:190px">
+          <label class="fld">Crear o abrir otra ranura</label>
+          <input id="slot" placeholder="ej. run2">
+        </div>
+        <button id="bSlot" class="primary">Ir a esa ranura</button>
+      </div>
+      <p class="muted" id="slotInfo" style="margin-top:7px"></p>
+    </div>
+
+    <div class="box">
+      <h2>Reglas</h2>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))" id="rules"></div>
+    </div>
+
+    <div class="box">
+      <h2>Parches de especies</h2>
+      <div class="alert info" style="margin-bottom:9px">
+        <b>Cómo se escribe</b><br>
+        <span class="muted">
+        · Cambiar tipos: <code>Gengar: Fantasma/Hada</code> &nbsp;o&nbsp; <code>Gengar:DH</code><br>
+        · Unir una línea evolutiva: <code>Wurmple:B, Silcoon:B, Beautifly:B/9</code><br>
+        · Corregir un nombre mal escrito: <code>Dunsprace = Dunsparce</code><br>
+        Una instrucción por línea. Se admiten nombres de tipo en español o inglés, y los códigos de una letra.
+        </span>
+      </div>
+      <div class="field">
+        <textarea id="patch" rows="5" placeholder="Gengar: Fantasma/Hada&#10;Dunsprace = Dunsparce"></textarea>
+      </div>
+      <button id="bPatch" class="primary">Aplicar y comprobar</button>
+      <button id="bPatchClr">Quitar todos</button>
+      <div id="patchOut" style="margin-top:9px"></div>
+    </div>
+
+    <div class="box">
+      <h2>Revisión de datos</h2>
+      <div id="quality"></div>
+    </div>
+  </section>
+
+  <footer>Tracker local · sin conexión · generado con Nuzlocke Factory</footer>
+</div>
+<datalist id="dexList"></datalist>
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================================
+   TRACKER NUZLOCKE — archivo único, sin dependencias.
+   Secciones:
+     1  Tipos y tabla de efectividad
+     2  Base de especies, formas regionales y alias
+     3  Datos de encuentros (los inyecta el generador)
+     4  Estado y persistencia
+     5  Lógica nuzlocke (dupes, muertos, disponibilidad)
+     6  Render
+     7  Eventos
+     8  Exportación JSON / CSV
+   ============================================================================ */
+
+/* ---------- 1. TIPOS ---------- */
+const TYPES=["Normal","Fire","Water","Electric","Grass","Ice","Fighting","Poison","Ground","Flying","Psychic","Bug","Rock","Ghost","Dragon","Dark","Steel","Fairy"];
+const TCODE={"0":"Normal","1":"Fire","2":"Water","3":"Electric","4":"Grass","5":"Ice","6":"Fighting","7":"Poison","8":"Ground","9":"Flying","A":"Psychic","B":"Bug","C":"Rock","D":"Ghost","E":"Dragon","F":"Dark","G":"Steel","H":"Fairy"};
+const CODEOF={};for(const k in TCODE)CODEOF[TCODE[k]]=k;
+const ES={Normal:"Normal",Fire:"Fuego",Water:"Agua",Electric:"Eléctrico",Grass:"Planta",Ice:"Hielo",Fighting:"Lucha",Poison:"Veneno",Ground:"Tierra",Flying:"Volador",Psychic:"Psíquico",Bug:"Bicho",Rock:"Roca",Ghost:"Fantasma",Dragon:"Dragón",Dark:"Siniestro",Steel:"Acero",Fairy:"Hada"};
+const TCOL={Normal:"#A8A878",Fire:"#F08030",Water:"#6890F0",Electric:"#D8A800",Grass:"#78C850",Ice:"#5FAFAF",Fighting:"#C03028",Poison:"#A040A0",Ground:"#B08828",Flying:"#8878D8",Psychic:"#F85888",Bug:"#8A9810",Rock:"#907828",Ghost:"#705898",Dragon:"#7038F8",Dark:"#705848",Steel:"#7878A0",Fairy:"#D8709C"};
+const CHART={Normal:{0.5:["Rock","Steel"],0:["Ghost"]},Fire:{2:["Grass","Ice","Bug","Steel"],0.5:["Fire","Water","Rock","Dragon"]},
+Water:{2:["Fire","Ground","Rock"],0.5:["Water","Grass","Dragon"]},Electric:{2:["Water","Flying"],0.5:["Electric","Grass","Dragon"],0:["Ground"]},
+Grass:{2:["Water","Ground","Rock"],0.5:["Fire","Grass","Poison","Flying","Bug","Dragon","Steel"]},Ice:{2:["Grass","Ground","Flying","Dragon"],0.5:["Fire","Water","Ice","Steel"]},
+Fighting:{2:["Normal","Ice","Rock","Dark","Steel"],0.5:["Poison","Flying","Psychic","Bug","Fairy"],0:["Ghost"]},Poison:{2:["Grass","Fairy"],0.5:["Poison","Ground","Rock","Ghost"],0:["Steel"]},
+Ground:{2:["Fire","Electric","Poison","Rock","Steel"],0.5:["Grass","Bug"],0:["Flying"]},Flying:{2:["Grass","Fighting","Bug"],0.5:["Electric","Rock","Steel"]},
+Psychic:{2:["Fighting","Poison"],0.5:["Psychic","Steel"],0:["Dark"]},Bug:{2:["Grass","Psychic","Dark"],0.5:["Fire","Fighting","Poison","Flying","Ghost","Steel","Fairy"]},
+Rock:{2:["Fire","Ice","Flying","Bug"],0.5:["Fighting","Ground","Steel"]},Ghost:{2:["Psychic","Ghost"],0.5:["Dark"],0:["Normal"]},
+Dragon:{2:["Dragon"],0.5:["Steel"],0:["Fairy"]},Dark:{2:["Psychic","Ghost"],0.5:["Fighting","Dark","Fairy"]},
+Steel:{2:["Ice","Rock","Fairy"],0.5:["Fire","Water","Electric","Steel"]},Fairy:{2:["Fighting","Dragon","Dark"],0.5:["Fire","Poison","Steel"]}};
+function eff(a,ds){let m=1;const c=CHART[a];for(const d of ds){if(c[0]&&c[0].indexOf(d)>-1)return 0;
+ if(c[2]&&c[2].indexOf(d)>-1)m*=2;else if(c[0.5]&&c[0.5].indexOf(d)>-1)m*=0.5;}return m;}
+
+/* ---------- 2. ESPECIES / FORMAS / ALIAS ----------
+   DEX_BASE: familias separadas por "|", miembros por ",", cada uno "Nombre:CÓDIGOS".
+             Una familia = una línea evolutiva = la unidad de la cláusula de duplicados.
+   FORMS   : "Nombre-Sufijo:CÓDIGOS:EspecieBase" — una por línea. Tipos propios.
+   ALIAS   : "MalEscrito=Correcto" — erratas frecuentes, se resuelven solas.        */
+const DEX_BASE=`Abra:A,Kadabra:A,Alakazam:A|
+Aerodactyl:C9|
+Ekans:7,Arbok:7|
+Growlithe:1,Arcanine:1|
+Articuno:59|
+Weedle:B7,Kakuna:B7,Beedrill:B7|
+Bellsprout:47,Weepinbell:47,Victreebel:47|
+Squirtle:2,Wartortle:2,Blastoise:2|
+Bulbasaur:47,Ivysaur:47,Venusaur:47|
+Caterpie:B,Metapod:B,Butterfree:B9|
+Happiny:0,Chansey:0,Blissey:0|
+Charmander:1,Charmeleon:1,Charizard:19|
+Cleffa:H,Clefairy:H,Clefable:H|
+Shellder:2,Cloyster:25|
+Cubone:8,Marowak:8|
+Seel:2,Dewgong:25|
+Diglett:8,Dugtrio:8|
+Ditto:0|
+Doduo:09,Dodrio:09|
+Dratini:E,Dragonair:E,Dragonite:E9|
+Drowzee:A,Hypno:A|
+Eevee:0,Vaporeon:2,Jolteon:3,Flareon:1,Espeon:A,Umbreon:F,Leafeon:4,Glaceon:5,Sylveon:H|
+Elekid:3,Electabuzz:3,Electivire:3|
+Voltorb:3,Electrode:3|
+Exeggcute:4A,Exeggutor:4A|
+Farfetch’d:09|
+Spearow:09,Fearow:09|
+Gastly:D7,Haunter:D7,Gengar:D7|
+Geodude:C8,Graveler:C8,Golem:C8|
+Oddish:47,Gloom:47,Vileplume:47,Bellossom:4|
+Zubat:79,Golbat:79,Crobat:79|
+Goldeen:2,Seaking:2|
+Psyduck:2,Golduck:2|
+Grimer:7,Muk:7|
+Magikarp:2,Gyarados:29|
+Tyrogue:6,Hitmonlee:6,Hitmonchan:6,Hitmontop:6|
+Horsea:2,Seadra:2,Kingdra:2E|
+Igglybuff:0H,Jigglypuff:0H,Wigglytuff:0H|
+Smoochum:5A,Jynx:5A|
+Kabuto:C2,Kabutops:C2|
+Kangaskhan:0|
+Krabby:2,Kingler:2|
+Koffing:7,Weezing:7|
+Lapras:25|
+Lickitung:0,Lickilicky:0|
+Machop:6,Machoke:6,Machamp:6|
+Magby:1,Magmar:1,Magmortar:1|
+Magnemite:3G,Magneton:3G,Magnezone:3G|
+Mankey:6,Primeape:6|
+Meowth:0,Persian:0|
+Mew:A|
+Mewtwo:A|
+Moltres:19|
+Mime Jr.:AH,Mr. Mime:AH,Mr. Rime:5A|
+Nidoran-M:7,Nidorino:7,Nidoking:78|
+Nidoran-F:7,Nidorina:7,Nidoqueen:78|
+Vulpix:1,Ninetales:1|
+Omanyte:C2,Omastar:C2|
+Onix:C8,Steelix:G8|
+Paras:B4,Parasect:B4|
+Pidgey:09,Pidgeotto:09,Pidgeot:09|
+Pichu:3,Pikachu:3,Raichu:3|
+Pinsir:B|
+Poliwag:2,Poliwhirl:2,Poliwrath:26,Politoed:2|
+Ponyta:1,Rapidash:1|
+Porygon:0,Porygon2:0,Porygon-Z:0|
+Rattata:0,Raticate:0|
+Rhyhorn:8C,Rhydon:8C,Rhyperior:8C|
+Sandshrew:8,Sandslash:8|
+Scyther:B9,Scizor:BG,Kleavor:BC|
+Slowpoke:2A,Slowbro:2A,Slowking:2A|
+Munchlax:0,Snorlax:0|
+Staryu:2,Starmie:2A|
+Tangela:4,Tangrowth:4|
+Tauros:0|
+Tentacool:27,Tentacruel:27|
+Venonat:B7,Venomoth:B7|
+Zapdos:39|
+Aipom:0,Ambipom:0|
+Mareep:3,Flaaffy:3,Ampharos:3|
+Spinarak:B7,Ariados:B7|
+Azurill:0H,Marill:2H,Azumarill:2H|
+Chikorita:4,Bayleef:4,Meganium:4|
+Celebi:A4|
+Chinchou:23,Lanturn:23|
+Corsola:2C|
+Totodile:2,Croconaw:2,Feraligatr:2|
+Cyndaquil:1,Quilava:1,Typhlosion:1|
+Delibird:59|
+Phanpy:8,Donphan:8|
+Dunsparce:0|
+Entei:1|
+Pineco:B,Forretress:BG|
+Sentret:0,Furret:0|
+Girafarig:0A|
+Gligar:89,Gliscor:89|
+Snubbull:H,Granbull:H|
+Heracross:B6|
+Ho-Oh:19|
+Hoothoot:09,Noctowl:09|
+Hoppip:49,Skiploom:49,Jumpluff:49|
+Houndour:F1,Houndoom:F1|
+Larvitar:C8,Pupitar:C8,Tyranitar:CF|
+Ledyba:B9,Ledian:B9|
+Lugia:A9|
+Slugma:1,Magcargo:1C|
+Mantyke:29,Mantine:29|
+Miltank:0|
+Misdreavus:D,Mismagius:D|
+Murkrow:F9,Honchkrow:F9|
+Natu:A9,Xatu:A9|
+Remoraid:2,Octillery:2|
+Swinub:58,Piloswine:58,Mamoswine:58|
+Wooper:28,Quagsire:28|
+Qwilfish:27|
+Raikou:3|
+Shuckle:BC|
+Skarmory:G9|
+Smeargle:0|
+Sneasel:F5,Weavile:F5|
+Stantler:0,Wyrdeer:0A|
+Bonsly:C,Sudowoodo:C|
+Suicune:2|
+Sunkern:4,Sunflora:4|
+Teddiursa:0,Ursaring:0,Ursaluna:08|
+Togepi:H,Togetic:H9,Togekiss:H9|
+Unown:A|
+Wynaut:A,Wobbuffet:A|
+Yanma:B9,Yanmega:B9|
+Absol:F|
+Aron:GC,Lairon:GC,Aggron:GC|
+Swablu:09,Altaria:E9|
+Anorith:CB,Armaldo:CB|
+Bagon:E,Shelgon:E,Salamence:E9|
+Baltoy:8A,Claydol:8A|
+Shuppet:D,Banette:D|
+Barboach:28,Whiscash:28|
+Wurmple:B,Silcoon:B,Beautifly:B9,Cascoon:B,Dustox:B7|
+Beldum:GA,Metang:GA,Metagross:GA|
+Torchic:1,Combusken:16,Blaziken:16|
+Shroomish:4,Breloom:46|
+Cacnea:4,Cacturne:4F|
+Numel:18,Camerupt:18|
+Carvanha:2F,Sharpedo:2F|
+Castform:0|
+Chingling:A,Chimecho:A|
+Clamperl:2,Huntail:2,Gorebyss:2|
+Corphish:2,Crawdaunt:2F|
+Lileep:C4,Cradily:C4|
+Skitty:0,Delcatty:0|
+Deoxys:A|
+Duskull:D,Dusclops:D,Dusknoir:D|
+Electrike:3,Manectric:3|
+Whismur:0,Loudred:0,Exploud:0|
+Feebas:2,Milotic:2|
+Trapinch:8,Vibrava:8E,Flygon:8E|
+Ralts:AH,Kirlia:AH,Gardevoir:AH,Gallade:A6|
+Snorunt:5,Glalie:5,Froslass:5D|
+Groudon:8|
+Treecko:4,Grovyle:4,Sceptile:4|
+Spoink:A,Grumpig:A|
+Gulpin:7,Swalot:7|
+Makuhita:6,Hariyama:6|
+Illumise:B|
+Jirachi:GA|
+Kecleon:0|
+Kyogre:2|
+Latias:EA|
+Latios:EA|
+Zigzagoon:0,Linoone:0|
+Lotad:24,Lombre:24,Ludicolo:24|
+Lunatone:CA|
+Luvdisc:2|
+Mudkip:2,Marshtomp:28,Swampert:28|
+Surskit:B2,Masquerain:B9|
+Mawile:GH|
+Meditite:6A,Medicham:6A|
+Poochyena:F,Mightyena:F|
+Minun:3|
+Nincada:B8,Ninjask:B9,Shedinja:BD|
+Nosepass:C,Probopass:CG|
+Seedot:4,Nuzleaf:4F,Shiftry:4F|
+Wingull:29,Pelipper:29|
+Plusle:3|
+Rayquaza:E9|
+Regice:5|
+Regirock:C|
+Registeel:G|
+Relicanth:2C|
+Budew:47,Roselia:47,Roserade:47|
+Sableye:FD|
+Spheal:52,Sealeo:52,Walrein:52|
+Seviper:7|
+Slakoth:0,Vigoroth:0,Slaking:0|
+Solrock:CA|
+Spinda:0|
+Taillow:09,Swellow:09|
+Torkoal:1|
+Tropius:49|
+Volbeat:B|
+Wailmer:2,Wailord:2|
+Zangoose:0|
+Snover:45,Abomasnow:45|
+Arceus:0|
+Privatyke:26,Arghonaut:26|
+Azelf:A|
+Shieldon:CG,Bastiodon:CG|
+Bidoof:0,Bibarel:02|
+Breezi:79,Fidgit:78|
+Bronzor:GA,Bronzong:GA|
+Buizel:2,Floatzel:2|
+Buneary:0,Lopunny:0|
+Burmy:B,Wormadam:B4,Mothim:B9|
+Carnivine:4|
+Chatot:09|
+Cherubi:4,Cherrim:4|
+Chimchar:1,Monferno:16,Infernape:16|
+Dorsoil:8,Colossoil:8F|
+Combee:B9,Vespiquen:B9|
+Cranidos:C,Rampardos:C|
+Cresselia:A|
+Croagunk:76,Toxicroak:76|
+Monohm:3,Duohm:3E,Cyclohm:3E|
+Darkrai:F|
+Dialga:GE|
+Skorupi:7B,Drapion:7F|
+Drifloon:D9,Drifblim:D9|
+Embirch:14,Flarelm:14,Pyroak:14|
+Piplup:2,Prinplup:2,Empoleon:2G|
+Finneon:2,Lumineon:2|
+Gible:E8,Gabite:E8,Garchomp:E8|
+Shellos:2,Gastrodon:28|
+Giratina:DE|
+Glameow:0,Purugly:0|
+Turtwig:4,Grotle:4,Torterra:48|
+Heatran:1G|
+Hippopotas:8,Hippowdon:8|
+Nohface:D,Kitsunoh:DG|
+Kricketot:B,Kricketune:B|
+Protowatt:32,Krilowatt:32|
+Riolu:6,Lucario:6G|
+Shinx:3,Luxio:3,Luxray:3|
+Manaphy:2|
+Mesprit:A|
+Pachirisu:3|
+Palkia:2E|
+Phione:2|
+Rebble:C,Tactite:C,Stratagem:C|
+Regigigas:0|
+Revenankh:D6|
+Rotom:3D|
+Shaymin:4|
+Stunky:7F,Skuntank:7F|
+Spiritomb:DF|
+Starly:09,Staravia:09,Staraptor:09|
+Syclar:5B,Syclant:5B|
+Uxie:A|
+Voodoll:0F,Voodoom:6F|
+Shelmet:B,Accelgor:B|
+Alomomola:2|
+Foongus:47,Amoonguss:47|
+Archen:C9,Archeops:C9|
+Cupra:BA,Argalis:BA,Aurumoth:BA|
+Audino:0|
+Axew:E,Fraxure:E,Haxorus:E|
+Basculin:2|
+Cubchoo:5,Beartic:5|
+Elgyem:A,Beheeyem:A|
+Pawniard:FG,Bisharp:FG|
+Blitzle:3,Zebstrika:3|
+Roggenrola:C,Boldore:C,Gigalith:C|
+Bouffalant:0|
+Brattler:F4,Malaconda:F4|
+Rufflet:09,Braviary:09|
+Tirtouga:2C,Carracosta:2C|
+Cawdet:G9,Cawmodore:G9|
+Litwick:D1,Lampent:D1,Chandelure:D1|
+Minccino:0,Cinccino:0|
+Cobalion:G6|
+Yamask:D,Cofagrigus:D|
+Timburr:6,Gurdurr:6,Conkeldurr:6|
+Cottonee:4H,Whimsicott:4H|
+Dwebble:BC,Crustle:BC|
+Cryogonal:5|
+Darumaka:1,Darmanitan:1|
+Deerling:04,Sawsbuck:04|
+Deino:FE,Zweilous:FE,Hydreigon:FE|
+Oshawott:2,Dewott:2,Samurott:2|
+Drilbur:8,Excadrill:8G|
+Druddigon:E|
+Ducklett:29,Swanna:29|
+Solosis:A,Duosion:A,Reuniclus:A|
+Durant:BG|
+Tynamo:3,Eelektrik:3,Eelektross:3|
+Tepig:1,Pignite:16,Emboar:16|
+Emolga:39|
+Karrablast:B,Escavalier:BG|
+Ferroseed:4G,Ferrothorn:4G|
+Frillish:2D,Jellicent:2D|
+Joltik:B3,Galvantula:B3|
+Trubbish:7,Garbodor:7|
+Genesect:BG|
+Golett:8D,Golurk:8D|
+Gothita:A,Gothorita:A,Gothitelle:A|
+Heatmor:1|
+Lillipup:0,Herdier:0,Stoutland:0|
+Keldeo:26|
+Klink:G,Klang:G,Klinklang:G|
+Sandile:8F,Krokorok:8F,Krookodile:8F|
+Kyurem:E5|
+Landorus:89|
+Larvesta:B1,Volcarona:B1|
+Sewaddle:B4,Swadloon:B4,Leavanny:B4|
+Purrloin:F,Liepard:F|
+Petilil:4,Lilligant:4|
+Vullaby:F9,Mandibuzz:F9|
+Maractus:4|
+Meloetta:0A|
+Mienfoo:6,Mienshao:6|
+Mollux:17|
+Munna:A,Musharna:A|
+Necturine:4D,Necturna:4D|
+Tympole:2,Palpitoad:28,Seismitoad:28|
+Panpour:2,Simipour:2|
+Pansage:4,Simisage:4|
+Pansear:1,Simisear:1|
+Patrat:0,Watchog:0|
+Pidove:09,Tranquill:09,Unfezant:09|
+Reshiram:E1|
+Sawk:6|
+Venipede:B7,Whirlipede:B7,Scolipede:B7|
+Scraggy:F6,Scrafty:F6|
+Scratchet:06,Tomohawk:96|
+Snivy:4,Servine:4,Serperior:4|
+Sigilyph:A9|
+Stunfisk:83|
+Woobat:A9,Swoobat:A9|
+Terrakion:C6|
+Throh:6|
+Thundurus:39|
+Tornadus:9|
+Vanillite:5,Vanillish:5,Vanilluxe:5|
+Victini:A1|
+Virizion:46|
+Zekrom:E3|
+Zorua:F,Zoroark:F|
+Amaura:C5,Aurorus:C5|
+Spritzee:H,Aromatisse:H|
+Bergmite:5,Avalugg:5|
+Binacle:C2,Barbaracle:C2|
+Fennekin:1,Braixen:1,Delphox:1A|
+Bunnelby:0,Diggersby:08|
+Floatoy:2,Caimanoe:2G,Naviathan:2G|
+Carbink:CH|
+Chespin:4,Quilladin:4,Chesnaught:46|
+Clauncher:2,Clawitzer:2|
+Crucibelle:C7|
+Diancie:CH|
+Dedenne:3H|
+Honedge:GD,Doublade:GD,Aegislash:GD|
+Skrelp:72,Dragalge:7E|
+Espurr:A,Meowstic:A|
+Flabébé:H,Floette:H,Florges:H|
+Fletchling:09,Fletchinder:19,Talonflame:19|
+Froakie:2,Frogadier:2,Greninja:2F|
+Furfrou:0|
+Skiddo:4,Gogoat:4|
+Goomy:E,Sliggoo:E,Goodra:E|
+Pumpkaboo:D4,Gourgeist:D4|
+Hawlucha:69|
+Helioptile:30,Heliolisk:30|
+Hoopa:AD|
+Inkay:FA,Malamar:FA|
+Pluffle:H,Kerfluffle:H6|
+Klefki:GH|
+Litleo:10,Pyroar:10|
+Noibat:9E,Noivern:9E|
+Pancham:6,Pangoro:6F|
+Phantump:D4,Trevenant:D4|
+Snugglow:37,Plasmanta:37|
+Scatterbug:B,Spewpa:B,Vivillon:B9|
+Swirlix:H,Slurpuff:H|
+Tyrunt:CE,Tyrantrum:CE|
+Volcanion:12|
+Volkritter:21,Volkraken:21|
+Xerneas:H|
+Yveltal:F9|
+Zygarde:E8|
+Dewpider:2B,Araquanid:2B|
+Stufful:06,Bewear:06|
+Blacephalon:1D|
+Bounsweet:4,Steenee:4,Tsareena:4|
+Popplio:2,Brionne:2,Primarina:2H|
+Bruxish:2A|
+Buzzwole:B6|
+Fawnifer:4,Electrelk:43,Caribolt:43|
+Celesteela:G9|
+Grubbin:B,Charjabug:B3,Vikavolt:B3|
+Comfey:H|
+Cosmog:A,Cosmoem:A,Solgaleo:AG,Lunala:AD|
+Swirlpool:2,Coribalis:2B,Snaelstrom:2B|
+Crabrawler:6,Crabominable:65|
+Cutiefly:BH,Ribombee:BH|
+Rowlet:49,Dartrix:49,Decidueye:4D|
+Dhelmise:D4|
+Drampa:0E|
+Justyke:G8,Equilibra:G8|
+Fomantis:4,Lurantis:4|
+Wimpod:B2,Golisopod:B2|
+Yungoos:0,Gumshoos:0|
+Guzzlord:FE|
+Jangmo-o:E,Hakamo-o:E6,Kommo-o:E6|
+Litten:1,Torracat:1,Incineroar:1F|
+Mumbao:4H,Jumbao:4H|
+Kartana:4G|
+Komala:0|
+Rockruff:C,Lycanroc:C|
+Magearna:GH|
+Mareanie:72,Toxapex:72|
+Marshadow:6D|
+Meltan:G,Melmetal:G|
+Mimikyu:DH|
+Minior:C9|
+Morelull:4H,Shiinotic:4H|
+Mudbray:8,Mudsdale:8|
+Poipole:7,Naganadel:7E|
+Necrozma:A|
+Nihilego:C7|
+Oranguru:0A|
+Oricorio:19|
+Pajantom:ED|
+Sandygast:D8,Palossand:D8|
+Passimian:6|
+Pheromosa:B6|
+Pikipek:09,Trumbeak:09,Toucannon:09|
+Pyukumuku:2|
+Salandit:71,Salazzle:71|
+Type: Null:0,Silvally:0|
+Smogecko:1,Smoguana:18,Smokomodo:18|
+Stakataka:CG|
+Tapu Bulu:4H|
+Tapu Fini:2H|
+Tapu Koko:3H|
+Tapu Lele:AH|
+Togedemaru:3G|
+Turtonator:1E|
+Wishiwashi:2|
+Xurkitree:3|
+Zeraora:3|
+Milcery:H,Alcremie:H|
+Applin:4E,Flapple:4E,Appletun:4E|
+Arctovish:25|
+Arctozolt:35|
+Arrokuda:2,Barraskewda:2|
+Solotl:1E,Astrolotl:1E|
+Blipbug:B,Dottler:BA,Orbeetle:BA|
+Yamper:3,Boltund:3|
+Calyrex:A4|
+Rolycoly:C,Carkol:C1,Coalossal:C1|
+Sizzlipede:1B,Centiskorch:1B|
+Chewtle:2,Drednaw:2C|
+Chromera:F0|
+Scorbunny:1,Raboot:1,Cinderace:1|
+Clobbopus:6,Grapploct:6|
+Cufant:G,Copperajah:G|
+Cursola:D|
+Rookidee:9,Corvisquire:9,Corviknight:9G|
+Cramorant:92|
+Dracovish:2E|
+Dracozolt:3E|
+Dreepy:ED,Drakloak:ED,Dragapult:ED|
+Sobble:2,Drizzile:2,Inteleon:2|
+Wooloo:0,Dubwool:0|
+Duraludon:GE|
+Eiscue:5|
+Gossifleur:4,Eldegoss:4|
+Eternatus:7E|
+Falinks:6|
+Sirfetch’d:6|
+Snom:5B,Frosmoth:5B|
+Glastrier:5|
+Skwovet:0,Greedent:0|
+Impidimp:FH,Morgrem:FH,Grimmsnarl:FH|
+Grookey:4,Thwackey:4,Rillaboom:4|
+Hatenna:A,Hattrem:A,Hatterene:AH|
+Indeedee:A0|
+Kubfu:6,Urshifu:6F|
+Obstagoon:F0|
+Perrserker:G|
+Miasmite:BE,Miasmaw:BE|
+Morpeko:3F|
+Nickit:F,Thievul:F|
+Pincurchin:3|
+Sinistea:D,Polteageist:D|
+Regidrago:E|
+Regieleki:3|
+Runerigus:8D|
+Saharascal:8,Saharaja:8|
+Silicobra:8,Sandaconda:8|
+Spectrier:D|
+Stonjourner:C|
+Toxel:37,Toxtricity:37|
+Venomicon:79|
+Zacian:H|
+Zamazenta:6|
+Zarude:F4|
+Basculegion:2D|
+Enamorus:H9|
+Overqwil:F7|
+Sneasler:76`;
+const FORMS_RAW=`Castform-Rainy:2:Castform
+Castform-Snowy:5:Castform
+Castform-Sunny:1:Castform
+Deoxys-Attack:A:Deoxys
+Deoxys-Defense:A:Deoxys
+Deoxys-Speed:A:Deoxys
+Arceus-Bug:B:Arceus
+Arceus-Dark:F:Arceus
+Arceus-Dragon:E:Arceus
+Arceus-Electric:3:Arceus
+Arceus-Fighting:6:Arceus
+Arceus-Fire:1:Arceus
+Arceus-Flying:9:Arceus
+Arceus-Ghost:D:Arceus
+Arceus-Grass:4:Arceus
+Arceus-Ground:8:Arceus
+Arceus-Ice:5:Arceus
+Arceus-Poison:7:Arceus
+Arceus-Psychic:A:Arceus
+Arceus-Rock:C:Arceus
+Arceus-Steel:G:Arceus
+Arceus-Water:2:Arceus
+Cherrim-Sunshine:4:Cherrim
+Giratina-Origin:DE:Giratina
+Rotom-Mow:34:Rotom
+Rotom-Frost:35:Rotom
+Rotom-Heat:31:Rotom
+Rotom-Fan:39:Rotom
+Rotom-Wash:32:Rotom
+Shaymin-Sky:49:Shaymin
+Wormadam-Sandy:B8:Wormadam
+Wormadam-Trash:BG:Wormadam
+Basculin-Blue-Striped:2:Basculin
+Darmanitan-Zen:1A:Darmanitan
+Genesect-Burn:BG:Genesect
+Genesect-Chill:BG:Genesect
+Genesect-Douse:BG:Genesect
+Genesect-Shock:BG:Genesect
+Keldeo-Resolute:26:Keldeo
+Kyurem-Black:E5:Kyurem
+Kyurem-White:E5:Kyurem
+Landorus-Therian:89:Landorus
+Meloetta-Pirouette:06:Meloetta
+Thundurus-Therian:39:Thundurus
+Tornadus-Therian:9:Tornadus
+Aegislash-Blade:GD:Aegislash
+Arceus-Fairy:H:Arceus
+Floette-Eternal:H:Floette
+Gourgeist-Large:D4:Gourgeist
+Gourgeist-Small:D4:Gourgeist
+Gourgeist-Super:D4:Gourgeist
+Hoopa-Unbound:AF:Hoopa
+Abomasnow-Mega:45:Abomasnow
+Absol-Mega:F:Absol
+Aerodactyl-Mega:C9:Aerodactyl
+Aggron-Mega:G:Aggron
+Alakazam-Mega:A:Alakazam
+Altaria-Mega:EH:Altaria
+Ampharos-Mega:3E:Ampharos
+Audino-Mega:0H:Audino
+Banette-Mega:D:Banette
+Beedrill-Mega:B7:Beedrill
+Blastoise-Mega:2:Blastoise
+Blaziken-Mega:16:Blaziken
+Camerupt-Mega:18:Camerupt
+Charizard-Mega-X:1E:Charizard
+Charizard-Mega-Y:19:Charizard
+Crucibelle-Mega:C7:Crucibelle
+Diancie-Mega:CH:Diancie
+Gallade-Mega:A6:Gallade
+Garchomp-Mega:E8:Garchomp
+Gardevoir-Mega:AH:Gardevoir
+Gengar-Mega:D7:Gengar
+Glalie-Mega:5:Glalie
+Gyarados-Mega:2F:Gyarados
+Heracross-Mega:B6:Heracross
+Houndoom-Mega:F1:Houndoom
+Kangaskhan-Mega:0:Kangaskhan
+Latias-Mega:EA:Latias
+Latios-Mega:EA:Latios
+Lopunny-Mega:06:Lopunny
+Lucario-Mega:6G:Lucario
+Manectric-Mega:3:Manectric
+Mawile-Mega:GH:Mawile
+Medicham-Mega:6A:Medicham
+Metagross-Mega:GA:Metagross
+Mewtwo-Mega-X:A6:Mewtwo
+Mewtwo-Mega-Y:A:Mewtwo
+Pidgeot-Mega:09:Pidgeot
+Pinsir-Mega:B9:Pinsir
+Rayquaza-Mega:E9:Rayquaza
+Sableye-Mega:FD:Sableye
+Salamence-Mega:E9:Salamence
+Sceptile-Mega:4E:Sceptile
+Scizor-Mega:BG:Scizor
+Sharpedo-Mega:2F:Sharpedo
+Slowbro-Mega:2A:Slowbro
+Steelix-Mega:G8:Steelix
+Swampert-Mega:28:Swampert
+Tyranitar-Mega:CF:Tyranitar
+Venusaur-Mega:47:Venusaur
+Meowstic-F:A:Meowstic
+Groudon-Primal:81:Groudon
+Kyogre-Primal:2:Kyogre
+Pumpkaboo-Large:D4:Pumpkaboo
+Pumpkaboo-Small:D4:Pumpkaboo
+Pumpkaboo-Super:D4:Pumpkaboo
+Vivillon-Fancy:B9:Vivillon
+Vivillon-Pokeball:B9:Vivillon
+Araquanid-Totem:2B:Araquanid
+Diglett-Alola:8G:Diglett
+Dugtrio-Alola:8G:Dugtrio
+Exeggutor-Alola:4E:Exeggutor
+Geodude-Alola:C3:Geodude
+Golem-Alola:C3:Golem
+Graveler-Alola:C3:Graveler
+Grimer-Alola:7F:Grimer
+Greninja-Ash:2F:Greninja
+Gumshoos-Totem:0:Gumshoos
+Kommo-o-Totem:E6:Kommo-o
+Lurantis-Totem:4:Lurantis
+Lycanroc-Dusk:C:Lycanroc
+Lycanroc-Midnight:C:Lycanroc
+Marowak-Alola:1D:Marowak
+Marowak-Alola-Totem:1D:Marowak
+Meowth-Alola:F:Meowth
+Mimikyu-Busted:DH:Mimikyu
+Mimikyu-Busted-Totem:DH:Mimikyu
+Mimikyu-Totem:DH:Mimikyu
+Minior-Meteor:C9:Minior
+Muk-Alola:7F:Muk
+Necrozma-Dawn-Wings:AD:Necrozma
+Necrozma-Dusk-Mane:AG:Necrozma
+Necrozma-Ultra:AE:Necrozma
+Ninetales-Alola:5H:Ninetales
+Oricorio-Pa'u:A9:Oricorio
+Oricorio-Pom-Pom:39:Oricorio
+Oricorio-Sensu:D9:Oricorio
+Persian-Alola:F:Persian
+Pikachu-Alola:3:Pikachu
+Pikachu-Hoenn:3:Pikachu
+Pikachu-Kalos:3:Pikachu
+Pikachu-Original:3:Pikachu
+Pikachu-Partner:3:Pikachu
+Pikachu-Sinnoh:3:Pikachu
+Pikachu-Unova:3:Pikachu
+Raichu-Alola:3A:Raichu
+Raticate-Alola:F0:Raticate
+Raticate-Alola-Totem:F0:Raticate
+Rattata-Alola:F0:Rattata
+Ribombee-Totem:BH:Ribombee
+Salazzle-Totem:71:Salazzle
+Sandshrew-Alola:5G:Sandshrew
+Sandslash-Alola:5G:Sandslash
+Silvally-Bug:B:Silvally
+Silvally-Dark:F:Silvally
+Silvally-Dragon:E:Silvally
+Silvally-Electric:3:Silvally
+Silvally-Fairy:H:Silvally
+Silvally-Fighting:6:Silvally
+Silvally-Fire:1:Silvally
+Silvally-Flying:9:Silvally
+Silvally-Ghost:D:Silvally
+Silvally-Grass:4:Silvally
+Silvally-Ground:8:Silvally
+Silvally-Ice:5:Silvally
+Silvally-Poison:7:Silvally
+Silvally-Psychic:A:Silvally
+Silvally-Rock:C:Silvally
+Silvally-Steel:G:Silvally
+Silvally-Water:2:Silvally
+Togedemaru-Totem:3G:Togedemaru
+Vikavolt-Totem:B3:Vikavolt
+Vulpix-Alola:5:Vulpix
+Wishiwashi-School:2:Wishiwashi
+Zygarde-10%:E8:Zygarde
+Zygarde-Complete:E8:Zygarde
+Alcremie-Gmax:H:Alcremie
+Appletun-Gmax:4E:Appletun
+Articuno-Galar:A9:Articuno
+Blastoise-Gmax:2:Blastoise
+Butterfree-Gmax:B9:Butterfree
+Calyrex-Ice:A5:Calyrex
+Calyrex-Shadow:AD:Calyrex
+Centiskorch-Gmax:1B:Centiskorch
+Charizard-Gmax:19:Charizard
+Cinderace-Gmax:1:Cinderace
+Coalossal-Gmax:C1:Coalossal
+Copperajah-Gmax:G:Copperajah
+Corsola-Galar:D:Corsola
+Corviknight-Gmax:9G:Corviknight
+Cramorant-Gorging:92:Cramorant
+Cramorant-Gulping:92:Cramorant
+Darmanitan-Galar:5:Darmanitan
+Darmanitan-Galar-Zen:51:Darmanitan
+Darumaka-Galar:5:Darumaka
+Drednaw-Gmax:2C:Drednaw
+Duraludon-Gmax:GE:Duraludon
+Eevee-Gmax:0:Eevee
+Eiscue-Noice:5:Eiscue
+Eternatus-Eternamax:7E:Eternatus
+Farfetch’d-Galar:6:Farfetch’d
+Flapple-Gmax:4E:Flapple
+Garbodor-Gmax:7:Garbodor
+Gengar-Gmax:D7:Gengar
+Grimmsnarl-Gmax:FH:Grimmsnarl
+Hatterene-Gmax:AH:Hatterene
+Indeedee-F:A0:Indeedee
+Inteleon-Gmax:2:Inteleon
+Kingler-Gmax:2:Kingler
+Lapras-Gmax:25:Lapras
+Linoone-Galar:F0:Linoone
+Magearna-Original:GH:Magearna
+Machamp-Gmax:6:Machamp
+Melmetal-Gmax:G:Melmetal
+Meowth-Galar:G:Meowth
+Meowth-Gmax:0:Meowth
+Moltres-Galar:F9:Moltres
+Morpeko-Hangry:3F:Morpeko
+Mr. Mime-Galar:5A:Mr. Mime
+Orbeetle-Gmax:BA:Orbeetle
+Pikachu-Gmax:3:Pikachu
+Pikachu-World:3:Pikachu
+Polteageist-Antique:D:Polteageist
+Ponyta-Galar:A:Ponyta
+Rapidash-Galar:AH:Rapidash
+Rillaboom-Gmax:4:Rillaboom
+Sandaconda-Gmax:8:Sandaconda
+Sinistea-Antique:D:Sinistea
+Slowbro-Galar:7A:Slowbro
+Slowking-Galar:7A:Slowking
+Slowpoke-Galar:A:Slowpoke
+Snorlax-Gmax:0:Snorlax
+Stunfisk-Galar:8G:Stunfisk
+Toxtricity-Gmax:37:Toxtricity
+Toxtricity-Low-Key:37:Toxtricity
+Toxtricity-Low-Key-Gmax:37:Toxtricity
+Urshifu-Rapid-Strike:62:Urshifu
+Urshifu-Rapid-Strike-Gmax:62:Urshifu
+Urshifu-Gmax:6F:Urshifu
+Venomicon-Epilogue:79:Venomicon
+Venusaur-Gmax:47:Venusaur
+Weezing-Galar:7H:Weezing
+Yamask-Galar:8D:Yamask
+Zacian-Crowned:HG:Zacian
+Zamazenta-Crowned:6G:Zamazenta
+Zapdos-Galar:69:Zapdos
+Zarude-Dada:F4:Zarude
+Zigzagoon-Galar:F0:Zigzagoon
+Arcanine-Hisui:1C:Arcanine
+Avalugg-Hisui:5C:Avalugg
+Basculegion-F:2D:Basculegion
+Basculin-White-Striped:2:Basculin
+Braviary-Hisui:A9:Braviary
+Decidueye-Hisui:46:Decidueye
+Dialga-Origin:GE:Dialga
+Electrode-Hisui:34:Electrode
+Enamorus-Therian:H9:Enamorus
+Goodra-Hisui:EG:Goodra
+Growlithe-Hisui:1C:Growlithe
+Lilligant-Hisui:46:Lilligant
+Palkia-Origin:2E:Palkia
+Qwilfish-Hisui:F7:Qwilfish
+Samurott-Hisui:2F:Samurott
+Sliggoo-Hisui:EG:Sliggoo
+Sneasel-Hisui:76:Sneasel
+Typhlosion-Hisui:1D:Typhlosion
+Voltorb-Hisui:34:Voltorb
+Zoroark-Hisui:0D:Zoroark
+Zorua-Hisui:0D:Zorua`;
+const ALIAS_RAW=``;
+
+/* ---------- 3. DATOS DE ENCUENTROS (inyectados) ---------- */
+const DATA={"game":"Pokémon Unbound (Expert)","id":"unboundexpert","locs":[{"name":"Starter","g":[{"m":"Especial","s":[["Gible",33.3,""],["Beldum",33.3,""],["Larvitar",33.3,""]]}]},{"name":"Route 1","g":[{"m":"Hierba","s":[["Vanillite",49,"7-9"],["Snorunt",45,"7-9"],["Delibird",4,"8-9"],["Minior-Meteor",2,"9-10"]]}]},{"name":"Icicle Cave 1F","g":[{"m":"Hierba","s":[["Spheal",30,"8-10"],["Makuhita",25,"8-10"],["Zubat",20,"8-10"],["Smoochum",10,"8-10"],["Bergmite",5,"9-10"],["Roggenrola",5,"9-10"],["Swinub",5,"9-10"]]}]},{"name":"Icicle Cave B1F","g":[{"m":"Hierba","s":[["Spheal",30,"8-10"],["Makuhita",25,"8-10"],["Zubat",20,"8-10"],["Smoochum",10,"8-10"],["Bergmite",5,"9-10"],["Roggenrola",5,"9-10"],["Swinub",5,"9-10"]]},{"m":"Surf","s":[["Seel",60,"35-40"],["Spheal",30,"35-40"],["Dewgong",5,"38-40"],["Sealeo",4,"38-40"],["Lapras",1,"40"]]},{"m":"Golpe Roca","s":[["Roggenrola",60,"20-30"],["Bergmite",35,"20-30"],["Boldore",5,"25-30"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Seel",80,"20-25"],["Shellder",20,"20-25"]]},{"m":"Súper caña","s":[["Shellder",59,"45-50"],["Dewgong",40,"45-50"],["Cloyster",1,"45-50"]]}]},{"name":"Icicle Cave B2F","g":[{"m":"Hierba","s":[["Spheal",30,"8-10"],["Makuhita",25,"8-10"],["Zubat",20,"8-10"],["Smoochum",10,"8-10"],["Bergmite",5,"9-10"],["Roggenrola",5,"9-10"],["Swinub",5,"9-10"]]},{"m":"Surf","s":[["Seel",60,"35-40"],["Spheal",30,"35-40"],["Dewgong",5,"38-40"],["Sealeo",4,"38-40"],["Lapras",1,"40"]]},{"m":"Golpe Roca","s":[["Roggenrola",60,"20-30"],["Bergmite",35,"20-30"],["Boldore",5,"25-30"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Seel",80,"20-25"],["Shellder",20,"20-25"]]},{"m":"Súper caña","s":[["Shellder",59,"45-50"],["Dewgong",40,"45-50"],["Cloyster",1,"45-50"]]}]},{"name":"Icicle Cave B3F","g":[{"m":"Hierba","s":[["Spheal",30,"9-11"],["Makuhita",25,"9-11"],["Zubat",20,"9-11"],["Smoochum",10,"9-11"],["Bergmite",5,"10-11"],["Roggenrola",5,"10-11"],["Swinub",5,"10-11"]]}]},{"name":"Icicle Cave B3F Alt","g":[{"m":"Hierba","s":[["Sealeo",30,"37-40"],["Hariyama",25,"37-40"],["Golbat",20,"37-40"],["Jynx",10,"37-40"],["Avalugg",5,"38-40"],["Boldore",5,"38-40"],["Piloswine",5,"38-40"]]},{"m":"Golpe Roca","s":[["Boldore",60,"40-50"],["Avalugg",39,"40-50"],["Shuckle",1,"45-50"]]}]},{"name":"Icicle Cave 1F Back","g":[{"m":"Hierba","s":[["Zubat",40,"8-10"],["Roggenrola",30,"8-10"],["Makuhita",20,"8-10"],["Drilbur",5,"9-10"],["Mawile",5,"9-10"]]},{"m":"Golpe Roca","s":[["Boldore",100,"30-40"]]}]},{"name":"Icicle Cave Clearing","g":[{"m":"Hierba","s":[["Sandshrew-Alola",100,"8-12"]]}]},{"name":"Icicle Cave B4F","g":[{"m":"Hierba","s":[["Sealeo",30,"37-40"],["Hariyama",25,"37-40"],["Golbat",20,"37-40"],["Jynx",10,"37-40"],["Avalugg",5,"38-40"],["Boldore",5,"38-40"],["Piloswine",5,"38-40"]]},{"m":"Golpe Roca","s":[["Boldore",60,"30-40"],["Bergmite",35,"30-40"],["Avalugg",5,"37-40"]]}]},{"name":"Route 2","g":[{"m":"Día","s":[["Pikipek",20,"8-11"],["Patrat",20,"8-11"],["Inkay",10,"8-11"],["Minccino",10,"8-11"],["Electrike",10,"8-11"],["Azurill",10,"8-11"],["Stufful",10,"8-11"],["Scraggy",5,"9-11"],["Riolu",5,"9-11"]]},{"m":"Noche","s":[["Hoothoot",20,"9-11"],["Rattata",20,"9-11"],["Inkay",10,"9-11"],["Minccino",10,"9-11"],["Electrike",10,"9-11"],["Azurill",10,"9-11"],["Stufful",10,"9-11"],["Scraggy",5,"10-11"],["Riolu",5,"10-11"]]},{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Basculin",5,"37-40"]]},{"m":"Golpe Roca","s":[["Binacle",60,"20-30"],["Krabby",40,"20-30"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Staryu",80,"20-25"],["Shellder",20,"20-25"]]},{"m":"Súper caña","s":[["Staryu",40,"45-50"],["Shellder",40,"45-50"],["Gyarados",19,"45-50"],["Starmie",1,"45-50"]]},{"m":"Especial","s":[["Litleo",50,""],["Binacle",50,""]]}]},{"name":"Dresco Town","g":[{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Basculin",5,"37-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Staryu",80,"20-25"],["Shellder",20,"20-25"]]},{"m":"Súper caña","s":[["Staryu",40,"45-50"],["Shellder",40,"45-50"],["Gyarados",19,"45-50"],["Starmie",1,"45-50"]]}]},{"name":"Route 3","g":[{"m":"Día","s":[["Wingull",20,"9-12"],["Bidoof",20,"9-12"],["Slowpoke",20,"9-12"],["Shellos",10,"9-12"],["Cherubi",10,"9-12"],["Poliwag",10,"10-12"],["Dewpider",5,"9-12"],["Buizel",5,"9-12"]]},{"m":"Noche","s":[["Wingull",20,"9-12"],["Bidoof",20,"9-12"],["Slowpoke",20,"9-12"],["Surskit",15,"9-12"],["Shellos",10,"9-12"],["Poliwag",10,"10-12"],["Buizel",5,"9-12"]]},{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Araquanid",5,"37-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Staryu",60,"20-25"],["Krabby",20,"20-25"],["Shellder",20,"20-25"]]},{"m":"Súper caña","s":[["Staryu",40,"45-50"],["Shellder",40,"45-50"],["Kingler",19,"45-50"],["Cloyster",1,"45-50"]]},{"m":"Especial","s":[["Sandygast",100,""]]}]},{"name":"Flower Paradise (A)","g":[{"m":"Hierba","s":[["Flabébé",60,"9-12"],["Cutiefly",25,"9-12"],["Oricorio-Pa'u",5,"9-12"],["Pansage",5,"10-12"],["Comfey",4,"9-12"],["Combee",1,"10-12"]]},{"m":"Surf","s":[["Flabébé",60,"9-12"],["Cutiefly",30,"9-12"],["Oricorio-Pom-Pom",9,"9-12"],["Combee",1,"10-12"]]}]},{"name":"Flower Paradise (B)","g":[{"m":"Hierba","s":[["Flabébé",60,"9-12"],["Cutiefly",25,"9-12"],["Oricorio",5,"9-12"],["Pansear",5,"10-12"],["Comfey",4,"9-12"],["Combee",1,"10-12"]]},{"m":"Surf","s":[["Flabébé",60,"9-12"],["Cutiefly",30,"9-12"],["Panpour",5,"10-12"],["Combee",5,"10-12"]]}]},{"name":"Flower Paradise (C)","g":[{"m":"Hierba","s":[["Flabébé",60,"9-12"],["Cutiefly",20,"9-12"],["Oricorio-Sensu",10,"10-12"],["Comfey",9,"9-12"],["Combee",1,"9-12"]]},{"m":"Surf","s":[["Flabébé",60,"9-12"],["Cutiefly",30,"9-12"],["Oricorio-Sensu",9,"10-12"],["Combee",1,"10-12"]]}]},{"name":"Route 4 (?)","g":[{"m":"Surf","s":[["Tentacool",60,"45-50"],["Pelipper",30,"45-50"],["Tentacruel",5,"48-50"],["Basculin",5,"47-50"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Corphish",80,"20-25"],["Staryu",20,"20-25"]]},{"m":"Súper caña","s":[["Crawdaunt",40,"45-50"],["Staryu",40,"45-50"],["Gyarados",19,"45-50"],["Starmie",1,"45-50"]]}]},{"name":"Route 4","g":[{"m":"Día","s":[["Starly",40,"14-17"],["Lillipup",20,"14-17"],["Ekans",10,"14-17"],["Numel",10,"14-17"],["Budew",10,"14-17"],["Mankey",5,"14-17"],["Ralts",5,"14-17"]]},{"m":"Noche","s":[["Hoothoot",40,"15-17"],["Lillipup",20,"15-17"],["Ekans",10,"15-17"],["Numel",10,"15-17"],["Budew",10,"15-17"],["Mankey",5,"15-17"],["Ralts",5,"15-17"]]},{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Basculin",5,"37-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Corphish",80,"20-25"],["Staryu",20,"20-25"]]},{"m":"Súper caña","s":[["Crawdaunt",40,"45-50"],["Staryu",40,"45-50"],["Gyarados",19,"45-50"],["Starmie",1,"45-50"]]}]},{"name":"Grim Woods","g":[{"m":"Día","s":[["Caterpie",20,"12-16"],["Seedot",20,"13-16"],["Pumpkaboo-Small",10,"13-16"],["Pumpkaboo",10,"13-16"],["Pumpkaboo-Large",10,"13-16"],["Pumpkaboo-Super",10,"13-16"],["Gastly",5,"14-16"],["Shuppet",5,"14-16"],["Duskull",5,"14-16"],["Phantump",5,"14-16"]]},{"m":"Noche","s":[["Weedle",20,"13-16"],["Seedot",20,"14-16"],["Pumpkaboo-Small",10,"14-16"],["Pumpkaboo",10,"14-16"],["Pumpkaboo-Large",10,"14-16"],["Pumpkaboo-Super",10,"14-16"],["Gastly",5,"15-16"],["Shuppet",5,"15-16"],["Duskull",5,"15-16"],["Phantump",5,"15-16"]]},{"m":"Surf","s":[["Psyduck",60,"35-40"],["Masquerain",30,"35-40"],["Golduck",5,"35-40"],["Surskit",5,"20-25"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Psyduck",80,"20-25"],["Barboach",20,"20-25"]]},{"m":"Súper caña","s":[["Golduck",80,"45-50"],["Whiscash",20,"45-50"]]}]},{"name":"Cinder Volcano 3F (1)","g":[{"m":"Hierba","s":[["Woobat",20,"15-17"],["Slugma",20,"15-17"],["Geodude",20,"15-17"],["Numel",15,"15-17"],["Salandit",10,"15-17"],["Drilbur",5,"16-17"],["Torkoal",5,"16-17"],["Magby",5,"16-17"]]},{"m":"Surf","s":[["Slugma",95,"35-40"],["Magcargo",5,"40"]]},{"m":"Golpe Roca","s":[["Geodude",90,"20-30"],["Graveler",9,"25-30"],["Shuckle",1,"30"]]}]},{"name":"Cinder Volcano (?)","g":[{"m":"Hierba","s":[["Woobat",20,"15-17"],["Slugma",20,"15-17"],["Geodude",20,"15-17"],["Numel",15,"15-17"],["Salandit",10,"15-17"],["Drilbur",5,"16-17"],["Torkoal",5,"16-17"],["Magby",5,"16-17"]]}]},{"name":"Cinder Volcano (?) 2","g":[{"m":"Hierba","s":[["Woobat",20,"15-17"],["Slugma",20,"15-17"],["Geodude",20,"15-17"],["Numel",15,"15-17"],["Salandit",10,"15-17"],["Drilbur",5,"16-17"],["Torkoal",5,"16-17"],["Magby",5,"16-17"]]},{"m":"Surf","s":[["Slugma",95,"35-40"],["Magcargo",5,"40"]]},{"m":"Golpe Roca","s":[["Geodude",90,"20-30"],["Graveler",9,"25-30"],["Shuckle",1,"30"]]}]},{"name":"Cinder Volcano 4F (2)","g":[{"m":"Hierba","s":[["Woobat",20,"15-17"],["Slugma",20,"15-17"],["Geodude",20,"15-18"],["Numel",15,"15-18"],["Salandit",10,"15-17"],["Drilbur",5,"16-18"],["Torkoal",5,"17-18"],["Magby",5,"17-18"]]}]},{"name":"Cinder Volcano Shadow B1F","g":[{"m":"Hierba","s":[["Woobat",20,"35-38"],["Slugma",20,"35-38"],["Graveler",20,"35-38"],["Camerupt",15,"35-38"],["Salandit",10,"35-38"],["Excadrill",5,"36-38"],["Heatmor",5,"36-38"],["Magmar",5,"36-38"]]},{"m":"Surf","s":[["Slugma",95,"35-40"],["Magcargo",5,"40"]]}]},{"name":"Cinder Volcano Shadow B2F","g":[{"m":"Hierba","s":[["Woobat",20,"35-38"],["Slugma",20,"35-38"],["Graveler",20,"35-38"],["Camerupt",15,"35-38"],["Salandit",10,"35-38"],["Excadrill",5,"36-38"],["Heatmor",5,"36-38"],["Magmar",5,"36-38"]]},{"m":"Surf","s":[["Slugma",95,"35-40"],["Magcargo",5,"40"]]},{"m":"Golpe Roca","s":[["Geodude",90,"25-35"],["Graveler",9,"30-35"],["Shuckle",1,"35"]]}]},{"name":"Cinder Volcano Shadow Storage (1)","g":[{"m":"Hierba","s":[["Woobat",20,"35-38"],["Slugma",20,"35-38"],["Graveler",20,"35-38"],["Camerupt",15,"35-38"],["Salandit",10,"35-38"],["Excadrill",5,"36-38"],["Heatmor",5,"36-38"],["Magmar",5,"36-38"]]},{"m":"Surf","s":[["Slugma",95,"35-40"],["Magcargo",5,"40"]]},{"m":"Golpe Roca","s":[["Geodude",90,"25-35"],["Graveler",9,"30-35"],["Shuckle",1,"35"]]}]},{"name":"Cinder Volcano Shadow Storage (2)","g":[{"m":"Hierba","s":[["Woobat",20,"35-38"],["Slugma",20,"35-38"],["Graveler",20,"35-38"],["Camerupt",15,"35-38"],["Salandit",10,"35-38"],["Excadrill",5,"36-38"],["Heatmor",5,"36-38"],["Magmar",5,"36-38"]]},{"m":"Surf","s":[["Slugma",95,"35-40"],["Magcargo",5,"40"]]},{"m":"Golpe Roca","s":[["Slugma",60,"35-40"],["Magcargo",35,"40"],["Graveler",4,"30-35"],["Shuckle",1,"35"]]}]},{"name":"Cinder Volcano Shadow 1F","g":[{"m":"Hierba","s":[["Woobat",20,"35-38"],["Slugma",20,"35-38"],["Graveler",20,"35-38"],["Camerupt",15,"35-38"],["Salandit",10,"35-38"],["Excadrill",5,"36-38"],["Heatmor",5,"36-38"],["Magmar",5,"36-38"]]}]},{"name":"Cinder Volcano F1","g":[{"m":"Hierba","s":[["Woobat",20,"15-17"],["Slugma",20,"15-17"],["Geodude",20,"15-17"],["Numel",15,"15-17"],["Salandit",10,"15-17"],["Drilbur",5,"16-17"],["Torkoal",5,"16-17"],["Magby",5,"16-17"]]},{"m":"Surf","s":[["Slugma",95,"35-40"],["Magcargo",5,"40"]]},{"m":"Golpe Roca","s":[["Geodude",90,"20-30"],["Graveler",9,"25-30"],["Shuckle",1,"30"]]}]},{"name":"Cinder Volcano 2F","g":[{"m":"Hierba","s":[["Woobat",20,"15-17"],["Slugma",20,"15-17"],["Geodude",20,"15-17"],["Numel",15,"15-17"],["Salandit",10,"15-17"],["Drilbur",5,"16-17"],["Torkoal",5,"16-17"],["Magby",5,"16-17"]]},{"m":"Surf","s":[["Slugma",95,"35-40"],["Magcargo",5,"40"]]},{"m":"Golpe Roca","s":[["Geodude",90,"20-30"],["Graveler",9,"25-30"],["Shuckle",1,"30"]]}]},{"name":"Cinder Volcano (?) 3","g":[{"m":"Hierba","s":[["Woobat",20,"15-17"],["Slugma",20,"15-17"],["Geodude",20,"15-17"],["Numel",15,"15-17"],["Salandit",10,"15-17"],["Drilbur",5,"16-17"],["Torkoal",5,"16-17"],["Magby",5,"16-17"]]},{"m":"Surf","s":[["Slugma",95,"35-40"],["Magcargo",5,"40"]]}]},{"name":"Route 5","g":[{"m":"Día","s":[["Purrloin",30,"15-18"],["Taillow",20,"15-18"],["Nidoran-M",10,"15-18"],["Nidoran-F",10,"15-18"],["Growlithe",10,"16-19"],["Lickitung",10,"16-19"],["Yanma",8,"17-19"],["Ditto",2,"17-19"]]},{"m":"Noche","s":[["Purrloin",30,"15-18"],["Murkrow",20,"15-19"],["Nidoran-M",10,"15-18"],["Nidoran-F",10,"15-18"],["Houndour",10,"16-19"],["Lickitung",10,"16-19"],["Venonat",8,"17-19"],["Ditto",2,"19"]]},{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Basculin",5,"37-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Corphish",80,"20-25"],["Staryu",20,"20-25"]]},{"m":"Súper caña","s":[["Crawdaunt",40,"45-50"],["Staryu",40,"45-50"],["Gyarados",19,"45-50"],["Starmie",1,"45-50"]]}]},{"name":"Crater Town","g":[{"m":"Especial","s":[["Clefairy",100,""]]}]},{"name":"KBT Expressway (?)","g":[{"m":"Hierba","s":[["Zubat",25,"18-21"],["Woobat",25,"18-21"],["Makuhita",15,"18-21"],["Aron",10,"19-21"],["Nosepass",10,"19-21"],["Geodude",10,"19-21"],["Noibat",5,"20-21"]]},{"m":"Golpe Roca","s":[["Geodude",70,"20-30"],["Nosepass",30,"20-30"]]}]},{"name":"KBT Expressway (?) 2","g":[{"m":"Hierba","s":[["Zubat",25,"17-20"],["Woobat",25,"17-20"],["Makuhita",15,"17-20"],["Aron",10,"18-20"],["Nosepass",10,"18-20"],["Geodude",10,"18-20"],["Noibat",5,"19-20"]]}]},{"name":"KBT Expressway (?) 3","g":[{"m":"Hierba","s":[["Zubat",25,"17-20"],["Woobat",25,"17-20"],["Makuhita",15,"17-20"],["Aron",10,"18-20"],["Nosepass",10,"18-20"],["Geodude",10,"18-20"],["Noibat",5,"19-20"]]}]},{"name":"KBT Expressway (?) 4","g":[{"m":"Hierba","s":[["Zubat",25,"17-20"],["Woobat",25,"17-20"],["Makuhita",15,"17-20"],["Aron",10,"18-20"],["Nosepass",10,"18-20"],["Geodude",10,"18-20"],["Noibat",5,"19-20"]]}]},{"name":"KBT Expressway (?) 5","g":[{"m":"Hierba","s":[["Zubat",25,"25-28"],["Woobat",25,"25-28"],["Makuhita",15,"25-28"],["Aron",10,"26-28"],["Nosepass",10,"26-28"],["Geodude",10,"26-28"],["Noibat",5,"26-28"]]},{"m":"Golpe Roca","s":[["Geodude",70,"20-30"],["Nosepass",30,"20-30"]]}]},{"name":"KBT Expressway (?) 6","g":[{"m":"Hierba","s":[["Zubat",25,"25-28"],["Woobat",25,"25-28"],["Makuhita",15,"25-28"],["Aron",10,"26-28"],["Nosepass",10,"26-28"],["Geodude",10,"26-28"],["Noibat",5,"26-28"]]}]},{"name":"KBT Expressway (?) 7","g":[{"m":"Hierba","s":[["Golbat",25,"34-37"],["Woobat",25,"34-37"],["Hariyama",16,"34-37"],["Lairon",10,"35-37"],["Nosepass",10,"35-37"],["Graveler",10,"35-37"],["Noibat",4,"36-37"]]}]},{"name":"KBT Expressway (?) 8","g":[{"m":"Hierba","s":[["Golbat",25,"38-41"],["Woobat",25,"38-41"],["Hariyama",16,"38-41"],["Lairon",10,"39-41"],["Nosepass",10,"39-41"],["Graveler",10,"39-41"],["Noibat",4,"40-41"]]}]},{"name":"KBT Expressway (?) 9","g":[{"m":"Hierba","s":[["Golbat",25,"38-41"],["Woobat",25,"38-41"],["Hariyama",16,"38-41"],["Lairon",10,"39-41"],["Nosepass",10,"39-41"],["Graveler",10,"39-41"],["Noibat",4,"40-41"]]}]},{"name":"KBT Expressway (?) 10","g":[{"m":"Hierba","s":[["Golbat",25,"38-41"],["Woobat",25,"38-41"],["Hariyama",16,"38-41"],["Lairon",10,"39-41"],["Nosepass",10,"39-41"],["Graveler",10,"39-41"],["Noibat",4,"40-41"]]}]},{"name":"KBT Expressway","g":[{"m":"Especial","s":[["Carbink",100,""]]}]},{"name":"Valley Cave (A)","g":[{"m":"Hierba","s":[["Woobat",35,"19-21"],["Phanpy",30,"19-21"],["Nosepass",20,"19-21"],["Aron",15,"19-21"]]}]},{"name":"Valley Cave (B)","g":[{"m":"Hierba","s":[["Woobat",30,"19-21"],["Phanpy",30,"19-21"],["Nosepass",20,"19-21"],["Aron",10,"19-21"],["Noibat",5,"20-21"],["Gligar",5,"20-21"]]},{"m":"Surf","s":[["Finneon",60,"35-40"],["Woobat",30,"35-40"],["Psyduck",6,"35-40"],["Golduck",4,"38-40"]]},{"m":"Golpe Roca","s":[["Geodude",70,"20-30"],["Nosepass",30,"20-30"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Finneon",80,"20-25"],["Psyduck",20,"20-25"]]},{"m":"Súper caña","s":[["Lumineon",55,"45-50"],["Golduck",40,"45-50"],["Gyarados",5,"45-50"]]}]},{"name":"Valley Cave (C)","g":[{"m":"Hierba","s":[["Woobat",35,"19-21"],["Phanpy",30,"19-21"],["Nosepass",20,"19-21"],["Aron",15,"19-21"]]}]},{"name":"Valley Cave (D)","g":[{"m":"Hierba","s":[["Woobat",35,"20-22"],["Phanpy",30,"20-22"],["Nosepass",20,"20-22"],["Aron",15,"20-22"]]}]},{"name":"Route 6","g":[{"m":"Día","s":[["Bunnelby",30,"20-22"],["Sunkern",24,"20-22"],["Ledyba",20,"20-22"],["Deerling",14,"20-22"],["Shinx",10,"20-22"],["Ledian",1,"22"],["Luxio",1,"22"]]},{"m":"Noche","s":[["Bunnelby",30,"20-22"],["Kricketot",24,"20-22"],["Spinarak",20,"20-22"],["Deerling",14,"20-22"],["Shinx",10,"20-22"],["Ariados",1,"22"],["Luxio",1,"22"]]},{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Mantyke",5,"20-25"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Goldeen",80,"20-25"],["Remoraid",20,"20-25"]]},{"m":"Súper caña","s":[["Seaking",40,"45-50"],["Octillery",40,"45-50"],["Gyarados",20,"45-50"]]}]},{"name":"Route 7","g":[{"m":"Día","s":[["Yungoos",24,"21-23"],["Doduo",20,"21-23"],["Buneary",14,"21-23"],["Espurr",10,"21-23"],["Abra",10,"21-23"],["Mareep",10,"21-23"],["Shinx",10,"21-23"],["Luxio",1,"23"],["Gumshoos",1,"23"]]},{"m":"Noche","s":[["Rattata-Alola",24,"21-23"],["Hoothoot",20,"21-23"],["Buneary",14,"21-23"],["Drowzee",10,"21-23"],["Abra",10,"21-23"],["Mareep",10,"21-23"],["Shinx",10,"21-23"],["Luxio",1,"23"],["Raticate-Alola",1,"23"]]},{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Mantyke",5,"20-25"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Goldeen",80,"20-25"],["Remoraid",20,"20-25"]]},{"m":"Súper caña","s":[["Seaking",40,"45-50"],["Octillery",40,"45-50"],["Gyarados",20,"45-50"]]}]},{"name":"Frost Mountain 3F","g":[{"m":"Hierba","s":[["Roggenrola",20,"22-25"],["Woobat",20,"22-25"],["Aron",20,"22-25"],["Nosepass",15,"22-25"],["Bronzor",10,"22-25"],["Sneasel",5,"22-25"],["Onix",5,"22-25"],["Cryogonal",5,"22-25"]]}]},{"name":"Frost Mountain 1F","g":[{"m":"Hierba","s":[["Roggenrola",20,"21-24"],["Woobat",20,"21-24"],["Aron",20,"21-24"],["Nosepass",15,"21-24"],["Bronzor",10,"21-24"],["Sneasel",5,"21-24"],["Onix",5,"21-24"],["Cryogonal",5,"21-24"]]},{"m":"Surf","s":[["Seel",60,"35-40"],["Spheal",30,"35-40"],["Dewgong",5,"38-40"],["Sealeo",4,"38-40"],["Lapras",1,"40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Seel",80,"20-25"],["Shellder",20,"20-25"]]},{"m":"Súper caña","s":[["Shellder",59,"45-50"],["Dewgong",40,"45-50"],["Cloyster",1,"45-50"]]}]},{"name":"Frost Mountain 2F","g":[{"m":"Hierba","s":[["Roggenrola",20,"21-24"],["Woobat",20,"21-24"],["Aron",20,"21-24"],["Nosepass",15,"21-24"],["Bronzor",10,"21-24"],["Sneasel",5,"21-24"],["Onix",5,"21-24"],["Cryogonal",5,"21-24"]]},{"m":"Surf","s":[["Seel",60,"35-40"],["Spheal",30,"35-40"],["Dewgong",5,"38-40"],["Sealeo",4,"38-40"],["Lapras",1,"40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Seel",80,"20-25"],["Shellder",20,"20-25"]]},{"m":"Súper caña","s":[["Shellder",59,"45-50"],["Dewgong",40,"45-50"],["Cloyster",1,"45-50"]]}]},{"name":"Route 8","g":[{"m":"Día","s":[["Snover",34,"22-25"],["Snorunt",34,"22-25"],["Deerling",15,"22-25"],["Cubchoo",10,"22-25"],["Flaaffy",5,"22-25"],["Minior-Meteor",2,"23-25"]]},{"m":"Noche","s":[["Snorunt",34,"22-25"],["Snover",24,"22-25"],["Deerling",15,"22-25"],["Sneasel",10,"22-25"],["Cubchoo",10,"22-25"],["Flaaffy",5,"22-25"],["Minior-Meteor",2,"23-25"]]},{"m":"Golpe Roca","s":[["Roggenrola",99,"20-30"],["Minior-Meteor",1,"20-30"]]}]},{"name":"Blizzard City","g":[{"m":"Especial","s":[["Crabominable",100,""]]}]},{"name":"Frozen Forest","g":[{"m":"Día","s":[["Snover",55,"23-26"],["Cubchoo",45,"23-26"]]},{"m":"Noche","s":[["Snover",45,"23-26"],["Cubchoo",40,"23-26"],["Sneasel",15,"23-26"]]}]},{"name":"Fallshore City","g":[{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Pyukumuku",5,"35-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Remoraid",60,"20-25"],["Carvanha",20,"20-25"],["Luvdisc",20,"20-25"]]},{"m":"Súper caña","s":[["Octillery",40,"45-50"],["Sharpedo",40,"45-50"],["Luvdisc",20,"45-50"]]},{"m":"Especial","s":[["Lombre",100,""]]}]},{"name":"Route 11","g":[{"m":"Día","s":[["Swablu",25,"26-29"],["Exeggcute",20,"26-29"],["Spoink",20,"26-29"],["Gulpin",15,"26-29"],["Meditite",15,"26-29"],["Togedemaru",5,"27-29"]]},{"m":"Noche","s":[["Noctowl",25,"26-29"],["Exeggcute",20,"26-29"],["Spoink",20,"26-29"],["Gulpin",15,"26-29"],["Meditite",15,"26-29"],["Togedemaru",5,"27-29"]]},{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Basculin",5,"37-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Barboach",60,"20-25"],["Luvdisc",20,"20-25"],["Remoraid",20,"20-25"]]},{"m":"Súper caña","s":[["Whiscash",40,"45-50"],["Octillery",40,"45-50"],["Luvdisc",20,"45-50"]]}]},{"name":"Cliff Cave 1F","g":[{"m":"Hierba","s":[["Golbat",20,"26-29"],["Geodude-Alola",20,"26-29"],["Onix",15,"26-29"],["Machop",10,"26-29"],["Wooper",10,"26-29"],["Misdreavus",10,"26-29"],["Quagsire",5,"26-29"],["Graveler-Alola",4,"26-29"],["Machoke",4,"28-29"],["Steelix",2,"29"]]}]},{"name":"Cliff Cave 2F","g":[{"m":"Hierba","s":[["Golbat",20,"29-32"],["Geodude-Alola",20,"29-32"],["Onix",15,"29-32"],["Machop",10,"29-32"],["Wooper",10,"29-32"],["Misdreavus",10,"29-32"],["Quagsire",5,"29-32"],["Graveler-Alola",4,"29-32"],["Machoke",4,"29-32"],["Steelix",2,"32"]]}]},{"name":"Cliff Cave 3F","g":[{"m":"Hierba","s":[["Golbat",20,"29-32"],["Geodude-Alola",20,"29-32"],["Onix",15,"29-32"],["Machop",10,"29-32"],["Wooper",10,"29-32"],["Misdreavus",10,"29-32"],["Quagsire",5,"29-32"],["Graveler-Alola",4,"29-32"],["Machoke",4,"29-32"],["Steelix",2,"29-32"]]}]},{"name":"Epidimy Town","g":[{"m":"Surf","s":[["Finneon",60,"35-40"],["Psyduck",30,"35-40"],["Lumineon",5,"38-40"],["Golduck",5,"38-40"]]},{"m":"Golpe Roca","s":[["Geodude",90,"20-30"],["Graveler",10,"25-30"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Barboach",80,"20-25"],["Luvdisc",20,"20-25"]]},{"m":"Súper caña","s":[["Luvdisc",60,"45-50"],["Whiscash",40,"45-50"]]}]},{"name":"Route 10","g":[{"m":"Hierba","s":[["Lotad",30,"26-29"],["Tympole",20,"26-29"],["Marill",20,"26-29"],["Linoone",14,"27-29"],["Lombre",5,"28-29"],["Palpitoad",5,"28-29"],["Goomy",5,"28-29"],["Ditto",1,"29"]]},{"m":"Surf","s":[["Palpitoad",60,"35-40"],["Surskit",30,"35-40"],["Lombre",5,"35-40"],["Masquerain",5,"38-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Wishiwashi",100,"20-25"]]},{"m":"Súper caña","s":[["Wishiwashi",99,"45-50"],["Bruxish",1,"45-50"]]}]},{"name":"Auburn Waterway (A)","g":[{"m":"Surf","s":[["Palpitoad",60,"35-40"],["Surskit",30,"35-40"],["Lombre",5,"35-40"],["Masquerain",5,"38-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Wishiwashi",80,"20-25"],["Goldeen",20,"20-25"]]},{"m":"Súper caña","s":[["Wishiwashi",40,"45-50"],["Seaking",40,"45-50"],["Gyarados",19,"45-50"],["Bruxish",1,"45-50"]]}]},{"name":"Auburn Waterway (B)","g":[{"m":"Hierba","s":[["Lotad",30,"26-29"],["Tympole",20,"26-29"],["Marill",20,"26-29"],["Linoone",14,"27-29"],["Lombre",5,"28-29"],["Palpitoad",5,"28-29"],["Goomy",5,"28-29"],["Ditto",1,"29"]]},{"m":"Surf","s":[["Palpitoad",60,"35-40"],["Surskit",30,"35-40"],["Lombre",5,"35-40"],["Masquerain",5,"38-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Wishiwashi",80,"20-25"],["Goldeen",20,"20-25"]]},{"m":"Súper caña","s":[["Wishiwashi",40,"45-50"],["Seaking",40,"45-50"],["Gyarados",19,"45-50"],["Bruxish",1,"45-50"]]}]},{"name":"Autl Woods West","g":[{"m":"Surf","s":[["Marill",60,"35-40"],["Surskit",30,"35-40"],["Masquerain",5,"38-40"],["Azumarill",5,"38-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Wishiwashi",80,"20-25"],["Goldeen",20,"20-25"]]},{"m":"Súper caña","s":[["Wishiwashi",40,"45-50"],["Seaking",40,"45-50"],["Gyarados",19,"45-50"],["Bruxish",1,"45-50"]]}]},{"name":"Autl Woods East","g":[{"m":"Hierba","s":[["Spearow",20,"27-30"],["Grubbin",20,"27-30"],["Marill",20,"27-30"],["Deerling",15,"27-30"],["Shroomish",15,"27-30"],["Skorupi",6,"29-30"],["Audino",4,"30"]]},{"m":"Surf","s":[["Marill",60,"35-40"],["Surskit",30,"35-40"],["Masquerain",5,"38-40"],["Azumarill",5,"38-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Wishiwashi",80,"20-25"],["Goldeen",20,"20-25"]]},{"m":"Súper caña","s":[["Wishiwashi",40,"45-50"],["Seaking",40,"45-50"],["Gyarados",19,"45-50"],["Bruxish",1,"45-50"]]}]},{"name":"Route 9","g":[{"m":"Hierba","s":[["Spearow",20,"27-30"],["Grubbin",20,"27-30"],["Marill",20,"27-30"],["Deerling",15,"27-30"],["Shroomish",15,"27-30"],["Skorupi",6,"29-30"],["Audino",4,"30"]]},{"m":"Surf","s":[["Marill",60,"35-40"],["Surskit",30,"35-40"],["Masquerain",5,"38-40"],["Azumarill",5,"38-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Wishiwashi",80,"20-25"],["Goldeen",20,"20-25"]]},{"m":"Súper caña","s":[["Wishiwashi",40,"45-50"],["Seaking",40,"45-50"],["Gyarados",19,"45-50"],["Bruxish",1,"45-50"]]}]},{"name":"Tehl Town","g":[{"m":"Surf","s":[["Marill",60,"35-40"],["Psyduck",30,"35-40"],["Golduck",5,"38-40"],["Azumarill",5,"38-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Wishiwashi",80,"20-25"],["Goldeen",20,"20-25"]]},{"m":"Súper caña","s":[["Wishiwashi",40,"45-50"],["Seaking",40,"45-50"],["Gyarados",19,"45-50"],["Bruxish",1,"45-50"]]}]},{"name":"Tarmigan Town","g":[{"m":"Surf","s":[["Poliwhirl",60,"35-40"],["Slowpoke",35,"25-40"],["Poliwag",4,"25-30"],["Politoed",1,"40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Poliwag",80,"20-25"],["Psyduck",20,"20-25"]]},{"m":"Súper caña","s":[["Poliwhirl",80,"45-50"],["Golduck",20,"45-50"]]}]},{"name":"Thundercap Mt. (exterior)","g":[{"m":"Surf","s":[["Tentacool",60,"42-47"],["Pelipper",30,"42-47"],["Tentacruel",5,"45-47"],["Mantyke",5,"44-47"]]},{"m":"Golpe Roca","s":[["Binacle",60,"25-35"],["Geodude-Alola",30,"25-35"],["Krabby",5,"25-35"],["Corsola",4,"35-40"],["Kingler",1,"35-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Remoraid",60,"20-25"],["Horsea",40,"20-25"]]},{"m":"Súper caña","s":[["Octillery",40,"45-50"],["Seadra",40,"45-50"],["Gyarados",20,"45-50"]]}]},{"name":"Thundercap Mt. 1F","g":[{"m":"Hierba","s":[["Magnemite",25,"27-30"],["Nosepass",20,"27-30"],["Klink",20,"27-30"],["Cubone",10,"27-30"],["Elekid",10,"27-30"],["Tynamo",5,"27-30"],["Magneton",5,"30"],["Electabuzz",5,"30"]]},{"m":"Surf","s":[["Stunfisk",64,"35-40"],["Chinchou",30,"35-40"],["Tynamo",5,"35-40"],["Lanturn",1,"40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Chinchou",100,"20-25"]]},{"m":"Súper caña","s":[["Lanturn",100,"45-50"]]}]},{"name":"Thundercap Mt. 2F","g":[{"m":"Hierba","s":[["Klink",25,"31-34"],["Nosepass",20,"31-34"],["Magnemite",20,"31-34"],["Timburr",10,"31-34"],["Elekid",10,"31-34"],["Tynamo",5,"31-34"],["Magneton",5,"34"],["Electabuzz",5,"34"]]},{"m":"Surf","s":[["Stunfisk",64,"35-40"],["Chinchou",30,"35-40"],["Tynamo",5,"35-40"],["Lanturn",1,"40"]]},{"m":"Golpe Roca","s":[["Geodude-Alola",60,"20-30"],["Graveler-Alola",30,"25-30"],["Nosepass",9,"20-30"],["Shuckle",1,"35"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Chinchou",100,"20-25"]]},{"m":"Súper caña","s":[["Lanturn",100,"45-50"]]}]},{"name":"Thundercap Mt. 3F (3)","g":[{"m":"Hierba","s":[["Nosepass",30,"47-50"],["Magneton",25,"47-50"],["Klang",20,"47-50"],["Marowak",10,"47-50"],["Electabuzz",10,"47-50"],["Eelektrik",5,"47-50"]]},{"m":"Surf","s":[["Stunfisk",64,"45-50"],["Lanturn",30,"45-50"],["Tynamo",5,"45-50"],["Eelektrik",1,"45-50"]]},{"m":"Golpe Roca","s":[["Graveler-Alola",90,"40-50"],["Nosepass",9,"40-50"],["Shuckle",1,"50"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Chinchou",100,"20-25"]]},{"m":"Súper caña","s":[["Lanturn",100,"45-50"]]}]},{"name":"Thundercap Mt. 3F (2)","g":[{"m":"Hierba","s":[["Magnemite",25,"31-34"],["Nosepass",20,"31-34"],["Klink",20,"31-34"],["Cubone",10,"31-34"],["Elekid",10,"31-34"],["Tynamo",5,"31-34"],["Magneton",5,"34"],["Electabuzz",5,"34"]]},{"m":"Surf","s":[["Stunfisk",64,"35-40"],["Chinchou",30,"35-40"],["Tynamo",5,"35-40"],["Lanturn",1,"40"]]},{"m":"Golpe Roca","s":[["Geodude-Alola",60,"20-30"],["Graveler-Alola",30,"25-30"],["Nosepass",9,"20-30"],["Shuckle",1,"35"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Chinchou",100,"20-25"]]},{"m":"Súper caña","s":[["Lanturn",100,"45-50"]]}]},{"name":"Thundercap Mt. 3F (1)","g":[{"m":"Hierba","s":[["Magnemite",25,"31-34"],["Nosepass",20,"31-34"],["Klink",20,"31-34"],["Cubone",10,"31-34"],["Elekid",10,"31-34"],["Tynamo",5,"31-34"],["Magneton",5,"34"],["Electabuzz",5,"34"]]},{"m":"Surf","s":[["Stunfisk",64,"35-40"],["Chinchou",30,"35-40"],["Tynamo",5,"35-40"],["Lanturn",1,"40"]]},{"m":"Golpe Roca","s":[["Geodude-Alola",60,"20-30"],["Graveler-Alola",30,"25-30"],["Nosepass",9,"20-30"],["Shuckle",1,"35"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Chinchou",100,"20-25"]]},{"m":"Súper caña","s":[["Lanturn",100,"45-50"]]}]},{"name":"Thundercap Mt. 3F 1 Back","g":[{"m":"Hierba","s":[["Magnemite",25,"31-34"],["Nosepass",20,"31-34"],["Klink",20,"31-34"],["Cubone",10,"31-34"],["Elekid",10,"31-34"],["Tynamo",5,"31-34"],["Magneton",5,"34"],["Electabuzz",5,"34"]]},{"m":"Surf","s":[["Stunfisk",64,"35-40"],["Chinchou",30,"35-40"],["Tynamo",5,"35-40"],["Lanturn",1,"40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Chinchou",100,"20-25"]]},{"m":"Súper caña","s":[["Lanturn",100,"45-50"]]}]},{"name":"Thundercap Mt. (?)","g":[{"m":"Hierba","s":[["Klink",25,"37-40"],["Nosepass",20,"37-40"],["Magneton",20,"37-40"],["Gurdurr",15,"37-40"],["Electabuzz",10,"37-40"],["Tynamo",5,"37-40"],["Klang",5,"40"]]},{"m":"Golpe Roca","s":[["Graveler-Alola",60,"35-40"],["Shuckle",40,"35-40"]]}]},{"name":"Thundercap Mt. (?) 2","g":[{"m":"Hierba","s":[["Klink",25,"31-34"],["Nosepass",20,"31-34"],["Magnemite",20,"31-34"],["Timburr",10,"31-34"],["Elekid",10,"31-34"],["Tynamo",5,"31-34"],["Magneton",5,"34"],["Electabuzz",5,"34"]]}]},{"name":"Thundercap Mt. 4F (2)","g":[{"m":"Hierba","s":[["Klink",25,"31-34"],["Nosepass",20,"31-34"],["Magnemite",20,"31-34"],["Timburr",10,"31-34"],["Elekid",10,"31-34"],["Tynamo",5,"31-34"],["Magneton",5,"34"],["Electabuzz",5,"34"]]},{"m":"Surf","s":[["Stunfisk",64,"35-40"],["Chinchou",30,"35-40"],["Tynamo",5,"35-40"],["Lanturn",1,"40"]]},{"m":"Golpe Roca","s":[["Geodude-Alola",60,"20-30"],["Graveler-Alola",30,"25-30"],["Nosepass",9,"20-30"],["Shuckle",1,"35"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Chinchou",100,"20-25"]]},{"m":"Súper caña","s":[["Lanturn",100,"45-50"]]}]},{"name":"Thundercap Mt. (?) 3","g":[{"m":"Hierba","s":[["Klink",25,"31-34"],["Nosepass",20,"31-34"],["Magnemite",20,"31-34"],["Timburr",10,"31-34"],["Elekid",10,"31-34"],["Tynamo",5,"31-34"],["Magneton",5,"34"],["Electabuzz",5,"34"]]},{"m":"Golpe Roca","s":[["Geodude-Alola",60,"20-30"],["Graveler-Alola",30,"25-30"],["Nosepass",9,"20-30"],["Shuckle",1,"35"]]}]},{"name":"Route 12","g":[{"m":"Día","s":[["Fletchling",20,"29-32"],["Rockruff",20,"33-36"],["Solosis",15,"33-36"],["Mienfoo",15,"33-36"],["Ponyta",10,"33-36"],["Snubbull",10,"33-36"],["Deerling",8,"33-36"],["Fletchinder",1,"33"],["Dedenne",1,"35-36"]]},{"m":"Noche","s":[["Hoothoot",20,"29-32"],["Rockruff",20,"33-36"],["Gothita",15,"33-36"],["Mienfoo",15,"33-36"],["Ponyta",10,"33-36"],["Snubbull",10,"33-36"],["Deerling",8,"33-36"],["Noctowl",1,"34-36"],["Dedenne",1,"35-36"]]},{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Mantyke",5,"25-30"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Carvanha",60,"20-25"],["Wailmer",40,"20-25"]]},{"m":"Súper caña","s":[["Sharpedo",40,"45-50"],["Wailord",40,"45-50"],["Gyarados",20,"45-50"]]}]},{"name":"Dehara City","g":[{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Pyukumuku",5,"35-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Staryu",60,"10-15"],["Poliwag",40,"20-25"]]},{"m":"Súper caña","s":[["Staryu",59,"45-50"],["Poliwhirl",40,"45-50"],["Starmie",1,"45-50"]]},{"m":"Especial","s":[["Sandygast",100,""]]}]},{"name":"Ruins of Void B3F Alt","g":[{"m":"Hierba","s":[["Cofagrigus",31,"60-65"],["Claydol",30,"60-65"],["Dusclops",15,"60-65"],["Sableye",10,"60-65"],["Bronzong",5,"60-65"],["Lunatone",4,"60-65"],["Solrock",4,"60-65"],["Sigilyph",1,"60-65"]]}]},{"name":"Ruins of Void Post Game Aklove","g":[{"m":"Hierba","s":[["Cofagrigus",31,"60-65"],["Claydol",30,"60-65"],["Dusclops",15,"60-65"],["Sableye",10,"60-65"],["Bronzong",5,"60-65"],["Lunatone",4,"60-65"],["Solrock",4,"60-65"],["Sigilyph",1,"60-65"]]}]},{"name":"Ruins of Void (exterior)","g":[{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Mantine",4,"37-40"],["Golduck",1,"37-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Horsea",60,"20-25"],["Shellder",40,"20-25"]]},{"m":"Súper caña","s":[["Seadra",40,"45-50"],["Shellder",40,"45-50"],["Gyarados",19,"45-50"],["Kingdra",1,"45-50"]]}]},{"name":"Ruins of Void (?)","g":[{"m":"Hierba","s":[["Baltoy",30,"35-38"],["Yamask",30,"35-38"],["Duskull",10,"35-38"],["Sableye",10,"36-38"],["Bronzong",5,"36-38"],["Dusclops",5,"38"],["Lunatone",4,"36-38"],["Solrock",4,"36-38"],["Sigilyph",1,"38"],["Cofagrigus",1,"38"]]}]},{"name":"Ruins of Void (?) 2","g":[{"m":"Hierba","s":[["Baltoy",30,"34-37"],["Yamask",30,"34-37"],["Duskull",10,"34-37"],["Sableye",10,"35-37"],["Bronzong",5,"35-37"],["Dusclops",5,"37"],["Lunatone",4,"35-37"],["Solrock",4,"35-37"],["Sigilyph",1,"37"],["Cofagrigus",1,"37"]]},{"m":"Golpe Roca","s":[["Geodude",90,"25-35"],["Baltoy",10,"25-35"]]}]},{"name":"Ruins of Void (?) 3","g":[{"m":"Hierba","s":[["Baltoy",30,"34-37"],["Yamask",30,"34-37"],["Duskull",10,"34-37"],["Sableye",10,"35-37"],["Bronzong",5,"35-37"],["Dusclops",5,"37"],["Lunatone",4,"35-37"],["Solrock",4,"35-37"],["Sigilyph",1,"37"],["Cofagrigus",1,"37"]]}]},{"name":"Ruins of Void (?) 4","g":[{"m":"Hierba","s":[["Baltoy",30,"34-37"],["Yamask",30,"34-37"],["Duskull",10,"34-37"],["Sableye",10,"35-37"],["Bronzong",5,"35-37"],["Dusclops",5,"37"],["Lunatone",4,"35-37"],["Solrock",4,"35-37"],["Sigilyph",1,"37"],["Cofagrigus",1,"37"]]},{"m":"Golpe Roca","s":[["Geodude",90,"25-35"],["Baltoy",10,"25-35"]]}]},{"name":"Ruins of Void B3F","g":[{"m":"Hierba","s":[["Baltoy",30,"34-37"],["Yamask",30,"34-37"],["Duskull",10,"34-37"],["Sableye",10,"35-37"],["Bronzong",5,"35-37"],["Dusclops",5,"37"],["Lunatone",4,"35-37"],["Solrock",4,"35-37"],["Sigilyph",1,"37"],["Cofagrigus",1,"37"]]},{"m":"Golpe Roca","s":[["Geodude",90,"25-35"],["Baltoy",10,"25-35"]]}]},{"name":"Ruins of Void (?) 5","g":[{"m":"Hierba","s":[["Baltoy",30,"34-37"],["Yamask",30,"34-37"],["Duskull",10,"34-37"],["Sableye",10,"35-37"],["Bronzong",5,"35-37"],["Dusclops",5,"37"],["Lunatone",4,"35-37"],["Solrock",4,"35-37"],["Sigilyph",1,"37"],["Cofagrigus",1,"37"]]}]},{"name":"Ruins of Void (?) 6","g":[{"m":"Hierba","s":[["Baltoy",30,"35-38"],["Yamask",30,"35-38"],["Duskull",10,"35-38"],["Sableye",10,"36-38"],["Bronzong",5,"36-38"],["Dusclops",5,"38"],["Lunatone",4,"36-38"],["Solrock",4,"36-38"],["Sigilyph",1,"38"],["Cofagrigus",1,"38"]]}]},{"name":"Ruins of Void (?) 7","g":[{"m":"Hierba","s":[["Baltoy",30,"35-38"],["Yamask",30,"35-38"],["Duskull",10,"35-38"],["Sableye",10,"36-38"],["Bronzong",5,"36-38"],["Dusclops",5,"38"],["Lunatone",4,"36-38"],["Solrock",4,"36-38"],["Sigilyph",1,"38"],["Cofagrigus",1,"38"]]}]},{"name":"Ruins of Void (?) 8","g":[{"m":"Hierba","s":[["Clamperl",50,"35-50"],["Mareanie",20,"35-50"],["Toxapex",10,"40-60"],["Chinchou",10,"35-50"],["Luvdisc",5,"35-60"],["Lanturn",4,"40-60"],["Relicanth",1,"35-60"]]}]},{"name":"Route 15","g":[{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Basculin",5,"37-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Horsea",60,"20-25"],["Shellder",40,"20-25"]]},{"m":"Súper caña","s":[["Seadra",40,"45-50"],["Shellder",40,"45-50"],["Gyarados",19,"45-50"],["Cloyster",1,"45-50"]]}]},{"name":"Route 13 (A)","g":[{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Alomomola",5,"37-40"]]},{"m":"Golpe Roca","s":[["Binacle",60,"20-30"],["Geodude",30,"20-30"],["Krabby",5,"20-30"],["Corsola",4,"30-35"],["Kingler",1,"30-35"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Skrelp",60,"20-25"],["Clauncher",40,"20-25"]]},{"m":"Súper caña","s":[["Dragalge",80,"45-50"],["Clawitzer",20,"45-50"]]}]},{"name":"Route 13 (B)","g":[{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Alomomola",5,"37-40"]]},{"m":"Golpe Roca","s":[["Binacle",60,"20-30"],["Geodude",30,"20-30"],["Krabby",5,"20-30"],["Corsola",4,"30-35"],["Kingler",1,"30-35"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Clauncher",60,"20-25"],["Skrelp",40,"20-25"]]},{"m":"Súper caña","s":[["Clawitzer",80,"45-50"],["Dragalge",20,"45-50"]]}]},{"name":"Route 14 (A)","g":[{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Mantine",5,"37-40"]]},{"m":"Golpe Roca","s":[["Binacle",60,"20-30"],["Geodude",30,"20-30"],["Krabby",5,"20-30"],["Corsola",4,"30-35"],["Kingler",1,"30-35"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Horsea",60,"20-25"],["Shellder",20,"20-25"],["Carvanha",20,"20-25"]]},{"m":"Súper caña","s":[["Seadra",40,"45-50"],["Cloyster",40,"45-50"],["Sharpedo",20,"45-50"]]}]},{"name":"Route 14 (B)","g":[{"m":"Día","s":[["Pelipper",20,"37-40"],["Bibarel",20,"37-40"],["Floatzel",14,"37-40"],["Slowpoke",14,"36-40"],["Golduck",10,"37-40"],["Gastrodon",10,"37-40"],["Weepinbell",10,"37-40"],["Bellsprout",2,"25-30"]]},{"m":"Noche","s":[["Pelipper",20,"37-40"],["Bibarel",20,"37-40"],["Floatzel",14,"37-40"],["Slowpoke",14,"36-40"],["Golduck",10,"37-40"],["Gastrodon",10,"37-40"],["Gloom",10,"37-40"],["Oddish",2,"25-30"]]},{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Mantine",5,"37-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Horsea",60,"20-25"],["Shellder",20,"20-25"],["Wailmer",20,"20-25"]]},{"m":"Súper caña","s":[["Seadra",40,"45-50"],["Shellder",40,"45-50"],["Wailord",20,"45-50"]]}]},{"name":"Route 14 (C)","g":[{"m":"Día","s":[["Pelipper",20,"37-40"],["Bibarel",20,"37-40"],["Floatzel",14,"37-40"],["Slowpoke",14,"36-40"],["Golduck",10,"37-40"],["Gastrodon",10,"37-40"],["Weepinbell",10,"37-40"],["Bellsprout",2,"25-30"]]},{"m":"Noche","s":[["Pelipper",20,"37-40"],["Bibarel",20,"37-40"],["Floatzel",14,"37-40"],["Slowpoke",14,"36-40"],["Golduck",10,"37-40"],["Gastrodon",10,"37-40"],["Gloom",10,"37-40"],["Oddish",2,"25-30"]]},{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Mantine",5,"37-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Shellder",60,"20-25"],["Horsea",20,"20-25"],["Luvdisc",20,"20-25"]]},{"m":"Súper caña","s":[["Shellder",40,"45-50"],["Seadra",40,"45-50"],["Luvdisc",20,"45-50"]]}]},{"name":"Route 14 (?)","g":[{"m":"Hierba","s":[["Clamperl",50,"35-50"],["Mareanie",20,"35-50"],["Toxapex",10,"40-60"],["Chinchou",10,"35-50"],["Luvdisc",6,"35-60"],["Lanturn",4,"40-60"]]}]},{"name":"Route 14 (?) 2","g":[{"m":"Hierba","s":[["Clamperl",50,"35-50"],["Mareanie",20,"35-50"],["Toxapex",10,"40-60"],["Chinchou",10,"35-50"],["Luvdisc",6,"35-60"],["Lanturn",4,"40-60"]]}]},{"name":"Lost Tunnel B1F","g":[{"m":"Hierba","s":[["Graveler",40,"37-40"],["Woobat",40,"37-40"],["Diglett",10,"37-40"],["Lairon",5,"37-40"],["Dugtrio",5,"40"]]},{"m":"Golpe Roca","s":[["Geodude",90,"25-35"],["Graveler",10,"30-35"]]}]},{"name":"Lost Tunnel (?)","g":[{"m":"Hierba","s":[["Graveler",40,"37-40"],["Woobat",40,"37-40"],["Diglett",15,"37-40"],["Dugtrio",5,"40"]]}]},{"name":"Great Desert (A)","g":[{"m":"Hierba","s":[["Sandslash",20,"36-40"],["Dwebble",20,"36-40"],["Krokorok",20,"36-40"],["Cacnea",10,"36-40"],["Darumaka",10,"36-40"],["Hippowdon",10,"36-40"],["Vibrava",5,"36-40"],["Maractus",5,"38-40"]]},{"m":"Golpe Roca","s":[["Dwebble",60,"30-40"],["Geodude",30,"30-40"],["Binacle",10,"30-40"]]}]},{"name":"Great Desert (B)","g":[{"m":"Hierba","s":[["Sandslash",20,"36-40"],["Dwebble",20,"36-40"],["Krokorok",20,"36-40"],["Cacnea",10,"36-40"],["Darumaka",10,"36-40"],["Hippowdon",10,"36-40"],["Vibrava",5,"36-40"],["Maractus",5,"38-40"]]},{"m":"Golpe Roca","s":[["Dwebble",60,"30-40"],["Geodude",30,"30-40"],["Binacle",10,"30-40"]]}]},{"name":"Great Desert (C)","g":[{"m":"Hierba","s":[["Sandslash",20,"36-40"],["Dwebble",20,"36-40"],["Krokorok",20,"36-40"],["Cacnea",10,"36-40"],["Darumaka",10,"36-40"],["Hippowdon",10,"36-40"],["Vibrava",5,"36-40"],["Maractus",5,"38-40"]]},{"m":"Golpe Roca","s":[["Dwebble",60,"30-40"],["Geodude",30,"30-40"],["Binacle",10,"30-40"]]}]},{"name":"Great Desert","g":[{"m":"Especial","s":[["Maractus",100,""]]}]},{"name":"Gurun Town","g":[{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Mantine",5,"37-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Remoraid",60,"20-25"],["Corsola",20,"20-25"],["Horsea",20,"20-25"]]},{"m":"Súper caña","s":[["Octillery",40,"45-50"],["Seadra",40,"45-50"],["Corsola",15,"45-50"],["Kingdra",5,"45-50"]]},{"m":"Especial","s":[["Spiritomb",100,""]]}]},{"name":"Vivill Woods","g":[{"m":"Día","s":[["Caterpie",20,"30-35"],["Wurmple",20,"30-35"],["Scatterbug",10,"30-35"],["Cottonee",10,"38-41"],["Swadloon",10,"39-41"],["Petilil",10,"38-41"],["Spewpa",5,"39-41"],["Metapod",5,"39-41"],["Silcoon",5,"39-41"],["Cascoon",5,"39-41"]]},{"m":"Noche","s":[["Weedle",20,"30-35"],["Wurmple",20,"30-35"],["Scatterbug",10,"30-35"],["Cottonee",10,"38-41"],["Swadloon",10,"39-41"],["Petilil",10,"38-41"],["Spewpa",5,"39-41"],["Kakuna",5,"39-41"],["Silcoon",5,"39-41"],["Cascoon",5,"39-41"]]},{"m":"Surf","s":[["Surskit",60,"36-41"],["Golduck",30,"36-41"],["Masquerain",5,"39-41"],["Psyduck",5,"20-25"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Psyduck",80,"20-25"],["Barboach",20,"20-25"]]},{"m":"Súper caña","s":[["Golduck",80,"45-50"],["Whiscash",20,"45-50"]]},{"m":"Especial","s":[["Paras",100,""]]}]},{"name":"Vivill Warehouse Research Room","g":[{"m":"Surf","s":[["Tentacool",60,"39-44"],["Basculin",30,"39-44"],["Tentacruel",5,"42-44"],["Seadra",5,"41-44"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Horsea",60,"20-25"],["Shellder",40,"20-25"]]},{"m":"Súper caña","s":[["Seadra",40,"45-50"],["Shellder",40,"45-50"],["Gyarados",15,"45-50"],["Dhelmise",5,"45-50"]]}]},{"name":"Vivill Town","g":[{"m":"Surf","s":[["Tentacool",60,"37-42"],["Pelipper",30,"37-42"],["Tentacruel",5,"40-42"],["Basculin",5,"40-42"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Horsea",60,"20-25"],["Shellder",40,"20-25"]]},{"m":"Súper caña","s":[["Seadra",40,"45-50"],["Shellder",40,"45-50"],["Gyarados",19,"45-50"],["Cloyster",1,"45-50"]]}]},{"name":"Distortion World (1)","g":[{"m":"Hierba","s":[["Giratina-Origin",100,"0"]]}]},{"name":"Distortion World (2)","g":[{"m":"Hierba","s":[["Giratina-Origin",100,"0"]]}]},{"name":"Distortion World (3)","g":[{"m":"Hierba","s":[["Giratina-Origin",100,"0"]]}]},{"name":"Route 16","g":[{"m":"Hierba","s":[["Tangela",30,"45-47"],["Girafarig",30,"45-47"],["Pancham",15,"44-47"],["Pawniard",10,"45-47"],["Chatot",5,"45-47"],["Throh",5,"45-47"],["Sawk",5,"45-47"]]},{"m":"Surf","s":[["Tentacool",60,"42-47"],["Pelipper",30,"42-47"],["Tentacruel",5,"45-47"],["Mantyke",5,"44-47"]]},{"m":"Golpe Roca","s":[["Binacle",60,"25-35"],["Geodude",30,"25-35"],["Krabby",5,"25-35"],["Corsola",4,"35-40"],["Kingler",1,"35-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Remoraid",60,"20-25"],["Corsola",20,"20-25"],["Horsea",20,"20-25"]]},{"m":"Súper caña","s":[["Octillery",40,"45-50"],["Seadra",40,"45-50"],["Corsola",20,"45-50"]]},{"m":"Especial","s":[["Kecleon",100,""]]}]},{"name":"Route 16 (?)","g":[{"m":"Hierba","s":[["Clamperl",50,"35-50"],["Remoraid",20,"35-50"],["Octillery",10,"40-60"],["Chinchou",10,"35-50"],["Corsola",6,"35-60"],["Lanturn",4,"40-60"]]}]},{"name":"Antisis City","g":[{"m":"Surf","s":[["Tentacool",60,"42-47"],["Pelipper",30,"42-47"],["Tentacruel",5,"45-47"],["Mantyke",5,"44-47"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Remoraid",80,"20-25"],["Horsea",20,"20-25"]]},{"m":"Súper caña","s":[["Octillery",40,"45-50"],["Seadra",40,"45-50"],["Gyarados",20,"45-50"]]}]},{"name":"Antisis Sewers North","g":[{"m":"Hierba","s":[["Grimer",30,"45-48"],["Raticate",30,"45-48"],["Golbat",20,"45-48"],["Koffing",10,"45-48"],["Muk",5,"47-48"],["Weezing",5,"47-48"]]}]},{"name":"Antisis Sewers South","g":[{"m":"Hierba","s":[["Grimer",30,"45-48"],["Raticate",30,"45-48"],["Golbat",20,"45-48"],["Koffing",10,"45-48"],["Muk",5,"47-48"],["Weezing",5,"47-48"]]},{"m":"Surf","s":[["Grimer",90,"45-48"],["Golbat",5,"48"],["Muk",5,"48"]]},{"m":"Caña vieja","s":[["Grimer",100,"10-15"]]},{"m":"Caña buena","s":[["Grimer",100,"20-25"]]},{"m":"Súper caña","s":[["Muk",100,"45-50"]]}]},{"name":"Antisis Sewers Room","g":[{"m":"Hierba","s":[["Grimer",30,"45-48"],["Raticate",30,"45-48"],["Golbat",20,"45-48"],["Koffing",10,"45-48"],["Muk",5,"47-48"],["Weezing",5,"47-48"]]}]},{"name":"Icy Hole 1F","g":[{"m":"Hierba","s":[["Sealeo",30,"47-50"],["Hariyama",25,"47-50"],["Golbat",20,"47-50"],["Jynx",10,"47-50"],["Avalugg",5,"48-50"],["Boldore",5,"48-50"],["Piloswine",5,"48-50"]]},{"m":"Surf","s":[["Dewgong",65,"45-50"],["Sealeo",34,"45-50"],["Lapras",1,"50"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Seel",80,"20-25"],["Shellder",20,"20-25"]]},{"m":"Súper caña","s":[["Shellder",59,"45-50"],["Dewgong",40,"45-50"],["Cloyster",1,"45-50"]]}]},{"name":"Icy Hole B1F","g":[{"m":"Hierba","s":[["Sealeo",30,"47-50"],["Hariyama",25,"47-50"],["Golbat",20,"47-50"],["Jynx",10,"47-50"],["Avalugg",5,"48-50"],["Boldore",5,"48-50"],["Piloswine",5,"48-50"]]}]},{"name":"Route 17 (?)","g":[{"m":"Surf","s":[["Tentacool",60,"45-50"],["Pelipper",30,"45-50"],["Tentacruel",5,"48-50"],["Mantyke",5,"47-50"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Remoraid",60,"20-25"],["Corsola",20,"20-25"],["Horsea",20,"20-25"]]},{"m":"Súper caña","s":[["Octillery",40,"45-50"],["Seadra",40,"45-50"],["Corsola",19,"45-50"],["Lapras",1,"45-50"]]}]},{"name":"Route 17","g":[{"m":"Día","s":[["Skiploom",30,"47-50"],["Pelipper",30,"47-50"],["Tropius",15,"47-50"],["Pidgeotto",15,"47-50"],["Zangoose",4,"48-50"],["Seviper",4,"48-50"],["Bagon",2,"40-45"]]},{"m":"Noche","s":[["Noctowl",60,"47-50"],["Pelipper",30,"47-50"],["Zangoose",4,"48-50"],["Seviper",4,"48-50"],["Bagon",2,"40-45"]]},{"m":"Surf","s":[["Tentacool",60,"45-50"],["Pelipper",30,"45-50"],["Tentacruel",5,"48-50"],["Mantyke",5,"47-50"]]},{"m":"Golpe Roca","s":[["Binacle",60,"30-40"],["Geodude",30,"30-40"],["Krabby",5,"30-40"],["Corsola",4,"35-45"],["Kingler",1,"35-45"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Remoraid",60,"20-25"],["Corsola",20,"20-25"],["Horsea",20,"20-25"]]},{"m":"Súper caña","s":[["Octillery",40,"45-50"],["Seadra",40,"45-50"],["Corsola",19,"45-50"],["Lapras",1,"45-50"]]},{"m":"Especial","s":[["Shellder",50,""],["Sharpedo",50,""]]}]},{"name":"Seaport City","g":[{"m":"Surf","s":[["Tentacool",60,"45-50"],["Pelipper",30,"45-50"],["Tentacruel",5,"48-50"],["Mantyke",5,"47-50"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Remoraid",60,"20-25"],["Corsola",20,"20-25"],["Horsea",20,"20-25"]]},{"m":"Súper caña","s":[["Octillery",40,"45-50"],["Seadra",40,"45-50"],["Corsola",19,"45-50"],["Lapras",1,"45-50"]]},{"m":"Especial","s":[["Mimikyu",50,""],["Castform",50,""]]}]},{"name":"Underwater Route 17","g":[{"m":"Hierba","s":[["Clamperl",50,"35-50"],["Carvanha",20,"35-50"],["Sharpedo",10,"40-60"],["Chinchou",10,"35-50"],["Corsola",6,"35-60"],["Lanturn",4,"40-60"]]}]},{"name":"Route 18 (A)","g":[{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Mantine",5,"37-40"]]},{"m":"Golpe Roca","s":[["Binacle",60,"25-35"],["Geodude",30,"25-35"],["Krabby",5,"25-35"],["Corsola",4,"35-40"],["Kingler",1,"35-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Remoraid",60,"20-25"],["Corsola",20,"20-25"],["Horsea",20,"20-25"]]},{"m":"Súper caña","s":[["Octillery",40,"45-50"],["Seadra",40,"45-50"],["Corsola",15,"45-50"],["Kingdra",5,"45-50"]]}]},{"name":"Route 18 (B)","g":[{"m":"Día","s":[["Farfetch’d",35,"53-57"],["Persian",35,"50-57"],["Bouffalant",20,"53-57"],["Sudowoodo",9,"53-57"],["Happiny",1,"53-57"]]},{"m":"Noche","s":[["Noctowl",35,"53-57"],["Skuntank",35,"53-57"],["Bouffalant",20,"53-57"],["Sudowoodo",9,"53-57"],["Happiny",1,"53-57"]]},{"m":"Surf","s":[["Tentacool",60,"35-40"],["Pelipper",30,"35-40"],["Tentacruel",5,"38-40"],["Mantine",5,"37-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Remoraid",60,"20-25"],["Corsola",20,"20-25"],["Horsea",20,"20-25"]]},{"m":"Súper caña","s":[["Octillery",40,"45-50"],["Seadra",40,"45-50"],["Corsola",15,"45-50"],["Gyarados",5,"45-50"]]}]},{"name":"Victory Road Cave (A)","g":[{"m":"Hierba","s":[["Golbat",40,"55-58"],["Boldore",30,"55-58"],["Durant",30,"55-58"]]},{"m":"Surf","s":[["Lumineon",60,"50-55"],["Golbat",30,"50-55"],["Marill",6,"45-55"],["Azumarill",4,"50-55"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Finneon",80,"20-25"],["Psyduck",20,"20-25"]]},{"m":"Súper caña","s":[["Lumineon",55,"45-50"],["Golduck",40,"45-50"],["Gyarados",5,"45-50"]]}]},{"name":"Victory Road Cave (B)","g":[{"m":"Hierba","s":[["Woobat",40,"54-58"],["Graveler",30,"55-58"],["Durant",30,"55-58"]]},{"m":"Surf","s":[["Lumineon",60,"50-55"],["Woobat",30,"45-55"],["Marill",6,"45-55"],["Azumarill",4,"50-55"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Finneon",80,"20-25"],["Psyduck",20,"20-25"]]},{"m":"Súper caña","s":[["Lumineon",55,"45-50"],["Golduck",40,"45-50"],["Gyarados",5,"45-50"]]}]},{"name":"Victory Road Volcano","g":[{"m":"Hierba","s":[["Woobat",20,"54-58"],["Magcargo",20,"55-58"],["Graveler",20,"55-58"],["Camerupt",15,"55-58"],["Salazzle",10,"55-58"],["Excadrill",5,"55-58"],["Heatmor",5,"55-58"],["Magmar",5,"55-58"]]},{"m":"Surf","s":[["Magcargo",100,"50-55"]]}]},{"name":"Victory Road Cave (C)","g":[{"m":"Hierba","s":[["Druddigon",80,"55-58"],["Turtonator",10,"55-58"],["Drampa",10,"55-58"]]},{"m":"Surf","s":[["Lumineon",60,"50-55"],["Woobat",30,"45-55"],["Marill",6,"45-55"],["Azumarill",4,"50-55"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Finneon",80,"20-25"],["Psyduck",20,"20-25"]]},{"m":"Súper caña","s":[["Lumineon",55,"45-50"],["Golduck",40,"45-50"],["Gyarados",5,"45-50"]]}]},{"name":"Victory Road Grassy","g":[{"m":"Hierba","s":[["Heatmor",40,"55-58"],["Roselia",25,"54-58"],["Lurantis",20,"55-58"],["Chansey",10,"55-58"],["Jigglypuff",5,"54-58"]]},{"m":"Surf","s":[["Floatzel",60,"50-55"],["Basculin-Blue-Striped",40,"50-55"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Luvdisc",100,"20-25"]]},{"m":"Súper caña","s":[["Luvdisc",99,"20-50"],["Bruxish",1,"45-50"]]}]},{"name":"Victory Road Cave (D)","g":[{"m":"Hierba","s":[["Woobat",40,"55-59"],["Durant",30,"56-59"],["Turtonator",10,"56-59"],["Drampa",10,"56-59"],["Hakamo-o",10,"56-59"]]}]},{"name":"Victory Road Mountainside","g":[{"m":"Hierba","s":[["Abomasnow",30,"56-59"],["Glalie",30,"56-59"],["Vanillish",20,"56-59"],["Beartic",18,"56-59"],["Minior-Meteor",2,"56-59"]]}]},{"name":"Victory Road Ice Cave (A)","g":[{"m":"Hierba","s":[["Sealeo",30,"56-59"],["Hariyama",25,"56-59"],["Golbat",20,"56-59"],["Jynx",10,"56-59"],["Avalugg",5,"56-59"],["Glalie",5,"56-59"],["Piloswine",5,"56-59"]]}]},{"name":"Victory Road Ice Cave (B)","g":[{"m":"Hierba","s":[["Sealeo",30,"56-59"],["Hariyama",25,"56-59"],["Golbat",20,"56-59"],["Jynx",10,"56-59"],["Avalugg",5,"56-59"],["Glalie",5,"56-59"],["Piloswine",5,"56-59"]]},{"m":"Surf","s":[["Dewgong",65,"50-55"],["Sealeo",34,"50-55"],["Lapras",1,"50-55"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Seel",80,"20-25"],["Shellder",20,"20-25"]]},{"m":"Súper caña","s":[["Shellder",60,"45-50"],["Dewgong",40,"45-50"]]}]},{"name":"Polder Town","g":[{"m":"Surf","s":[["Palpitoad",60,"45-50"],["Stunfisk",30,"45-50"],["Gastrodon",5,"49-50"],["Sliggoo",5,"49-50"]]},{"m":"Caña vieja","s":[["Magikarp",70,"10-15"],["Poliwag",30,"10-15"]]},{"m":"Caña buena","s":[["Barboach",60,"20-25"],["Poliwhirl",40,"20-25"]]},{"m":"Súper caña","s":[["Poliwhirl",55,"45-50"],["Whiscash",40,"45-50"],["Politoed",5,"45-50"]]}]},{"name":"Cootes Bog","g":[{"m":"Día","s":[["Croagunk",30,"48-52"],["Quagsire",20,"49-52"],["Sliggoo",20,"50-52"],["Drapion",10,"51-52"],["Weepinbell",10,"49-52"],["Carnivine",5,"49-52"],["Toxicroak",5,"52"]]},{"m":"Noche","s":[["Croagunk",30,"48-52"],["Quagsire",20,"49-52"],["Sliggoo",20,"50-52"],["Drapion",10,"51-52"],["Gloom",10,"49-52"],["Carnivine",5,"49-52"],["Toxicroak",5,"52"]]},{"m":"Surf","s":[["Quagsire",60,"45-50"],["Stunfisk",30,"45-50"],["Gastrodon",5,"49-50"],["Sliggoo",5,"49-50"]]},{"m":"Caña vieja","s":[["Magikarp",70,"10-15"],["Poliwag",30,"10-15"]]},{"m":"Caña buena","s":[["Barboach",60,"20-25"],["Poliwhirl",40,"20-25"]]},{"m":"Súper caña","s":[["Poliwhirl",55,"45-50"],["Whiscash",40,"45-50"],["Politoed",5,"45-50"]]},{"m":"Especial","s":[["Feraligatr",100,""]]}]},{"name":"Crystal Peak Bog Entrance","g":[{"m":"Hierba","s":[["Loudred",30,"50-53"],["Woobat",30,"49-53"],["Onix",10,"49-53"],["Noibat",10,"49-53"],["Zweilous",10,"50-53"],["Steelix",5,"49-53"],["Skarmory",5,"50-53"]]},{"m":"Golpe Roca","s":[["Graveler",90,"50-53"],["Onix",10,"49-53"]]}]},{"name":"Crystal Peak B1F Left","g":[{"m":"Hierba","s":[["Loudred",30,"50-53"],["Woobat",30,"49-53"],["Onix",10,"49-53"],["Noibat",10,"49-53"],["Zweilous",10,"50-53"],["Steelix",5,"49-53"],["Skarmory",5,"50-53"]]},{"m":"Surf","s":[["Gastrodon",90,"49-53"],["Golduck",9,"49-53"],["Dragonair",1,"49-53"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Psyduck",60,"20-25"],["Finneon",40,"20-25"]]},{"m":"Súper caña","s":[["Golduck",55,"45-50"],["Lumineon",40,"45-50"],["Qwilfish",5,"45-50"]]}]},{"name":"Crystal Peak 1F Main Room","g":[{"m":"Hierba","s":[["Loudred",30,"50-53"],["Woobat",30,"49-53"],["Onix",10,"49-53"],["Noibat",10,"49-53"],["Zweilous",10,"50-53"],["Steelix",5,"49-53"],["Skarmory",5,"50-53"]]},{"m":"Surf","s":[["Gastrodon",90,"49-53"],["Golduck",9,"49-53"],["Dragonair",1,"49-53"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Psyduck",60,"20-25"],["Finneon",40,"20-25"]]},{"m":"Súper caña","s":[["Golduck",55,"45-50"],["Lumineon",40,"45-50"],["Qwilfish",5,"45-50"]]}]},{"name":"Crystal Peak 1F Left Room","g":[{"m":"Hierba","s":[["Loudred",30,"50-53"],["Woobat",30,"49-53"],["Onix",10,"49-53"],["Noibat",10,"49-53"],["Zweilous",10,"50-53"],["Steelix",5,"49-53"],["Skarmory",5,"50-53"]]},{"m":"Surf","s":[["Gastrodon",90,"60-65"],["Golduck",9,"60-65"],["Dragonair",1,"60-65"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Psyduck",60,"20-25"],["Finneon",40,"20-25"]]},{"m":"Súper caña","s":[["Golduck",55,"45-50"],["Lumineon",40,"45-50"],["Qwilfish",5,"45-50"]]}]},{"name":"Crystal Peak (?)","g":[{"m":"Hierba","s":[["Loudred",30,"60-65"],["Woobat",30,"60-65"],["Onix",10,"60-65"],["Noivern",10,"60-65"],["Zweilous",10,"60-65"],["Steelix",5,"60-65"],["Skarmory",5,"60-65"]]}]},{"name":"Crystal Peak (?) 2","g":[{"m":"Hierba","s":[["Loudred",30,"50-53"],["Woobat",30,"49-53"],["Onix",10,"49-53"],["Noibat",10,"49-53"],["Zweilous",10,"50-53"],["Steelix",5,"49-53"],["Skarmory",5,"50-53"]]}]},{"name":"Crystal Peak Cube Entrance","g":[{"m":"Hierba","s":[["Loudred",30,"60-65"],["Woobat",30,"60-65"],["Onix",10,"60-65"],["Noivern",10,"60-65"],["Zweilous",10,"60-65"],["Steelix",5,"60-65"],["Skarmory",5,"60-65"]]},{"m":"Surf","s":[["Gastrodon",90,"60-65"],["Golduck",9,"60-65"],["Dragonair",1,"60-65"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Psyduck",60,"20-25"],["Finneon",40,"20-25"]]},{"m":"Súper caña","s":[["Golduck",55,"45-50"],["Lumineon",40,"45-50"],["Qwilfish",5,"45-50"]]}]},{"name":"Crystal Peak Cliffside","g":[{"m":"Hierba","s":[["Drifblim",85,"50-53"],["Absol",5,"50-53"],["Rufflet",5,"49-53"],["Vullaby",5,"49-53"]]}]},{"name":"Crystal Peak (?) 3","g":[{"m":"Hierba","s":[["Loudred",30,"50-53"],["Woobat",30,"49-53"],["Onix",10,"49-53"],["Noibat",10,"49-53"],["Zweilous",10,"50-53"],["Steelix",5,"49-53"],["Skarmory",5,"50-53"]]}]},{"name":"Crystal Peak 3F","g":[{"m":"Hierba","s":[["Loudred",30,"50-53"],["Woobat",30,"49-53"],["Onix",10,"49-53"],["Noibat",10,"49-53"],["Zweilous",10,"50-53"],["Steelix",5,"49-53"],["Skarmory",5,"50-53"]]},{"m":"Surf","s":[["Gastrodon",90,"49-53"],["Golduck",9,"49-53"],["Dragonair",1,"49-53"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Psyduck",60,"20-25"],["Finneon",40,"20-25"]]},{"m":"Súper caña","s":[["Golduck",55,"45-50"],["Lumineon",40,"45-50"],["Qwilfish",5,"45-50"]]}]},{"name":"Crystal Peak (?) 4","g":[{"m":"Hierba","s":[["Loudred",30,"51-54"],["Woobat",30,"50-54"],["Onix",10,"50-54"],["Noibat",10,"50-54"],["Zweilous",10,"51-54"],["Steelix",5,"50-54"],["Skarmory",5,"51-54"]]},{"m":"Surf","s":[["Gastrodon",90,"50-54"],["Golduck",9,"50-54"],["Dragonair",1,"50-54"]]},{"m":"Golpe Roca","s":[["Graveler",90,"51-54"],["Onix",10,"50-54"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Psyduck",60,"20-25"],["Finneon",40,"20-25"]]},{"m":"Súper caña","s":[["Golduck",55,"45-50"],["Lumineon",40,"45-50"],["Qwilfish",5,"45-50"]]}]},{"name":"Crystal Peak 5F","g":[{"m":"Hierba","s":[["Loudred",30,"51-54"],["Woobat",30,"50-54"],["Onix",10,"50-54"],["Noibat",10,"50-54"],["Zweilous",10,"51-54"],["Steelix",5,"50-54"],["Skarmory",5,"51-54"]]}]},{"name":"Magnolia Fields","g":[{"m":"Día","s":[["Tranquill",30,"49-53"],["Furfrou",25,"49-53"],["Mudsdale",20,"49-53"],["Gogoat",15,"49-53"],["Miltank",9,"50-53"],["Tauros",1,"50-53"]]},{"m":"Noche","s":[["Furfrou",25,"49-53"],["Noctowl",20,"49-53"],["Mudsdale",20,"49-53"],["Gogoat",15,"49-53"],["Tranquill",10,"49-53"],["Miltank",9,"50-53"],["Tauros",1,"50-53"]]},{"m":"Surf","s":[["Frillish",60,"45-50"],["Pelipper",30,"45-50"],["Jellicent",10,"49-50"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Gyarados",60,"20-25"],["Wailmer",40,"20-25"]]},{"m":"Súper caña","s":[["Wailord",55,"45-50"],["Gyarados",40,"45-50"],["Qwilfish",5,"45-50"]]}]},{"name":"Redwood Village","g":[{"m":"Golpe Roca","s":[["Pineco",60,"10-30"],["Aipom",30,"10-30"],["Heracross",5,"50"],["Scyther",4,"50"],["Pinsir",1,"50"]]}]},{"name":"Tomb of Borrius 1F","g":[{"m":"Hierba","s":[["Unown",99,"5-65"],["Sigilyph",1,"60-65"]]}]},{"name":"Tomb of Borrius (?)","g":[{"m":"Hierba","s":[["Unown",99,"5-65"],["Sigilyph",1,"60-65"]]},{"m":"Golpe Roca","s":[["Graveler",95,"60-65"],["Shuckle",5,"60-65"]]}]},{"name":"Tomb of Borrius B3F","g":[{"m":"Hierba","s":[["Unown",99,"5-65"],["Sigilyph",1,"60-65"]]}]},{"name":"Tomb of Borrius (?) 2","g":[{"m":"Hierba","s":[["Unown",99,"5-65"],["Sigilyph",1,"60-65"]]}]},{"name":"Tomb of Borrius (?) 3","g":[{"m":"Hierba","s":[["Unown",99,"5-65"],["Sigilyph",1,"60-65"]]}]},{"name":"Tomb of Borrius (?) 4","g":[{"m":"Hierba","s":[["Unown",99,"5-65"],["Sigilyph",1,"60-65"]]}]},{"name":"Tomb of Borrius (?) 5","g":[{"m":"Hierba","s":[["Unown",99,"5-65"],["Sigilyph",1,"60-65"]]}]},{"name":"Tomb of Borrius 1F Back","g":[{"m":"Hierba","s":[["Unown",100,"5-65"]]}]},{"name":"Rift Cave (?)","g":[{"m":"Hierba","s":[["Golbat",20,"34-37"],["Haunter",20,"34-37"],["Duskull",20,"34-37"],["Bronzor",15,"34-37"],["Golett",10,"34-37"],["Chimecho",5,"34-37"],["Bronzong",5,"37"],["Dusclops",5,"37"]]}]},{"name":"Rift Cave (?) 2","g":[{"m":"Hierba","s":[["Golbat",20,"34-37"],["Haunter",20,"34-37"],["Duskull",20,"34-37"],["Bronzor",15,"34-37"],["Golett",10,"34-37"],["Chimecho",5,"34-37"],["Bronzong",5,"37"],["Dusclops",5,"37"]]}]},{"name":"Rift Cave B1F","g":[{"m":"Hierba","s":[["Dusclops",25,"60-65"],["Golbat",20,"60-65"],["Haunter",20,"60-65"],["Bronzong",20,"60-65"],["Golurk",10,"60-65"],["Chimecho",5,"60-65"]]}]},{"name":"Rift Cave (?) 3","g":[{"m":"Hierba","s":[["Dusclops",25,"60-65"],["Golbat",20,"60-65"],["Haunter",20,"60-65"],["Bronzong",20,"60-65"],["Golurk",10,"60-65"],["Chimecho",5,"60-65"]]}]},{"name":"Redwood Forest","g":[{"m":"Día","s":[["Ledian",30,"55-65"],["Vigoroth",30,"55-65"],["Ursaring",20,"55-65"],["Komala",13,"60-65"],["Heracross",5,"60-65"],["Passimian",1,"60-65"],["Oranguru",1,"60-65"]]},{"m":"Noche","s":[["Ariados",30,"55-65"],["Vigoroth",30,"55-65"],["Ursaring",20,"55-65"],["Komala",13,"60-65"],["Heracross",5,"60-65"],["Passimian",1,"60-65"],["Oranguru",1,"60-65"]]},{"m":"Surf","s":[["Masquerain",65,"55-65"],["Golduck",35,"55-65"]]},{"m":"Golpe Roca","s":[["Pineco",60,"10-30"],["Aipom",30,"10-30"],["Heracross",5,"50"],["Scyther",4,"50"],["Pinsir",1,"50"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Psyduck",80,"20-25"],["Barboach",20,"20-25"]]},{"m":"Súper caña","s":[["Golduck",80,"45-50"],["Whiscash",20,"45-50"]]},{"m":"Especial","s":[["Snorlax",50,""],["Zoroark",50,""]]}]},{"name":"Cube Corp","g":[{"m":"Surf","s":[["Jellicent",60,"55-65"],["Pelipper",30,"55-65"],["Ditto",10,"55-65"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10-15"]]},{"m":"Caña buena","s":[["Gyarados",60,"20-25"],["Wailmer",40,"20-25"]]},{"m":"Súper caña","s":[["Wailord",55,"45-50"],["Gyarados",40,"45-50"],["Ditto",5,"45-50"]]}]},{"name":"Mapa 46.10 (?)","g":[{"m":"Hierba","s":[["Geodude",20,"46"],["Phanpy",20,"15"],["Cubone",10,"46"],["Fearow",10,"50"],["Marowak",10,"52"],["Meowth",10,"43"],["Onix",5,"54"],["Skarmory",5,"30"],["Larvitar",5,"15-20"],["Persian",5,"49-52"]]}]}]};
+/* Ratios por defecto cuando la fuente no trae porcentaje explícito */
+const DEFRATES={Hierba:[20,15,15,10,10,10,10,5,5],Pesca:[20,20,10,10,10,10,5,5,4,4,2],
+ Surf:[30,30,20,10,10],Rocas:[30,30,20,20]};
+
+/* ---------- 4. ESTADO ---------- */
+/* La partida se guarda en localStorage bajo una clave derivada del id del juego,
+   NO del nombre del archivo: el navegador comparte el almacenamiento entre todos
+   los archivos abiertos con file://, así que la ruta y el nombre no influyen.
+   La "ranura" permite llevar varias partidas del mismo juego en paralelo.      */
+const BASEID=DATA.id||"default";
+let SLOT="";try{SLOT=localStorage.getItem("nztslot_"+BASEID)||"";}catch(e){}
+function storageKey(){return "nzt_"+BASEID+(SLOT?"__"+SLOT:"");}
+function freshState(){return{picks:{},manual:[],team:[],patch:"",
+  rules:{dupes:true,same:false,formFam:true,deadBlocks:true}};}
+let memOnly=false,SPECIES={},FAMILIES=[],FORMS={},ALIAS={};
+let S=freshState();
+let open=new Set(),hideBlocked=false,mid=1;
+
+const RULES=[
+ ["dupes","Cláusula de duplicados","Bloquea las especies de una línea evolutiva ya registrada."],
+ ["formFam","Las formas regionales son la misma línea","Vulpix-A cuenta como Vulpix. Desactívalo si tu hackrom las trata como especies independientes."],
+ ["deadBlocks","Los muertos siguen bloqueando","Lo normal en Nuzlocke: aunque muriera, su especie ya no vuelve a estar disponible."],
+ ["same","Bloquear dentro de la misma ubicación","Si una ruta repite una familia en varios slots, tacha los demás."]
+];
+
+function norm(s){return (s||"").toString().toLowerCase().normalize("NFD")
+  .replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]/g,"");}
+function esc(s){return (s||"").toString().replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");
+ clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("on"),1600);}
+
+/* --- construcción de la base, con fusión de familias --- */
+function buildDex(){
+  SPECIES={};FAMILIES=[];FORMS={};ALIAS={};
+  parseDexText(DEX_BASE);
+  /* formas: tipos propios + familia de su especie base */
+  FORMS_RAW.split(/[\n|]/).forEach(l=>{
+    l=l.trim(); if(!l) return;
+    const p=l.split(":"); if(p.length<3) return;
+    const nm=p[0].trim(),ty=p[1].trim().split("").map(c=>TCODE[c]).filter(Boolean),base=p[2].trim();
+    if(!nm||!ty.length) return;
+    FORMS[norm(nm)]={name:nm,types:ty,base:base};
+  });
+  ALIAS_RAW.split(/[\n|]/).forEach(l=>{
+    const p=l.split("="); if(p.length!==2) return;
+    ALIAS[norm(p[0])]=p[1].trim();
+  });
+  applyPatchText(S.patch||"");
+  registerForms();
+  const dl=document.getElementById("dexList");
+  if(dl) dl.innerHTML=Object.values(SPECIES).map(s=>'<option value="'+esc(s.name)+'">').join("");
+}
+function parseDexText(txt){
+  txt.replace(/\s*\n\s*/g,"").split("|").forEach(line=>{
+    line=line.trim(); if(!line) return;
+    const mem=[];
+    line.split(",").forEach(m=>{
+      m=m.trim();const i=m.lastIndexOf(":");if(i<1)return;
+      const nm=m.slice(0,i).trim();
+      const ty=m.slice(i+1).trim().split("").map(c=>TCODE[c]).filter(Boolean);
+      if(nm&&ty.length)mem.push({nm:nm,ty:ty});
+    });
+    mergeFamily(mem);
+  });
+}
+function mergeFamily(mem){
+  if(!mem.length)return -1;
+  const found=[...new Set(mem.map(x=>SPECIES[norm(x.nm)]).filter(Boolean).map(x=>x.fam))];
+  let fam;
+  if(found.length){
+    fam=Math.min.apply(null,found);
+    found.forEach(f=>{if(f===fam)return;
+      (FAMILIES[f]||[]).forEach(n=>{if(SPECIES[norm(n)])SPECIES[norm(n)].fam=fam;
+        if(FAMILIES[fam].indexOf(n)<0)FAMILIES[fam].push(n);});
+      FAMILIES[f]=[];});
+  }else{fam=FAMILIES.length;FAMILIES[fam]=[];}
+  mem.forEach(x=>{const k=norm(x.nm);
+    if(FAMILIES[fam].indexOf(x.nm)<0)FAMILIES[fam].push(x.nm);
+    SPECIES[k]={name:x.nm,types:x.ty,fam:fam};});
+  return fam;
+}
+/* Registra las formas como especies reales, con familia propia o compartida */
+function registerForms(){
+  for(const k in FORMS){
+    const f=FORMS[k],b=SPECIES[norm(f.base)];
+    let fam;
+    if(S.rules.formFam&&b) fam=b.fam;
+    else {fam=FAMILIES.length;FAMILIES[fam]=[];}
+    if(FAMILIES[fam].indexOf(f.name)<0)FAMILIES[fam].push(f.name);
+    SPECIES[k]={name:f.name,types:f.types,fam:fam,form:true,base:f.base};
+  }
+}
+/* Búsqueda tolerante: exacta -> alias -> forma -> quitar sufijos -> null */
+function look(name){
+  if(!name)return null;
+  const n=String(name).trim(),k=norm(n);
+  if(SPECIES[k])return SPECIES[k];
+  if(ALIAS[k])return look(ALIAS[k]);
+  let parts=n.split("-");
+  while(parts.length>1){
+    parts.pop();
+    const s=SPECIES[norm(parts.join("-"))];
+    if(s)return Object.assign({},s,{approx:true,shown:n});
+  }
+  return null;
+}
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;
+ let p=[],c=[];for(let j=0;j<=n;j++)p[j]=j;
+ for(let i=1;i<=m;i++){c[0]=i;for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));const t=p;p=c;c=t;}
+ return p[n];}
+function suggest(name){const t=norm(name);let best=null,bd=99;
+ for(const k in SPECIES){const d=lev(t,k);if(d<bd){bd=d;best=SPECIES[k].name;}}
+ return bd<=2?best:null;}
+
+/* --- parser de parches con errores detallados --- */
+function parseTypeList(str){
+  str=str.trim();
+  if(/^[0-9A-H]{1,2}$/.test(str)){
+    const t=str.split("").map(c=>TCODE[c]);
+    if(t.every(Boolean))return{types:t};
+  }
+  const out=[];
+  for(const raw of str.split(/[\/ ]+/)){
+    if(!raw)continue;
+    const w=norm(raw);
+    const hit=TYPES.find(t=>norm(t)===w)||TYPES.find(t=>norm(ES[t])===w);
+    if(!hit)return{err:'tipo desconocido: "'+raw+'"'};
+    out.push(hit);
+  }
+  if(!out.length)return{err:"no has indicado ningún tipo"};
+  if(out.length>2)return{err:"máximo 2 tipos"};
+  return{types:out};
+}
+function applyPatchText(txt){
+  const res=[];
+  (txt||"").split(/\n/).forEach((line,i)=>{
+    const raw=line;line=line.trim();
+    if(!line||line[0]==="#")return;
+    /* alias:  A = B   |   A -> B  */
+    const al=line.match(/^(.+?)\s*(?:=|->)\s*(.+)$/);
+    if(al&&line.indexOf(":")<0){
+      const from=al[1].trim(),to=al[2].trim();
+      if(!look(to)){res.push({n:i+1,ok:false,txt:raw,msg:'"'+to+'" no existe en la base'});return;}
+      ALIAS[norm(from)]=to;
+      res.push({n:i+1,ok:true,txt:raw,msg:'alias: '+from+' → '+look(to).name});
+      return;
+    }
+    /* familia / tipos:  A:tipos, B:tipos, ... */
+    if(line.indexOf(":")<0){res.push({n:i+1,ok:false,txt:raw,msg:'no reconozco la instrucción (falta ":" o "=")'});return;}
+    const mem=[],errs=[];
+    line.split(",").forEach(part=>{
+      part=part.trim(); if(!part)return;
+      const j=part.lastIndexOf(":");
+      if(j<1){errs.push('"'+part+'" sin tipos');return;}
+      const nm=part.slice(0,j).trim(),tl=parseTypeList(part.slice(j+1));
+      if(!nm){errs.push("falta el nombre");return;}
+      if(tl.err){errs.push(nm+": "+tl.err);return;}
+      mem.push({nm:nm,ty:tl.types});
+    });
+    if(errs.length){res.push({n:i+1,ok:false,txt:raw,msg:errs.join(" · ")});return;}
+    if(!mem.length){res.push({n:i+1,ok:false,txt:raw,msg:"línea vacía tras analizar"});return;}
+    mergeFamily(mem);
+    res.push({n:i+1,ok:true,txt:raw,msg:mem.length===1
+      ? mem[0].nm+" → "+mem[0].ty.map(t=>ES[t]).join("/")
+      : "familia unida: "+mem.map(m=>m.nm).join(" → ")});
+  });
+  return res;
+}
+
+/* --- persistencia --- */
+function save(){try{localStorage.setItem(storageKey(),JSON.stringify(S));}catch(e){memOnly=true;warnStore();}}
+function loadS(){try{const r=localStorage.getItem(storageKey());if(!r)return;const o=JSON.parse(r);
+  S=Object.assign(S,o,{rules:Object.assign({dupes:true,same:false,formFam:true,deadBlocks:true},o.rules||{})});
+  (S.manual||[]).forEach(m=>{if(m.id>=mid)mid=m.id+1;});
+ }catch(e){memOnly=true;}}
+function warnStore(){const el=document.getElementById("storeWarn");if(el)el.innerHTML=memOnly?
+ '<div class="alert err" style="margin-top:9px"><b>SIN GUARDADO AUTOMÁTICO.</b> El navegador ha bloqueado el almacenamiento local (pasa en vistas previas y en incógnito). Guarda la partida en JSON antes de cerrar.</div>':"";}
+
+/* ---------- 5. LÓGICA NUZLOCKE ---------- */
+/* Todo lo que "posees": elecciones de ruta + añadidos a mano */
+function ownedList(){
+  const out=[];
+  DATA.locs.forEach(L=>{const p=S.picks[L.name];
+    if(p&&!p.none&&p.sp)out.push({ref:"L|"+L.name,sp:p.sp,lv:p.lv,dead:!!p.dead,where:L.name,nick:p.nick||""});});
+  (S.manual||[]).forEach(m=>out.push({ref:"M|"+m.id,sp:m.sp,lv:m.lv,dead:!!m.dead,
+    where:m.origin,nick:m.nick||"",manual:true,nodupe:!!m.nodupe}));
+  return out;
+}
+function owned(){
+  const o={};
+  ownedList().forEach(x=>{
+    if(x.nodupe)return;
+    if(x.dead&&!S.rules.deadBlocks)return;
+    const sp=look(x.sp);if(!sp)return;
+    if(o[sp.fam]===undefined)o[sp.fam]={loc:x.where,sp:x.sp};
+  });
+  return o;
+}
+function blockedIn(locName,spName,own){
+  if(!S.rules.dupes)return null;
+  const sp=look(spName);if(!sp)return null;
+  const hit=own[sp.fam];if(!hit)return null;
+  if(hit.loc===locName){
+    if(!S.rules.same)return null;
+    const p=S.picks[locName];
+    if(p&&p.sp===spName)return null;
+  }
+  return hit;
+}
+
+/* ---------- 6. RENDER ---------- */
+function tb(t){return '<span class="type" style="background:'+TCOL[t]+'">'+ES[t]+'</span>';}
+function typesOf(n){const sp=look(n);
+  if(!sp)return '<span class="tag err">?</span>';
+  return '<span class="types">'+sp.types.map(tb).join("")+(sp.approx?'<span class="tag form" title="Forma no catalogada: uso los tipos de '+esc(sp.name)+'">~</span>':"")+'</span>';}
+function rateOf(g,i){
+  if(g.s[i][1]!=null&&g.s[i][1]!=="")return +g.s[i][1];
+  const d=DEFRATES[g.m];return d&&d[i]!=null?d[i]:null;
+}
+function renderLocs(){
+  const q=norm(document.getElementById("q").value),fm=document.getElementById("fmode").value,own=owned();
+  let html="";
+  DATA.locs.forEach(L=>{
+    const p=S.picks[L.name];
+    let tot=0,free=0;
+    L.g.forEach(g=>g.s.forEach(s=>{tot++;if(!blockedIn(L.name,s[0],own))free++;}));
+    if(q){let hit=norm(L.name).indexOf(q)>-1;
+      if(!hit)hit=L.g.some(g=>g.s.some(s=>norm(s[0]).indexOf(q)>-1));
+      if(!hit)return;}
+    if(fm==="pend"&&p)return;
+    if(fm==="done"&&!p)return;
+    if(fm==="stuck"&&(p||free>0||!tot))return;
+    const dead=p&&p.dead;
+    const cls=["loc",p?(p.none?"none":(dead?"rip":"done")):"",open.has(L.name)?"open":"",tot?"":"empty"].join(" ");
+    html+='<div class="'+cls+'" data-l="'+esc(L.name)+'"><div class="lh">';
+    html+='<div class="chk">'+(p?(p.none?"–":(dead?"✝":"✓")):"")+'</div>';
+    html+='<div class="lname">'+esc(L.name)+'</div>';
+    if(p&&!p.none)html+='<div class="pick'+(dead?" dead":"")+'">'+esc(p.nick?p.nick+" ("+p.sp+")":p.sp)+'</div>'+typesOf(p.sp);
+    else if(p)html+='<div class="pick no">Ninguno</div>';
+    html+='<div class="sp"></div><div class="avail">'+(tot?free+"/"+tot+" libres":"sin encuentros")+'</div>';
+    html+='<button class="mini" data-a="tog">'+(open.has(L.name)?"▲":"▼")+'</button></div><div class="lb">';
+    L.g.forEach((g,gi)=>{
+      let fn=0,fp=0,anyPc=false;
+      g.s.forEach((s,i)=>{const r=rateOf(g,i);if(r!=null)anyPc=true;
+        if(!blockedIn(L.name,s[0],own)){fn++;fp+=(r||0);}});
+      html+='<div class="meth"><h4>'+esc(g.m)+'<span>'+fn+'/'+g.s.length+' libres'+(anyPc?' · '+Math.round(fp)+'% útil':'')+'</span></h4><div class="slots">';
+      g.s.forEach((s,i)=>{
+        const bl=blockedIn(L.name,s[0],own);
+        const chosen=p&&!p.none&&p.gi===gi&&p.si===i;
+        if(hideBlocked&&bl&&!chosen)return;
+        const sp=look(s[0]),r=rateOf(g,i);
+        html+='<div class="slot'+(bl?" blocked":"")+(chosen?" chosen":"")+(sp?"":" unknown")+'"'+
+          (bl?' title="Bloqueado: ya tienes '+esc(bl.sp)+' en '+esc(bl.loc)+'"':"")+'>';
+        html+='<span class="pc">'+(r!=null?r+"%":"—")+'</span>';
+        html+='<span class="lv">Nv '+esc(s[2]||"?")+'</span>';
+        html+='<span class="nm">'+esc(s[0])+'</span>'+typesOf(s[0]);
+        if(!p)html+='<button class="mini" data-a="pick" data-gi="'+gi+'" data-si="'+i+'"'+(bl?" disabled":"")+'>Elegir</button>';
+        html+='</div>';
+      });
+      html+='</div></div>';
+    });
+    html+='<div class="locfoot">';
+    if(p){
+      html+='<button class="mini danger" data-a="undo">↺ Deshacer</button>';
+      if(!p.none)html+='<button class="mini" data-a="rip">'+(dead?"↺ Revivir":"✝ Ha muerto")+'</button>';
+    }else{
+      html+='<button class="mini" data-a="none">✖ Ningún Pokémon aquí</button>';
+      if(!tot)html+='<span class="muted">Sin tabla de encuentros para esta ubicación.</span>';
+    }
+    html+='</div></div></div>';
+  });
+  document.getElementById("locs").innerHTML=html||'<div class="alert info">Nada que mostrar con estos filtros.</div>';
+  counters();
+}
+function counters(){
+  const l=ownedList();
+  let mark=0;DATA.locs.forEach(L=>{if(S.picks[L.name])mark++;});
+  document.getElementById("cAlive").textContent=l.filter(x=>!x.dead).length;
+  document.getElementById("cDead").textContent=l.filter(x=>x.dead).length;
+  document.getElementById("cMark").textContent=mark;
+  document.getElementById("cLeft").textContent=DATA.locs.length-mark;
+  document.getElementById("cPct").textContent=DATA.locs.length?Math.round(mark/DATA.locs.length*100)+"%":"0%";
+  document.getElementById("hSub").textContent=DATA.locs.length+" ubicaciones · "+
+    DATA.locs.reduce((a,L)=>a+L.g.reduce((b,g)=>b+g.s.length,0),0)+" encuentros";
+}
+function monCard(x){
+  const inT=S.team.indexOf(x.ref)>-1;
+  let h='<div class="card'+(x.dead?" dead":(inT?" team":""))+'">';
+  h+='<div class="nm">'+esc(x.nick||x.sp)+'</div>';
+  h+='<div class="rt">'+esc(x.sp)+(x.lv?" · Nv "+esc(x.lv):"")+'</div>';
+  h+='<div class="rt">'+esc(x.where)+(x.manual?" (manual)":"")+(x.nodupe?" · sin dupes":"")+'</div>';
+  h+='<div style="margin:4px 0">'+typesOf(x.sp)+'</div><div class="btns">';
+  if(!x.dead)h+='<button class="mini" data-team="'+esc(x.ref)+'">'+(inT?"Quitar":"Equipo")+'</button>';
+  h+='<button class="mini '+(x.dead?"":"danger")+'" data-rip="'+esc(x.ref)+'">'+(x.dead?"↺ Revivir":"✝ Muerto")+'</button>';
+  if(x.manual)h+='<button class="mini" data-del="'+esc(x.ref)+'">Borrar</button>';
+  return h+'</div></div>';
+}
+function renderCap(){
+  const all=ownedList(),alive=all.filter(x=>!x.dead),dead=all.filter(x=>x.dead);
+  S.team=S.team.filter(r=>alive.some(x=>x.ref===r)).slice(0,6);
+  document.getElementById("capCount").textContent="("+alive.length+")";
+  document.getElementById("capGrid").innerHTML=alive.length?alive.map(monCard).join(""):'<div class="card">Nada capturado todavía.</div>';
+  document.getElementById("ripCount").textContent="("+dead.length+")";
+  document.getElementById("ripGrid").innerHTML=dead.length?dead.map(monCard).join(""):'<div class="card">Nadie ha caído. Que dure.</div>';
+  const mons=S.team.map(r=>{const x=all.find(y=>y.ref===r);return x?{n:x.nick||x.sp,sp:look(x.sp)}:null;}).filter(x=>x&&x.sp);
+  const t=document.getElementById("cov");
+  if(!mons.length){t.innerHTML='<tr><td style="padding:12px">Marca Pokémon como equipo para ver la cobertura.</td></tr>';return;}
+  let h='<tr><th class="colh" style="writing-mode:horizontal-tb;transform:none">Ataque</th>';
+  mons.forEach(m=>h+='<th class="colh">'+esc(m.n.slice(0,11))+'</th>');
+  h+='<th class="colh" style="writing-mode:horizontal-tb;transform:none">Débiles</th></tr>';
+  TYPES.forEach(a=>{
+    h+='<tr><th class="rowh"><span class="type" style="display:block;background:'+TCOL[a]+'">'+ES[a]+'</span></th>';
+    let w=0;
+    mons.forEach(m=>{const v=eff(a,m.sp.types);let c="m1",l="1";
+      if(v===4){c="m4";l="4";w++;}else if(v===2){c="m2";l="2";w++;}
+      else if(v===0.5){c="mh";l="½";}else if(v===0.25){c="mq";l="¼";}else if(v===0){c="m0";l="0";}
+      h+='<td class="'+c+'">'+l+'</td>';});
+    h+='<td class="sum'+(w>=3?" bad":(w===0?" good":""))+'">'+w+'</td></tr>';});
+  t.innerHTML=h;
+}
+function renderRules(){
+  document.getElementById("rules").innerHTML=RULES.map(r=>
+   '<label class="rule"><input type="checkbox" data-rule="'+r[0]+'"'+(S.rules[r[0]]?" checked":"")+'>'+
+   '<span><span class="t">'+r[1]+'</span><span class="d">'+r[2]+'</span></span></label>').join("");
+}
+function renderQuality(){
+  const unk={};
+  DATA.locs.forEach(L=>L.g.forEach(g=>g.s.forEach(s=>{if(!look(s[0]))(unk[s[0]]=unk[s[0]]||[]).push(L.name);})));
+  const approx={};
+  DATA.locs.forEach(L=>L.g.forEach(g=>g.s.forEach(s=>{const sp=look(s[0]);if(sp&&sp.approx)approx[s[0]]=1;})));
+  const keys=Object.keys(unk).sort(),ak=Object.keys(approx).sort();
+  let h="";
+  if(!keys.length)h='<div class="alert ok">Todos los nombres de la hoja se reconocen. '+Object.keys(SPECIES).length+' especies cargadas.</div>';
+  else h='<div class="alert warn"><b>'+keys.length+' nombre(s) sin reconocer</b> — no entran en la cláusula de duplicados.<ul>'+
+    keys.map(k=>{const s=suggest(k);return '<li><b>'+esc(k)+'</b> ('+unk[k].length+')'+
+      (s?' → ¿<b>'+esc(s)+'</b>? <button class="mini" data-fix="'+esc(k)+'" data-to="'+esc(s)+'">Corregir</button>':'')+'</li>';}).join("")+'</ul></div>';
+  if(ak.length)h+='<div class="alert info"><b>'+ak.length+' forma(s) sin catalogar</b> — uso los tipos de la especie base. Corrígelas con un parche si el hackrom les cambia el tipo.<br><span class="muted">'+ak.map(esc).join(" · ")+'</span></div>';
+  const empty=DATA.locs.filter(L=>!L.g.length);
+  if(empty.length)h+='<div class="alert info"><b>'+empty.length+' ubicaciones sin tabla</b><br><span class="muted">'+empty.map(e=>esc(e.name)).join(" · ")+'</span></div>';
+  document.getElementById("quality").innerHTML=h;
+}
+/* Devuelve las ranuras existentes de ESTE juego, con su recuento.
+   Se leen del propio localStorage: clave "nzt_<id>" la principal y
+   "nzt_<id>__<nombre>" las demás.                                    */
+function listSlots(){
+  const pre="nzt_"+BASEID,out=[];
+  try{
+    Object.keys(localStorage).forEach(k=>{
+      if(k===pre)out.push({name:"",key:k});
+      else if(k.indexOf(pre+"__")===0)out.push({name:k.slice(pre.length+2),key:k});
+    });
+  }catch(e){}
+  if(!out.some(s=>s.name===SLOT))out.push({name:SLOT,key:storageKey(),nueva:true});
+  out.forEach(s=>{
+    s.n=0;s.m=0;
+    try{const o=JSON.parse(localStorage.getItem(s.key)||"{}");
+      s.n=Object.keys(o.picks||{}).length;s.m=(o.manual||[]).length;}catch(e){}
+  });
+  out.sort((a,b)=>a.name.localeCompare(b.name));
+  return out;
+}
+function renderSlot(){
+  document.getElementById("slot").value="";
+  document.getElementById("slotList").innerHTML=listSlots().map(s=>{
+    const on=s.name===SLOT;
+    return '<div class="slotrow'+(on?" on":"")+'">'+
+      '<span class="nm">'+(s.name?esc(s.name):"principal")+'</span>'+
+      '<span class="ct">'+s.n+' rutas · '+s.m+' a mano'+(s.nueva?' · sin guardar aún':'')+'</span>'+
+      '<span class="spacer"></span>'+
+      (on?'<span class="tag ok">en uso</span>'
+         :'<button class="mini" data-slot="'+esc(s.name)+'">Abrir</button>')+
+      '<button class="mini danger" data-delslot="'+esc(s.name)+'">Borrar</button></div>';
+  }).join("");
+  document.getElementById("slotInfo").innerHTML=memOnly
+    ? "El navegador ha bloqueado el almacenamiento: no puedo listar ni guardar ranuras."
+    : "Guardando en <code>"+esc(storageKey())+"</code>";
+}
+
+/* --- rutas huérfanas -------------------------------------------------------
+   Si regeneras el tracker y una ruta cambia de nombre o desaparece, la elección
+   que hiciste en ella sigue guardada pero ya no tiene dónde enseñarse. No se
+   borra nunca: se avisa y tú decides si pasarla a captura manual u olvidarla. */
+function huerfanas(){
+  const vivas=new Set(DATA.locs.map(L=>L.name));
+  return Object.keys(S.picks||{}).filter(k=>!vivas.has(k)&&S.picks[k]&&!S.picks[k].none&&S.picks[k].sp);
+}
+function renderHuerf(){
+  const el=document.getElementById("huerfWarn");if(!el)return;
+  const h=huerfanas();
+  if(!h.length){el.innerHTML="";return;}
+  el.innerHTML='<div class="alert warn" style="margin-top:9px"><b>'+h.length+
+    (h.length===1?' ruta guardada ya no existe':' rutas guardadas ya no existen')+
+    ' en este tracker.</b> Seguramente el hackrom se ha regenerado con otros nombres de zona. '+
+    'No he borrado nada: <ul style="margin:6px 0 8px 18px">'+
+    h.map(k=>'<li>'+esc(k)+' — <b>'+esc(S.picks[k].sp)+'</b>'+(S.picks[k].lv?' Nv '+esc(S.picks[k].lv):"")+
+      (S.picks[k].dead?' <span class="muted">(muerto)</span>':"")+'</li>').join("")+
+    '</ul><button id="bHuerfPasar">Pasarlas a capturas manuales</button> '+
+    '<button id="bHuerfOlvidar" class="danger">Olvidarlas</button></div>';
+  document.getElementById("bHuerfPasar").onclick=()=>{
+    huerfanas().forEach(k=>{const p=S.picks[k];
+      (S.manual=S.manual||[]).push({id:mid++,sp:p.sp,lv:p.lv||"",dead:!!p.dead,origin:k,nick:p.nick||"",nodupe:false});
+      delete S.picks[k];});
+    save();renderAll();toast("Rutas antiguas pasadas a capturas manuales");};
+  document.getElementById("bHuerfOlvidar").onclick=()=>{
+    if(!confirm("¿Seguro? Se pierden esas elecciones y no se pueden recuperar."))return;
+    huerfanas().forEach(k=>delete S.picks[k]);
+    save();renderAll();toast("Rutas antiguas olvidadas");};
+}
+function renderAll(){renderLocs();renderCap();renderRules();renderQuality();warnStore();renderSlot();renderHuerf();
+  document.getElementById("patch").value=S.patch||"";}
+
+/* ---------- 7. EVENTOS ---------- */
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav.tabs button").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll("section.tab").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");document.getElementById("tab-"+b.dataset.tab).classList.add("on");});
+document.getElementById("locs").addEventListener("click",ev=>{
+  const host=ev.target.closest(".loc");if(!host)return;
+  const ln=host.dataset.l,b=ev.target.closest("button");
+  if(!b){if(ev.target.closest(".lh")){open.has(ln)?open.delete(ln):open.add(ln);renderLocs();}return;}
+  const a=b.dataset.a,L=DATA.locs.find(x=>x.name===ln);
+  if(a==="tog"){open.has(ln)?open.delete(ln):open.add(ln);renderLocs();}
+  else if(a==="pick"){
+    const gi=+b.dataset.gi,si=+b.dataset.si,slot=L.g[gi].s[si];
+    S.picks[ln]={sp:slot[0],gi:gi,si:si,lv:slot[2]||"",nick:"",dead:false};
+    open.delete(ln);save();renderAll();toast(slot[0]+" registrado");
+  }
+  else if(a==="none"){S.picks[ln]={none:true};open.delete(ln);save();renderAll();}
+  else if(a==="undo"){delete S.picks[ln];open.add(ln);save();renderAll();}
+  else if(a==="rip"){S.picks[ln].dead=!S.picks[ln].dead;save();renderAll();
+    toast(S.picks[ln].dead?"✝ "+S.picks[ln].sp:"Revivido");}
+});
+function findRef(ref){
+  if(ref.indexOf("L|")===0)return{type:"L",key:ref.slice(2)};
+  return{type:"M",key:+ref.slice(2)};
+}
+function capClick(ev){
+  const t=ev.target.closest("[data-team]"),r=ev.target.closest("[data-rip]"),d=ev.target.closest("[data-del]");
+  if(t){const ref=t.dataset.team,i=S.team.indexOf(ref);
+    if(i>-1)S.team.splice(i,1);
+    else{if(S.team.length>=6){toast("Equipo lleno (6)");return;}S.team.push(ref);}
+    save();renderCap();return;}
+  if(r){const f=findRef(r.dataset.rip);
+    if(f.type==="L")S.picks[f.key].dead=!S.picks[f.key].dead;
+    else{const m=S.manual.find(x=>x.id===f.key);if(m)m.dead=!m.dead;}
+    save();renderAll();return;}
+  if(d){const f=findRef(d.dataset.del);
+    if(f.type==="M"&&confirm("¿Borrar esta entrada manual?")){
+      S.manual=S.manual.filter(x=>x.id!==f.key);save();renderAll();}}
+}
+document.getElementById("capGrid").addEventListener("click",capClick);
+document.getElementById("ripGrid").addEventListener("click",capClick);
+document.getElementById("mAdd").onclick=()=>{
+  const sp=document.getElementById("mSp").value.trim(),err=document.getElementById("mErr");
+  if(!sp){err.innerHTML='<div class="alert err">Escribe un Pokémon.</div>';return;}
+  const found=look(sp);
+  if(!found){
+    const s=suggest(sp);
+    err.innerHTML='<div class="alert err"><b>"'+esc(sp)+'" no está en la base.</b>'+
+      (s?' ¿Querías decir <b>'+esc(s)+'</b>?':' Revisa el nombre, o añádelo con un parche.')+
+      ' <button class="mini" id="mForce">Añadir igualmente</button></div>';
+    document.getElementById("mForce").onclick=()=>addManual(sp);
+    return;
+  }
+  addManual(found.name);
+};
+function addManual(sp){
+  S.manual.push({id:mid++,sp:sp,nick:document.getElementById("mNick").value.trim(),
+    lv:document.getElementById("mLv").value.trim(),origin:document.getElementById("mOri").value,
+    dead:false,nodupe:document.getElementById("mNoDupe").checked});
+  document.getElementById("mSp").value="";document.getElementById("mNick").value="";
+  document.getElementById("mLv").value="";document.getElementById("mErr").innerHTML="";
+  save();renderAll();toast(sp+" añadido");
+}
+document.getElementById("quality").addEventListener("click",ev=>{
+  const b=ev.target.closest("[data-fix]");if(!b)return;
+  S.patch=(S.patch?S.patch+"\n":"")+b.dataset.fix+" = "+b.dataset.to;
+  buildDex();save();renderAll();toast(b.dataset.fix+" → "+b.dataset.to);
+});
+document.getElementById("q").oninput=renderLocs;
+document.getElementById("fmode").onchange=renderLocs;
+document.getElementById("bHide").onclick=e=>{hideBlocked=!hideBlocked;
+  e.target.textContent="Ocultar bloqueados: "+(hideBlocked?"SÍ":"NO");renderLocs();};
+document.getElementById("bExpand").onclick=()=>{DATA.locs.forEach(L=>open.add(L.name));renderLocs();};
+document.getElementById("bCollapse").onclick=()=>{open.clear();renderLocs();};
+document.getElementById("rules").addEventListener("change",ev=>{
+  const el=ev.target;if(!el.dataset.rule)return;
+  S.rules[el.dataset.rule]=el.checked;buildDex();save();renderAll();});
+document.getElementById("bPatch").onclick=()=>{
+  S.patch=document.getElementById("patch").value;
+  buildDex();
+  const res=applyPatchTextReport(S.patch);
+  const ok=res.filter(r=>r.ok),bad=res.filter(r=>!r.ok);
+  let h="";
+  if(ok.length)h+='<div class="alert ok"><b>'+ok.length+' cambio(s) aplicados</b><ul>'+
+    ok.map(r=>'<li>línea '+r.n+': '+esc(r.msg)+'</li>').join("")+'</ul></div>';
+  if(bad.length)h+='<div class="alert err"><b>'+bad.length+' línea(s) con error</b> — se ignoran, el resto sí se aplica.<ul>'+
+    bad.map(r=>'<li>línea '+r.n+' <code>'+esc(r.txt)+'</code> → '+esc(r.msg)+'</li>').join("")+'</ul></div>';
+  if(!res.length)h='<div class="alert info">No había ninguna instrucción que aplicar.</div>';
+  document.getElementById("patchOut").innerHTML=h;
+  save();renderAll();
+};
+/* recalcula el informe sin volver a mutar dos veces */
+function applyPatchTextReport(txt){buildDexNoPatch();const r=applyPatchText(txt);registerForms();return r;}
+function buildDexNoPatch(){
+  SPECIES={};FAMILIES=[];FORMS={};ALIAS={};
+  parseDexText(DEX_BASE);
+  FORMS_RAW.split(/[\n|]/).forEach(l=>{l=l.trim();if(!l)return;const p=l.split(":");if(p.length<3)return;
+    const nm=p[0].trim(),ty=p[1].trim().split("").map(c=>TCODE[c]).filter(Boolean),base=p[2].trim();
+    if(nm&&ty.length)FORMS[norm(nm)]={name:nm,types:ty,base:base};});
+  ALIAS_RAW.split(/[\n|]/).forEach(l=>{const p=l.split("=");if(p.length===2)ALIAS[norm(p[0])]=p[1].trim();});
+}
+document.getElementById("bPatchClr").onclick=()=>{S.patch="";document.getElementById("patch").value="";
+  document.getElementById("patchOut").innerHTML="";buildDex();save();renderAll();toast("Parches eliminados");};
+document.getElementById("bReset").onclick=()=>{if(!confirm("¿Borrar todas tus elecciones de esta partida?"))return;
+  S.picks={};S.manual=[];S.team=[];save();renderAll();toast("Partida reiniciada");};
+function switchSlot(s){
+  if(s===SLOT){toast("Ya estás en esa ranura");return;}
+  save();                       /* guarda la ranura actual antes de saltar */
+  SLOT=s;
+  try{localStorage.setItem("nztslot_"+BASEID,SLOT);}catch(e){memOnly=true;}
+  S=freshState();mid=1;loadS();buildDex();renderAll();
+  toast(SLOT?"Ranura: "+SLOT:"Ranura principal");
+}
+function delSlot(name){
+  const n=name||"principal";
+  if(!confirm('¿Borrar la ranura "'+n+'" y toda su partida?\nEsto no se puede deshacer.'))return;
+  try{localStorage.removeItem("nzt_"+BASEID+(name?"__"+name:""));}catch(e){}
+  if(name===SLOT){                /* si borras en la que estás, te saca de ella */
+    S=freshState();mid=1;
+    if(name){SLOT="";try{localStorage.setItem("nztslot_"+BASEID,"");}catch(e){}loadS();}
+    buildDex();
+  }
+  renderAll();toast('Ranura "'+n+'" borrada');
+}
+document.getElementById("bSlot").onclick=()=>{
+  const raw=document.getElementById("slot").value.trim();
+  const s=raw.replace(/[^A-Za-z0-9_-]/g,"");
+  if(raw&&!s){alert("El nombre de la ranura solo admite letras, números, guion y guion bajo.");return;}
+  if(!raw){toast("Escribe un nombre, o pulsa Abrir en la lista");return;}
+  switchSlot(s);
+};
+document.getElementById("slot").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("bSlot").click();});
+document.getElementById("slotList").addEventListener("click",ev=>{
+  const a=ev.target.closest("[data-slot]"),d=ev.target.closest("[data-delslot]");
+  if(a)switchSlot(a.dataset.slot);
+  else if(d)delSlot(d.dataset.delslot);
+});
+
+/* ---------- 8. EXPORTACIÓN ---------- */
+function dl(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;
+ document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},600);}
+document.getElementById("bSaveJ").onclick=()=>{dl(new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),
+ "partida-"+norm(DATA.game).slice(0,18)+".json");toast("Partida guardada");};
+document.getElementById("bLoadJ").onclick=()=>document.getElementById("fj").click();
+document.getElementById("fj").onchange=ev=>{const f=ev.target.files[0];if(!f)return;const rd=new FileReader();
+ rd.onload=()=>{try{const o=JSON.parse(rd.result);
+   if(!o||typeof o!=="object"||(!o.picks&&!o.manual))throw new Error("no parece una partida de este tracker");
+   S=Object.assign(S,o,{rules:Object.assign(S.rules,o.rules||{})});
+   (S.manual||[]).forEach(m=>{if(m.id>=mid)mid=m.id+1;});
+   buildDex();save();renderAll();toast("Partida cargada");
+ }catch(e){alert("No he podido cargar el archivo:\n"+e.message);}ev.target.value="";};
+ rd.readAsText(f);};
+document.getElementById("bCsv").onclick=()=>{
+  let c="Ubicacion,Pokemon,Mote,Nivel,Metodo,Estado\n";
+  DATA.locs.forEach(L=>{const p=S.picks[L.name];
+    const mm=p&&p.gi!=null&&L.g[p.gi]?L.g[p.gi].m:"";
+    c+=[L.name,p?(p.none?"-":p.sp):"",p&&p.nick?p.nick:"",p&&p.lv?p.lv:"",mm,
+        p?(p.none?"Sin captura":(p.dead?"Muerto":"Vivo")):"Pendiente"]
+      .map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")+"\n";});
+  (S.manual||[]).forEach(m=>{c+=['(manual) '+m.origin,m.sp,m.nick||"",m.lv||"",m.origin,m.dead?"Muerto":"Vivo"]
+    .map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")+"\n";});
+  dl(new Blob(["﻿"+c],{type:"text/csv;charset=utf-8"}),"resumen.csv");toast("CSV exportado");};
+
+/* ---------- ARRANQUE ---------- */
+loadS();buildDex();renderAll();
+window.NZ={S:()=>S,DATA:()=>DATA,SPECIES:()=>SPECIES,FAMILIES:()=>FAMILIES,look:look,eff:eff,
+ owned:owned,blockedIn:blockedIn,norm:norm,applyPatchText:applyPatchText,
+ parseTypeList:parseTypeList,buildDex:buildDex};
+</script>
+</body>
+</html>

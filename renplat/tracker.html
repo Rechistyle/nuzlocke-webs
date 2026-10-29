@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuzlocke · Pokémon Renegade Platinum</title>
+<style>
+:root{--ink:#101820;--box:#f8f8f0;--box-2:#e8e8d8;--bin:#3860a8;--bg-1:#182848;--bg-2:#283860;
+--accent:#f8d030;--red:#d02828;--green:#38a038}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Courier New",ui-monospace,Menlo,Consolas,monospace;font-weight:700;
+ background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 2px,rgba(0,0,0,0) 2px 4px),
+ linear-gradient(160deg,var(--bg-1) 0%,var(--bg-2) 60%,#101830 100%);
+ background-attachment:fixed;color:var(--ink);min-height:100vh;padding:12px;font-size:13px;line-height:1.45}
+.box{background:var(--box);border:3px solid var(--ink);
+ box-shadow:inset 0 0 0 3px var(--bin),inset 0 0 0 6px var(--box),4px 4px 0 rgba(0,0,0,.55);
+ padding:13px 15px;margin-bottom:13px}
+h1,h2{letter-spacing:1px;text-transform:uppercase}
+h1{font-size:18px}
+h2{font-size:14px;border-bottom:3px solid var(--ink);padding-bottom:5px;margin-bottom:11px;
+ display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wrap{max-width:1180px;margin:0 auto}
+header.hdr{display:flex;justify-content:space-between;align-items:center;gap:13px;flex-wrap:wrap}
+.hdr small{display:block;font-size:11px;letter-spacing:0;text-transform:none;color:#48607f;margin-top:3px}
+.counters{display:flex;gap:6px;flex-wrap:wrap}
+.counter{background:var(--ink);color:var(--box);padding:5px 9px;border:2px solid var(--ink);
+ box-shadow:2px 2px 0 rgba(0,0,0,.5);font-size:10px;text-align:center;min-width:62px}
+.counter b{display:block;font-size:15px;color:var(--accent);line-height:1.2}
+.counter.g b{color:#7ce87c}.counter.r b{color:#ff8a8a}
+button{font-family:inherit;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.6px;
+ background:var(--box-2);color:var(--ink);border:2px solid var(--ink);padding:6px 11px;cursor:pointer;box-shadow:2px 2px 0 #000}
+button:hover{background:var(--accent)}
+button:active{transform:translate(2px,2px);box-shadow:0 0 0 #000}
+button.primary{background:var(--bin);color:#fff}button.primary:hover{background:#5080d0}
+button.danger{background:var(--red);color:#fff}button.danger:hover{background:#f04848}
+button.mini{font-size:10px;padding:2px 7px;box-shadow:1px 1px 0 #000}
+button:disabled{opacity:.35;cursor:not-allowed}
+input,select,textarea{font-family:inherit;font-weight:700;font-size:12px;background:#fff;color:var(--ink);
+ border:2px solid var(--ink);padding:4px 6px;width:100%}
+input:focus,select:focus,textarea:focus{outline:3px solid var(--accent);outline-offset:-1px}
+label.fld{display:block;font-size:10px;text-transform:uppercase;color:#48607f;margin-bottom:3px}
+.field{margin-bottom:8px}.inline{display:flex;gap:7px;flex-wrap:wrap;align-items:flex-end}
+.inline .field{margin-bottom:0}
+nav.tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:-3px;position:relative;z-index:2}
+nav.tabs button{border-bottom-width:3px;padding:8px 15px;font-size:12px;background:var(--bg-2);color:#c8d8f0}
+nav.tabs button.on{background:var(--box);color:var(--ink);border-bottom-color:var(--box);box-shadow:2px -2px 0 #000}
+section.tab{display:none}section.tab.on{display:block}
+.type{display:inline-block;padding:1px 5px;font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:#fff;
+ border:2px solid var(--ink);text-shadow:1px 1px 0 rgba(0,0,0,.55);white-space:nowrap}
+.types{display:inline-flex;gap:3px;vertical-align:middle}
+.tag{display:inline-block;padding:1px 5px;font-size:9px;border:2px solid var(--ink);text-transform:uppercase}
+.tag.err{background:var(--red);color:#fff}.tag.form{background:#6848a8;color:#fff}
+.loc{border:3px solid var(--ink);background:var(--box);margin-bottom:9px;box-shadow:3px 3px 0 rgba(0,0,0,.4)}
+.loc.done{background:#dcf0dc}.loc.none{background:#e8e8e8}.loc.rip{background:#efdcdc}
+.loc.empty{opacity:.55}
+.loc>.lh{display:flex;align-items:center;gap:9px;padding:7px 10px;cursor:pointer;flex-wrap:wrap;border-bottom:3px solid transparent}
+.loc.open>.lh{border-bottom-color:var(--ink)}
+.loc .chk{width:19px;height:19px;flex:0 0 19px;border:2px solid var(--ink);background:#fff;text-align:center;line-height:15px;font-size:13px}
+.loc.done .chk{background:var(--green);color:#fff}.loc.none .chk{background:#909090;color:#fff}
+.loc.rip .chk{background:#803030;color:#fff}
+.loc .lname{font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+.loc .pick{font-size:12px;background:var(--ink);color:var(--accent);padding:2px 8px;border:2px solid var(--ink)}
+.loc .pick.no{background:#707070;color:#fff}.loc .pick.dead{background:#803030;color:#fff;text-decoration:line-through}
+.loc .avail{font-size:10px;color:#586878;font-weight:400;text-transform:none;letter-spacing:0}
+.loc .sp{flex:1}
+.lb{padding:9px 10px 11px;display:none}.loc.open .lb{display:block}
+.meth{margin-bottom:9px}
+.meth h4{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;background:var(--bin);color:#fff;
+ padding:3px 7px;border:2px solid var(--ink);display:flex;justify-content:space-between;gap:8px}
+.meth h4 span{font-weight:400;letter-spacing:0;text-transform:none;font-size:10px;opacity:.9}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:3px;margin-top:4px}
+.slot{display:flex;align-items:center;gap:6px;border:2px solid var(--ink);background:#fff;padding:2px 5px;font-size:11px}
+.slot .pc{background:var(--ink);color:var(--accent);padding:1px 4px;font-size:10px;flex:0 0 36px;text-align:center}
+.slot .lv{color:#586878;font-size:10px;font-weight:400;flex:0 0 auto;white-space:nowrap}
+.slot .nm{flex:1 1 auto;min-width:88px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot .types,.slot button{flex:0 0 auto}
+.slot.blocked{background:#dcdcdc;color:#909090;text-decoration:line-through}
+.slot.blocked .pc{background:#a0a0a0;color:#e8e8e8}
+.slot.blocked .type{filter:grayscale(1) opacity(.55)}
+.slot.chosen{background:var(--accent);border-width:3px}
+.slot.unknown .nm{color:var(--red)}
+.locfoot{display:flex;gap:6px;flex-wrap:wrap;border-top:2px dashed #b0b8c0;padding-top:8px;margin-top:4px}
+.alert{border:3px solid var(--ink);padding:8px 11px;margin-bottom:11px;font-size:11px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
+.alert.warn{background:var(--accent)}.alert.err{background:#ffc0c0}.alert.info{background:#c8dcf8}
+.alert.ok{background:#c0f0c0}
+.alert ul{margin:5px 0 0 17px;font-weight:400}
+.muted{color:#68788a;font-size:11px;font-weight:400;letter-spacing:0;text-transform:none}
+.spacer{flex:1}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:8px}
+.card{border:2px solid var(--ink);background:var(--box-2);padding:7px;box-shadow:2px 2px 0 rgba(0,0,0,.35)}
+.card.team{background:var(--accent)}
+.card.dead{background:#e0cccc;border-color:#803030}
+.card.dead .nm{text-decoration:line-through;color:#803030}
+.card .nm{font-size:12px;text-transform:uppercase}
+.card .rt{font-size:10px;color:#48607f;font-weight:400}
+.card .btns{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.cov{width:100%;border-collapse:collapse;font-size:10px}
+.cov th,.cov td{border:2px solid var(--ink);padding:3px 4px;text-align:center;background:#fff}
+.cov th.rowh{text-align:left;padding:0;width:100px}
+.cov th.colh{font-size:9px;writing-mode:vertical-rl;transform:rotate(180deg);padding:5px 2px;background:var(--ink);color:var(--box)}
+.cov td{min-width:44px}
+.cov td.m4{background:#a01818;color:#fff}.cov td.m2{background:#f06060;color:#fff}
+.cov td.m1{background:#fff;color:#a8b0b8}.cov td.mh{background:#a0d8a0}
+.cov td.mq{background:#48a048;color:#fff}.cov td.m0{background:#404850;color:#fff}
+.cov td.sum{background:var(--box-2);width:60px}.cov td.sum.bad{background:#f0a0a0}.cov td.sum.good{background:#a8e0a8}
+.cov-wrap{overflow-x:auto}
+.legend{display:flex;gap:9px;flex-wrap:wrap;font-size:10px;margin-top:7px}
+.legend i{display:inline-block;width:12px;height:12px;border:2px solid var(--ink);vertical-align:-2px;margin-right:3px}
+.rule{border:2px solid var(--ink);background:var(--box-2);padding:7px 9px;display:flex;gap:8px;align-items:flex-start}
+.rule input{width:18px;height:18px;flex:0 0 18px;margin-top:1px;accent-color:#3860a8}
+.slotrow{display:flex;align-items:center;gap:8px;border:2px solid var(--ink);background:#fff;
+ padding:4px 7px;margin-bottom:4px;font-size:11px;flex-wrap:wrap}
+.slotrow.on{background:var(--accent)}
+.slotrow .nm{text-transform:uppercase;letter-spacing:.5px;min-width:108px}
+.slotrow .ct{font-weight:400;color:#586878;font-size:10px}
+.rule .t{display:block;font-size:11px;text-transform:uppercase}
+.rule .d{display:block;font-size:10px;color:#586878;font-weight:400;text-transform:none;margin-top:2px}
+#toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--ink);color:var(--accent);
+ border:3px solid var(--accent);padding:8px 16px;font-size:12px;text-transform:uppercase;letter-spacing:1px;
+ box-shadow:3px 3px 0 rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .18s;z-index:99}
+#toast.on{opacity:1}
+footer{text-align:center;color:#8fa4c4;font-size:10px;font-weight:400;padding:5px 0 15px}
+code{background:#e0e4e8;padding:0 3px;border:1px solid #b0b8c0;font-size:11px}
+@media (max-width:640px){body{padding:6px}.slots{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="nzt-fuera"><nav class="nzt-nav"><style>nav.nzt-nav{box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;gap:6px;height:50px;width:100%;margin:0;padding:0 12px;overflow-x:auto;overflow-y:hidden;white-space:nowrap;background:#2a3550;border-bottom:2px solid #1b2338;text-align:left;font-family:Verdana,Arial,sans-serif}nav.nzt-nav .nzt-marca{flex:none;margin-right:8px;color:#fff;font-size:14px;font-weight:700;text-shadow:none}nav.nzt-nav a.nzt-b{flex:none;box-sizing:border-box;padding:8px 14px;border:1px solid #aeb8d0;border-radius:5px;background:#e8ecf6;color:#2a3550;font-size:13px;font-weight:700;line-height:1;text-decoration:none;text-shadow:none}nav.nzt-nav a.nzt-b:hover,nav.nzt-nav a.nzt-b:focus-visible{background:#fff;color:#2a3550;text-decoration:none;outline:2px solid #fff;outline-offset:1px}nav.nzt-nav a.nzt-b.on{background:#fff;box-shadow:inset 0 -3px 0 #c0392b}body{margin-top:0}@media (max-width:720px){nav.nzt-nav .nzt-marca{display:none}}</style><span class="nzt-marca">Pokémon Renegade Platinum</span><a class="nzt-b" href="index.html">Pokédex</a><a class="nzt-b" href="calculadora/index.html">Calculator</a><a class="nzt-b" href="src/roark_split.html">Trainer Sheet</a><a class="nzt-b on" aria-current="page" href="tracker.html">Tracker</a><a class="nzt-b" href="documentos.html">Documentos</a></nav></div><style>.nzt-fuera{margin:-12px -12px 12px}@media (max-width:640px){.nzt-fuera{margin:-6px -6px 6px}}</style>
+<div class="wrap">
+
+  <div class="box">
+    <header class="hdr">
+      <div><h1>▶ <span id="hGame">Pokémon Renegade Platinum</span></h1><small id="hSub">—</small></div>
+      <div class="counters">
+        <div class="counter g"><b id="cAlive">0</b>Vivos</div>
+        <div class="counter r"><b id="cDead">0</b>Muertos</div>
+        <div class="counter"><b id="cMark">0</b>Marcadas</div>
+        <div class="counter"><b id="cLeft">0</b>Pendientes</div>
+        <div class="counter"><b id="cPct">0%</b>Progreso</div>
+      </div>
+    </header>
+  </div>
+
+  <nav class="tabs">
+    <button data-tab="enc" class="on">Encuentros</button>
+    <button data-tab="cap">Equipo y capturados</button>
+    <button data-tab="rip">R.I.P.</button>
+    <button data-tab="dat">Datos</button>
+  </nav>
+
+  <section class="tab on" id="tab-enc">
+    <div class="box">
+      <div class="inline" style="margin-bottom:10px">
+        <div class="field" style="flex:2;min-width:170px">
+          <label class="fld">Buscar ubicación o Pokémon</label>
+          <input id="q" placeholder="ej. Route 110, Ralts…">
+        </div>
+        <div class="field" style="min-width:158px">
+          <label class="fld">Mostrar</label>
+          <select id="fmode">
+            <option value="all">Todas las ubicaciones</option>
+            <option value="pend">Solo pendientes</option>
+            <option value="done">Solo resueltas</option>
+            <option value="stuck">Sin opciones libres</option>
+          </select>
+        </div>
+        <button id="bHide">Ocultar bloqueados: NO</button>
+        <button id="bExpand">Desplegar</button>
+        <button id="bCollapse">Plegar</button>
+      </div>
+      <div id="locs"></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-cap">
+    <div class="box">
+      <h2>Añadir a mano <span class="muted">— intercambios, shinies, regalos, huevos</span></h2>
+      <div class="inline">
+        <div class="field" style="flex:1;min-width:150px">
+          <label class="fld">Pokémon</label>
+          <input id="mSp" list="dexList" placeholder="ej. Vulpix-A">
+        </div>
+        <div class="field" style="min-width:110px"><label class="fld">Mote</label><input id="mNick"></div>
+        <div class="field" style="width:70px"><label class="fld">Nivel</label><input id="mLv"></div>
+        <div class="field" style="min-width:130px">
+          <label class="fld">Origen</label>
+          <select id="mOri"><option>Intercambio</option><option>Shiny</option><option>Regalo</option>
+            <option>Huevo</option><option>Estático</option><option>Otro</option></select>
+        </div>
+        <label class="rule" style="margin-bottom:0"><input type="checkbox" id="mNoDupe">
+          <span class="t">Sin dupes</span></label>
+        <button id="mAdd" class="primary">+ Añadir</button>
+      </div>
+      <p class="muted" style="margin-top:7px">«Sin dupes» = este Pokémon no bloquea a su línea evolutiva en las rutas. Útil para un shiny que capturaste además del encuentro normal.</p>
+      <div id="mErr"></div>
+    </div>
+
+    <div class="box">
+      <h2>Vivos <span class="muted" id="capCount"></span><span class="spacer"></span>
+        <span class="muted">Marca hasta 6 como equipo</span></h2>
+      <div class="grid" id="capGrid"></div>
+    </div>
+
+    <div class="box">
+      <h2>Cobertura defensiva del equipo</h2>
+      <div class="cov-wrap"><table class="cov" id="cov"></table></div>
+      <div class="legend"><span><i style="background:#a01818"></i>x4</span><span><i style="background:#f06060"></i>x2</span>
+      <span><i style="background:#fff"></i>x1</span><span><i style="background:#a0d8a0"></i>x½</span>
+      <span><i style="background:#48a048"></i>x¼</span><span><i style="background:#404850"></i>Inmune</span></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-rip">
+    <div class="box">
+      <h2>✝ Cementerio <span class="muted" id="ripCount"></span></h2>
+      <p class="muted" style="margin-bottom:10px">Los caídos siguen bloqueando a su línea evolutiva en las rutas mientras la regla «los muertos siguen bloqueando» esté activa en Datos.</p>
+      <div class="grid" id="ripGrid"></div>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-dat">
+    <div class="box">
+      <h2>Guardar y exportar</h2>
+      <div class="inline">
+        <button id="bSaveJ">⭳ Guardar partida (JSON)</button>
+        <button id="bLoadJ">⭱ Cargar partida (JSON)</button>
+        <button id="bCsv">⭳ Resumen .csv</button>
+        <button id="bReset" class="danger">✖ Reiniciar partida</button>
+      </div>
+      <input type="file" id="fj" accept=".json" style="display:none">
+      <p class="muted" style="margin-top:8px">Cargar un JSON solo repone <b>tus elecciones</b>; las tablas de encuentros de este archivo no se tocan nunca. Para otro hackrom, genera otro tracker con el generador.</p>
+      <div id="storeWarn"></div>
+      <div id="huerfWarn"></div>
+    </div>
+
+    <div class="box">
+      <h2>Ranura de guardado</h2>
+      <p class="muted">La partida <b>no vive dentro del .html</b>: vive en el almacenamiento del navegador, bajo una clave derivada del nombre del juego — <b>no</b> del nombre del archivo ni de la carpeta. Por eso, si regeneras o duplicas este tracker, la partida te sigue. Usa una ranura distinta para llevar dos partidas del mismo juego en paralelo.</p>
+      <div id="slotList" style="margin-top:9px"></div>
+      <div class="inline" style="margin-top:9px">
+        <div class="field" style="flex:1;min-width:190px">
+          <label class="fld">Crear o abrir otra ranura</label>
+          <input id="slot" placeholder="ej. run2">
+        </div>
+        <button id="bSlot" class="primary">Ir a esa ranura</button>
+      </div>
+      <p class="muted" id="slotInfo" style="margin-top:7px"></p>
+    </div>
+
+    <div class="box">
+      <h2>Reglas</h2>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))" id="rules"></div>
+    </div>
+
+    <div class="box">
+      <h2>Parches de especies</h2>
+      <div class="alert info" style="margin-bottom:9px">
+        <b>Cómo se escribe</b><br>
+        <span class="muted">
+        · Cambiar tipos: <code>Gengar: Fantasma/Hada</code> &nbsp;o&nbsp; <code>Gengar:DH</code><br>
+        · Unir una línea evolutiva: <code>Wurmple:B, Silcoon:B, Beautifly:B/9</code><br>
+        · Corregir un nombre mal escrito: <code>Dunsprace = Dunsparce</code><br>
+        Una instrucción por línea. Se admiten nombres de tipo en español o inglés, y los códigos de una letra.
+        </span>
+      </div>
+      <div class="field">
+        <textarea id="patch" rows="5" placeholder="Gengar: Fantasma/Hada&#10;Dunsprace = Dunsparce"></textarea>
+      </div>
+      <button id="bPatch" class="primary">Aplicar y comprobar</button>
+      <button id="bPatchClr">Quitar todos</button>
+      <div id="patchOut" style="margin-top:9px"></div>
+    </div>
+
+    <div class="box">
+      <h2>Revisión de datos</h2>
+      <div id="quality"></div>
+    </div>
+  </section>
+
+  <footer>Tracker local · sin conexión · generado con Nuzlocke Factory</footer>
+</div>
+<datalist id="dexList"></datalist>
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================================
+   TRACKER NUZLOCKE — archivo único, sin dependencias.
+   Secciones:
+     1  Tipos y tabla de efectividad
+     2  Base de especies, formas regionales y alias
+     3  Datos de encuentros (los inyecta el generador)
+     4  Estado y persistencia
+     5  Lógica nuzlocke (dupes, muertos, disponibilidad)
+     6  Render
+     7  Eventos
+     8  Exportación JSON / CSV
+   ============================================================================ */
+
+/* ---------- 1. TIPOS ---------- */
+const TYPES=["Normal","Fire","Water","Electric","Grass","Ice","Fighting","Poison","Ground","Flying","Psychic","Bug","Rock","Ghost","Dragon","Dark","Steel","Fairy"];
+const TCODE={"0":"Normal","1":"Fire","2":"Water","3":"Electric","4":"Grass","5":"Ice","6":"Fighting","7":"Poison","8":"Ground","9":"Flying","A":"Psychic","B":"Bug","C":"Rock","D":"Ghost","E":"Dragon","F":"Dark","G":"Steel","H":"Fairy"};
+const CODEOF={};for(const k in TCODE)CODEOF[TCODE[k]]=k;
+const ES={Normal:"Normal",Fire:"Fuego",Water:"Agua",Electric:"Eléctrico",Grass:"Planta",Ice:"Hielo",Fighting:"Lucha",Poison:"Veneno",Ground:"Tierra",Flying:"Volador",Psychic:"Psíquico",Bug:"Bicho",Rock:"Roca",Ghost:"Fantasma",Dragon:"Dragón",Dark:"Siniestro",Steel:"Acero",Fairy:"Hada"};
+const TCOL={Normal:"#A8A878",Fire:"#F08030",Water:"#6890F0",Electric:"#D8A800",Grass:"#78C850",Ice:"#5FAFAF",Fighting:"#C03028",Poison:"#A040A0",Ground:"#B08828",Flying:"#8878D8",Psychic:"#F85888",Bug:"#8A9810",Rock:"#907828",Ghost:"#705898",Dragon:"#7038F8",Dark:"#705848",Steel:"#7878A0",Fairy:"#D8709C"};
+const CHART={Normal:{0.5:["Rock","Steel"],0:["Ghost"]},Fire:{2:["Grass","Ice","Bug","Steel"],0.5:["Fire","Water","Rock","Dragon"]},
+Water:{2:["Fire","Ground","Rock"],0.5:["Water","Grass","Dragon"]},Electric:{2:["Water","Flying"],0.5:["Electric","Grass","Dragon"],0:["Ground"]},
+Grass:{2:["Water","Ground","Rock"],0.5:["Fire","Grass","Poison","Flying","Bug","Dragon","Steel"]},Ice:{2:["Grass","Ground","Flying","Dragon"],0.5:["Fire","Water","Ice","Steel"]},
+Fighting:{2:["Normal","Ice","Rock","Dark","Steel"],0.5:["Poison","Flying","Psychic","Bug","Fairy"],0:["Ghost"]},Poison:{2:["Grass","Fairy"],0.5:["Poison","Ground","Rock","Ghost"],0:["Steel"]},
+Ground:{2:["Fire","Electric","Poison","Rock","Steel"],0.5:["Grass","Bug"],0:["Flying"]},Flying:{2:["Grass","Fighting","Bug"],0.5:["Electric","Rock","Steel"]},
+Psychic:{2:["Fighting","Poison"],0.5:["Psychic","Steel"],0:["Dark"]},Bug:{2:["Grass","Psychic","Dark"],0.5:["Fire","Fighting","Poison","Flying","Ghost","Steel","Fairy"]},
+Rock:{2:["Fire","Ice","Flying","Bug"],0.5:["Fighting","Ground","Steel"]},Ghost:{2:["Psychic","Ghost"],0.5:["Dark"],0:["Normal"]},
+Dragon:{2:["Dragon"],0.5:["Steel"],0:["Fairy"]},Dark:{2:["Psychic","Ghost"],0.5:["Fighting","Dark","Fairy"]},
+Steel:{2:["Ice","Rock","Fairy"],0.5:["Fire","Water","Electric","Steel"]},Fairy:{2:["Fighting","Dragon","Dark"],0.5:["Fire","Poison","Steel"]}};
+function eff(a,ds){let m=1;const c=CHART[a];for(const d of ds){if(c[0]&&c[0].indexOf(d)>-1)return 0;
+ if(c[2]&&c[2].indexOf(d)>-1)m*=2;else if(c[0.5]&&c[0.5].indexOf(d)>-1)m*=0.5;}return m;}
+
+/* ---------- 2. ESPECIES / FORMAS / ALIAS ----------
+   DEX_BASE: familias separadas por "|", miembros por ",", cada uno "Nombre:CÓDIGOS".
+             Una familia = una línea evolutiva = la unidad de la cláusula de duplicados.
+   FORMS   : "Nombre-Sufijo:CÓDIGOS:EspecieBase" — una por línea. Tipos propios.
+   ALIAS   : "MalEscrito=Correcto" — erratas frecuentes, se resuelven solas.        */
+const DEX_BASE=`Abra:A,Kadabra:A,Alakazam:A|
+Aerodactyl:C9|
+Ekans:7,Arbok:7|
+Growlithe:1,Arcanine:1|
+Articuno:59|
+Weedle:B7,Kakuna:B7,Beedrill:B7|
+Bellsprout:47,Weepinbell:47,Victreebel:47|
+Squirtle:2,Wartortle:2,Blastoise:2|
+Bulbasaur:47,Ivysaur:47,Venusaur:47|
+Caterpie:B,Metapod:B,Butterfree:B9|
+Happiny:0,Chansey:0,Blissey:0|
+Charmander:1,Charmeleon:1,Charizard:1E|
+Cleffa:H,Clefairy:H,Clefable:H|
+Shellder:2,Cloyster:25|
+Cubone:8,Marowak:8|
+Seel:2,Dewgong:25|
+Diglett:8,Dugtrio:8|
+Ditto:0|
+Doduo:09,Dodrio:09|
+Dratini:E,Dragonair:E,Dragonite:E9|
+Drowzee:A,Hypno:A|
+Eevee:0,Vaporeon:2,Jolteon:3,Flareon:1,Espeon:A,Umbreon:F,Leafeon:4,Glaceon:5|
+Elekid:3,Electabuzz:3,Electivire:36|
+Voltorb:3,Electrode:3|
+Exeggcute:4A,Exeggutor:4A|
+Farfetch’d:69|
+Spearow:09,Fearow:09|
+Gastly:D7,Haunter:D7,Gengar:D7|
+Geodude:C8,Graveler:C8,Golem:C8|
+Oddish:47,Gloom:47,Vileplume:47,Bellossom:4|
+Zubat:79,Golbat:79,Crobat:79|
+Goldeen:2,Seaking:2|
+Psyduck:2,Golduck:2A|
+Grimer:7,Muk:7|
+Magikarp:2,Gyarados:29|
+Tyrogue:6,Hitmonlee:6,Hitmonchan:6,Hitmontop:6|
+Horsea:2,Seadra:2,Kingdra:2E|
+Igglybuff:0H,Jigglypuff:0H,Wigglytuff:0H|
+Smoochum:5A,Jynx:5A|
+Kabuto:C2,Kabutops:C2|
+Kangaskhan:0|
+Krabby:2,Kingler:2|
+Koffing:7,Weezing:7|
+Lapras:25|
+Lickitung:0,Lickilicky:0|
+Machop:6,Machoke:6,Machamp:6|
+Magby:1,Magmar:1,Magmortar:1|
+Magnemite:3G,Magneton:3G,Magnezone:3G|
+Mankey:6,Primeape:6|
+Meowth:0,Persian:0|
+Mew:A|
+Mewtwo:A|
+Moltres:19|
+Mime Jr.:AH,Mr. Mime:AH|
+Nidoran-M:7,Nidorino:7,Nidoking:78|
+Nidoran-F:7,Nidorina:7,Nidoqueen:78|
+Vulpix:1,Ninetales:1H|
+Omanyte:C2,Omastar:C2|
+Onix:C8,Steelix:G8|
+Paras:B4,Parasect:B4|
+Pidgey:09,Pidgeotto:09,Pidgeot:09|
+Pichu:3,Pikachu:3,Raichu:3|
+Pinsir:B|
+Poliwag:2,Poliwhirl:2,Poliwrath:26,Politoed:2|
+Ponyta:1,Rapidash:1|
+Porygon:0,Porygon2:0,Porygon-Z:0|
+Rattata:0,Raticate:0|
+Rhyhorn:8C,Rhydon:8C,Rhyperior:8C|
+Sandshrew:8,Sandslash:8|
+Scyther:B9,Scizor:BG|
+Slowpoke:2A,Slowbro:2A,Slowking:2A|
+Munchlax:0,Snorlax:0|
+Staryu:2,Starmie:2A|
+Tangela:4,Tangrowth:4|
+Tauros:0|
+Tentacool:27,Tentacruel:27|
+Venonat:B7,Venomoth:B7|
+Zapdos:39|
+Aipom:0,Ambipom:0|
+Mareep:3,Flaaffy:3,Ampharos:3E|
+Spinarak:B7,Ariados:B7|
+Azurill:0H,Marill:2H,Azumarill:2H|
+Chikorita:4,Bayleef:4,Meganium:4H|
+Celebi:A4|
+Chinchou:23,Lanturn:23|
+Corsola:2C|
+Totodile:2,Croconaw:2,Feraligatr:2F|
+Cyndaquil:1,Quilava:1,Typhlosion:1|
+Delibird:59|
+Phanpy:8,Donphan:8|
+Dunsparce:0|
+Entei:1|
+Pineco:B,Forretress:BG|
+Sentret:0,Furret:0|
+Girafarig:0A|
+Gligar:89,Gliscor:89|
+Snubbull:H,Granbull:H|
+Heracross:B6|
+Ho-Oh:19|
+Hoothoot:09,Noctowl:A9|
+Hoppip:49,Skiploom:49,Jumpluff:49|
+Houndour:F1,Houndoom:F1|
+Larvitar:C8,Pupitar:C8,Tyranitar:CF|
+Ledyba:B9,Ledian:B9|
+Lugia:A9|
+Slugma:1,Magcargo:1C|
+Mantyke:29,Mantine:29|
+Miltank:0|
+Misdreavus:DH,Mismagius:DH|
+Murkrow:F9,Honchkrow:F9|
+Natu:A9,Xatu:A9|
+Remoraid:2,Octillery:2|
+Swinub:58,Piloswine:58,Mamoswine:58|
+Wooper:28,Quagsire:28|
+Qwilfish:27|
+Raikou:3|
+Shuckle:BC|
+Skarmory:G9|
+Smeargle:0|
+Sneasel:F5,Weavile:F5|
+Stantler:0|
+Bonsly:C,Sudowoodo:C|
+Suicune:2|
+Sunkern:4,Sunflora:4|
+Teddiursa:0,Ursaring:0|
+Togepi:H,Togetic:H9,Togekiss:H9|
+Unown:A|
+Wynaut:A,Wobbuffet:A|
+Yanma:B9,Yanmega:B9|
+Absol:F|
+Aron:GC,Lairon:GC,Aggron:GC|
+Swablu:H9,Altaria:EH|
+Anorith:CB,Armaldo:CB|
+Bagon:E,Shelgon:E,Salamence:E9|
+Baltoy:8A,Claydol:8A|
+Shuppet:D,Banette:D|
+Barboach:28,Whiscash:28|
+Wurmple:B,Silcoon:B,Beautifly:B9,Cascoon:B,Dustox:B7|
+Beldum:GA,Metang:GA,Metagross:GA|
+Torchic:1,Combusken:16,Blaziken:16|
+Shroomish:4,Breloom:46|
+Cacnea:4,Cacturne:4F|
+Numel:18,Camerupt:18|
+Carvanha:2F,Sharpedo:2F|
+Castform:0|
+Chingling:A,Chimecho:A|
+Clamperl:2,Huntail:2,Gorebyss:2|
+Corphish:2,Crawdaunt:2F|
+Lileep:C4,Cradily:C4|
+Skitty:0,Delcatty:0|
+Deoxys:A|
+Duskull:D,Dusclops:D,Dusknoir:D|
+Electrike:3,Manectric:3|
+Whismur:0,Loudred:0,Exploud:0|
+Feebas:2,Milotic:2H|
+Trapinch:B8,Vibrava:BE,Flygon:BE|
+Ralts:AH,Kirlia:AH,Gardevoir:AH,Gallade:A6|
+Snorunt:5,Glalie:5C,Froslass:5D|
+Groudon:8|
+Treecko:4,Grovyle:4,Sceptile:4E|
+Spoink:A,Grumpig:A|
+Gulpin:7,Swalot:7|
+Makuhita:6,Hariyama:6|
+Illumise:BH|
+Jirachi:GA|
+Kecleon:0|
+Kyogre:2|
+Latias:EA|
+Latios:EA|
+Zigzagoon:0,Linoone:0|
+Lotad:24,Lombre:24,Ludicolo:24|
+Lunatone:CA|
+Luvdisc:2H|
+Mudkip:2,Marshtomp:28,Swampert:28|
+Surskit:B2,Masquerain:B2|
+Mawile:GH|
+Meditite:6A,Medicham:6A|
+Poochyena:F,Mightyena:F|
+Minun:3|
+Nincada:B8,Ninjask:B9,Shedinja:BD|
+Nosepass:C,Probopass:CG|
+Seedot:4,Nuzleaf:4F,Shiftry:4F|
+Wingull:29,Pelipper:29|
+Plusle:3|
+Rayquaza:E9|
+Regice:5|
+Regirock:C|
+Registeel:G|
+Relicanth:2C|
+Budew:47,Roselia:47,Roserade:47|
+Sableye:FD|
+Spheal:52,Sealeo:52,Walrein:52|
+Seviper:7F|
+Slakoth:0,Vigoroth:0,Slaking:0|
+Solrock:CA|
+Spinda:0|
+Taillow:09,Swellow:09|
+Torkoal:1|
+Tropius:49|
+Volbeat:B3|
+Wailmer:2,Wailord:2|
+Zangoose:0|
+Snover:54,Abomasnow:54|
+Arceus:0|
+Privatyke:26,Arghonaut:26|
+Azelf:AH|
+Shieldon:CG,Bastiodon:CG|
+Bidoof:0,Bibarel:02|
+Breezi:79,Fidgit:78|
+Bronzor:GA,Bronzong:GA|
+Buizel:2,Floatzel:2|
+Buneary:0,Lopunny:06|
+Burmy:B,Wormadam:B4,Mothim:B9|
+Carnivine:4|
+Chatot:09|
+Cherubi:4,Cherrim:4|
+Chimchar:1,Monferno:16,Infernape:16|
+Dorsoil:8,Colossoil:8F|
+Combee:B9,Vespiquen:B9|
+Cranidos:C,Rampardos:C|
+Cresselia:A|
+Croagunk:76,Toxicroak:76|
+Monohm:3,Duohm:3E,Cyclohm:3E|
+Darkrai:F|
+Dialga:GE|
+Skorupi:7B,Drapion:7F|
+Drifloon:D9,Drifblim:D9|
+Embirch:14,Flarelm:14,Pyroak:14|
+Piplup:2,Prinplup:2,Empoleon:2G|
+Finneon:2,Lumineon:2|
+Gible:E8,Gabite:E8,Garchomp:E8|
+Shellos:2,Gastrodon:28|
+Giratina:DE|
+Glameow:0,Purugly:0|
+Turtwig:4,Grotle:4,Torterra:48|
+Heatran:1G|
+Hippopotas:8,Hippowdon:8|
+Nohface:D,Kitsunoh:DG|
+Kricketot:B,Kricketune:B|
+Protowatt:32,Krilowatt:32|
+Riolu:6,Lucario:6G|
+Shinx:3,Luxio:3,Luxray:3F|
+Manaphy:2|
+Mesprit:AH|
+Pachirisu:3|
+Palkia:2E|
+Phione:2|
+Rebble:C,Tactite:C,Stratagem:C|
+Regigigas:0|
+Revenankh:D6|
+Rotom:3D|
+Shaymin:4|
+Stunky:7F,Skuntank:7F|
+Spiritomb:DF|
+Starly:09,Staravia:09,Staraptor:09|
+Syclar:5B,Syclant:5B|
+Uxie:AH|
+Voodoll:0F,Voodoom:6F`;
+const FORMS_RAW=`Castform-Rainy:2:Castform
+Castform-Snowy:5:Castform
+Castform-Sunny:1:Castform
+Deoxys-Attack:A:Deoxys
+Deoxys-Defense:A:Deoxys
+Deoxys-Speed:A:Deoxys
+Arceus-Bug:B:Arceus
+Arceus-Dark:F:Arceus
+Arceus-Dragon:E:Arceus
+Arceus-Electric:3:Arceus
+Arceus-Fighting:6:Arceus
+Arceus-Fire:1:Arceus
+Arceus-Flying:9:Arceus
+Arceus-Ghost:D:Arceus
+Arceus-Grass:4:Arceus
+Arceus-Ground:8:Arceus
+Arceus-Ice:5:Arceus
+Arceus-Poison:7:Arceus
+Arceus-Psychic:A:Arceus
+Arceus-Rock:C:Arceus
+Arceus-Steel:G:Arceus
+Arceus-Water:2:Arceus
+Cherrim-Sunshine:4:Cherrim
+Giratina-Origin:DE:Giratina
+Pichu-Spiky-eared:3:Pichu
+Rotom-Mow:34:Rotom
+Rotom-Frost:35:Rotom
+Rotom-Heat:31:Rotom
+Rotom-Fan:39:Rotom
+Rotom-Wash:32:Rotom
+Shaymin-Sky:49:Shaymin
+Wormadam-Sandy:B8:Wormadam
+Wormadam-Trash:BG:Wormadam`;
+const ALIAS_RAW=``;
+
+/* ---------- 3. DATOS DE ENCUENTROS (inyectados) ---------- */
+const DATA={"game":"Pokémon Renegade Platinum","id":"renplat","locs":[{"name":"Starter","g":[{"m":"Especial","s":[["Turtwig",33.3,""],["Chimchar",33.3,""],["Piplup",33.3,""]]}]},{"name":"Twinleaf Town","g":[{"m":"Surf","s":[["Psyduck",90,"20-40"],["Golduck",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Poliwag",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Poliwag",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Poliwhirl",35,"50"]]}]},{"name":"Route 201","g":[{"m":"Mañana","s":[["Starly",30,"4-5"],["Bidoof",30,"4-5"],["Pidgey",10,"4-5"],["Kricketot",10,"4-5"],["Nidoran-M",10,"4-5"],["Nidoran-F",10,"4-5"]]},{"m":"Día","s":[["Starly",30,"4-5"],["Bidoof",30,"4-5"],["Pidgey",20,"4-5"],["Nidoran-M",10,"4-5"],["Nidoran-F",10,"4-5"]]},{"m":"Noche","s":[["Starly",30,"4-5"],["Bidoof",30,"4-5"],["Hoothoot",10,"4-5"],["Kricketot",10,"4-5"],["Nidoran-M",10,"4-5"],["Nidoran-F",10,"4-5"]]},{"m":"Poké Radar","s":[["Doduo",22,"4-5"]]}]},{"name":"Lake Verity","g":[{"m":"Mañana","s":[["Starly",30,"4-5"],["Bidoof",20,"4-5"],["Surskit",20,"4-5"],["Azurill",10,"4-5"],["Psyduck",10,"4-5"],["Wingull",10,"4-5"]]},{"m":"Día","s":[["Starly",30,"4-5"],["Bidoof",20,"4-5"],["Surskit",20,"4-5"],["Azurill",10,"4-5"],["Psyduck",10,"4-5"],["Wingull",10,"4-5"]]},{"m":"Noche","s":[["Starly",30,"4-5"],["Bidoof",20,"4-5"],["Surskit",20,"4-5"],["Azurill",10,"4-5"],["Psyduck",10,"4-5"],["Wingull",10,"4-5"]]},{"m":"Poké Radar","s":[["Wynaut",22,"4-5"]]},{"m":"Surf","s":[["Surskit",90,"20-40"],["Masquerain",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10"]]},{"m":"Caña buena","s":[["Magikarp",100,"25"]]},{"m":"Súper caña","s":[["Gyarados",100,"50"]]}]},{"name":"Route 202","g":[{"m":"Mañana","s":[["Shinx",20,"5-6"],["Zigzagoon",20,"5-6"],["Sentret",20,"5-6"],["Rattata",10,"5-6"],["Poochyena",10,"5-6"],["Growlithe",10,"5-6"],["Burmy",10,"5-6"]]},{"m":"Día","s":[["Shinx",20,"5-6"],["Zigzagoon",20,"5-6"],["Sentret",20,"5-6"],["Rattata",10,"5-6"],["Poochyena",10,"5-6"],["Growlithe",10,"5-6"],["Burmy",10,"5-6"]]},{"m":"Noche","s":[["Shinx",20,"5-6"],["Zigzagoon",20,"5-6"],["Hoothoot",20,"5-6"],["Rattata",10,"5-6"],["Poochyena",10,"5-6"],["Growlithe",10,"5-6"],["Burmy",10,"5-6"]]},{"m":"Poké Radar","s":[["Houndour",22,"5-6"]]}]},{"name":"Route 204 ~ South","g":[{"m":"Mañana","s":[["Starly",20,"6-7"],["Budew",20,"6-7"],["Bellsprout",10,"6-7"],["Ralts",10,"6-7"],["Caterpie",10,"6-7"],["Weedle",10,"6-7"],["Wurmple",10,"6-7"],["Ledyba",10,"6-7"]]},{"m":"Día","s":[["Starly",20,"6-7"],["Budew",20,"6-7"],["Bellsprout",10,"6-7"],["Ralts",10,"6-7"],["Caterpie",10,"6-7"],["Weedle",10,"6-7"],["Wurmple",10,"6-7"],["Sunkern",10,"6-7"]]},{"m":"Noche","s":[["Starly",20,"6-7"],["Budew",20,"6-7"],["Bellsprout",10,"6-7"],["Ralts",10,"6-7"],["Caterpie",10,"6-7"],["Weedle",10,"6-7"],["Oddish",10,"6-7"],["Spinarak",10,"6-7"]]},{"m":"Poké Radar","s":[["Roselia",22,"6-7"]]},{"m":"Surf","s":[["Marill",90,"20-40"],["Azumarill",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Goldeen",30,"10"],["Corphish",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Goldeen",30,"25"],["Corphish",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Seaking",30,"50"],["Crawdaunt",10,"50"]]}]},{"name":"Ravaged Path","g":[{"m":"Mañana","s":[["Zubat",30,"6-8"],["Geodude",20,"6-8"],["Wooper",20,"6-8"],["Psyduck",10,"6-8"],["Sandshrew",10,"6-8"],["Makuhita",10,"6-8"]]},{"m":"Día","s":[["Zubat",30,"6-8"],["Geodude",20,"6-8"],["Wooper",20,"6-8"],["Psyduck",10,"6-8"],["Sandshrew",10,"6-8"],["Makuhita",10,"6-8"]]},{"m":"Noche","s":[["Zubat",30,"6-8"],["Geodude",20,"6-8"],["Wooper",20,"6-8"],["Psyduck",10,"6-8"],["Sandshrew",10,"6-8"],["Makuhita",10,"6-8"]]},{"m":"Surf","s":[["Wooper",90,"20-40"],["Quagsire",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Barboach",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Barboach",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Whiscash",35,"50"]]}]},{"name":"Route 203","g":[{"m":"Mañana","s":[["Starly",25,"7-8"],["Bidoof",20,"7-8"],["Spearow",15,"7-8"],["Seedot",10,"7-8"],["Lotad",10,"7-8"],["Cubone",10,"7-8"],["Abra",10,"7-8"]]},{"m":"Día","s":[["Starly",25,"7-8"],["Bidoof",20,"7-8"],["Spearow",15,"7-8"],["Seedot",10,"7-8"],["Lotad",10,"7-8"],["Cubone",10,"7-8"],["Abra",10,"7-8"]]},{"m":"Noche","s":[["Starly",25,"7-8"],["Bidoof",20,"7-8"],["Spearow",15,"7-8"],["Seedot",10,"7-8"],["Lotad",10,"7-8"],["Cubone",10,"7-8"],["Abra",10,"7-8"]]},{"m":"Poké Radar","s":[["Pineco",22,"7-8"]]},{"m":"Surf","s":[["Psyduck",90,"20-40"],["Golduck",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Corphish",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Corphish",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Crawdaunt",35,"50"]]}]},{"name":"Oreburgh Gate ~ 1F","g":[{"m":"Mañana","s":[["Zubat",35,"7-9"],["Geodude",35,"7-9"],["Diglett",20,"7-9"],["Riolu",10,"7-9"]]},{"m":"Día","s":[["Zubat",35,"7-9"],["Geodude",35,"7-9"],["Diglett",20,"7-9"],["Riolu",10,"7-9"]]},{"m":"Noche","s":[["Zubat",35,"7-9"],["Geodude",35,"7-9"],["Diglett",20,"7-9"],["Riolu",10,"7-9"]]}]},{"name":"Oreburgh Gate ~ B1F","g":[{"m":"Mañana","s":[["Zubat",35,"8-10"],["Geodude",35,"8-10"],["Diglett",20,"8-10"],["Riolu",10,"8-10"]]},{"m":"Día","s":[["Zubat",35,"8-10"],["Geodude",35,"8-10"],["Diglett",20,"8-10"],["Riolu",10,"8-10"]]},{"m":"Noche","s":[["Zubat",35,"8-10"],["Geodude",35,"8-10"],["Diglett",20,"8-10"],["Riolu",10,"8-10"]]},{"m":"Surf","s":[["Zubat",90,"20-40"],["Golbat",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Barboach",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Barboach",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Whiscash",35,"50"]]}]},{"name":"Route 207","g":[{"m":"Mañana","s":[["Machop",30,"9-10"],["Rhyhorn",20,"9-10"],["Ponyta",20,"9-10"],["Phanpy",20,"9-10"],["Larvitar",10,"9-10"]]},{"m":"Día","s":[["Machop",30,"9-10"],["Rhyhorn",20,"9-10"],["Ponyta",20,"9-10"],["Phanpy",20,"9-10"],["Larvitar",10,"9-10"]]},{"m":"Noche","s":[["Machop",30,"9-10"],["Rhyhorn",20,"9-10"],["Ponyta",20,"9-10"],["Phanpy",20,"9-10"],["Larvitar",10,"9-10"]]},{"m":"Poké Radar","s":[["Stantler",22,"9-10"]]},{"m":"Árbol de miel","s":[["Aipom",30,"21"],["Slakoth",20,"21"],["Metapod",20,"21"],["Kakuna",20,"21"],["Munchlax",10,"21"]]}]},{"name":"Oreburgh Mine ~ 1F","g":[{"m":"Mañana","s":[["Geodude",25,"9-10"],["Zubat",25,"9-10"],["Whismur",20,"9-10"],["Aron",10,"9-10"],["Onix",10,"9-10"],["Trapinch",10,"9-10"]]},{"m":"Día","s":[["Geodude",25,"9-10"],["Zubat",25,"9-10"],["Whismur",20,"9-10"],["Aron",10,"9-10"],["Onix",10,"9-10"],["Trapinch",10,"9-10"]]},{"m":"Noche","s":[["Geodude",25,"9-10"],["Zubat",25,"9-10"],["Whismur",20,"9-10"],["Aron",10,"9-10"],["Onix",10,"9-10"],["Trapinch",10,"9-10"]]}]},{"name":"Oreburgh Mine ~ B1F","g":[{"m":"Mañana","s":[["Geodude",25,"10-11"],["Zubat",25,"10-11"],["Whismur",20,"10-11"],["Aron",10,"10-11"],["Onix",10,"10-11"],["Trapinch",10,"10-11"]]},{"m":"Día","s":[["Geodude",25,"10-11"],["Zubat",25,"10-11"],["Whismur",20,"10-11"],["Aron",10,"10-11"],["Onix",10,"10-11"],["Trapinch",10,"10-11"]]},{"m":"Noche","s":[["Geodude",25,"10-11"],["Zubat",25,"10-11"],["Whismur",20,"10-11"],["Aron",10,"10-11"],["Onix",10,"10-11"],["Trapinch",10,"10-11"]]}]},{"name":"Route 204 ~ North","g":[{"m":"Mañana","s":[["Starly",20,"11-12"],["Budew",20,"11-12"],["Bellsprout",10,"11-12"],["Ralts",10,"11-12"],["Caterpie",10,"11-12"],["Weedle",10,"11-12"],["Wurmple",10,"11-12"],["Ledyba",10,"11-12"]]},{"m":"Día","s":[["Starly",20,"11-12"],["Budew",20,"11-12"],["Bellsprout",10,"11-12"],["Ralts",10,"11-12"],["Caterpie",10,"11-12"],["Weedle",10,"11-12"],["Wurmple",10,"11-12"],["Sunkern",10,"11-12"]]},{"m":"Noche","s":[["Starly",20,"11-12"],["Budew",20,"11-12"],["Bellsprout",10,"11-12"],["Ralts",10,"11-12"],["Caterpie",10,"11-12"],["Weedle",10,"11-12"],["Oddish",10,"11-12"],["Spinarak",10,"11-12"]]},{"m":"Poké Radar","s":[["Roselia",22,"11-12"]]}]},{"name":"Valley Windworks","g":[{"m":"Mañana","s":[["Magnemite",20,"11-13"],["Elekid",20,"11-13"],["Electrike",20,"11-13"],["Voltorb",20,"11-13"],["Drifloon",10,"11-13"],["Pachirisu",10,"11-13"]]},{"m":"Día","s":[["Magnemite",20,"11-13"],["Elekid",20,"11-13"],["Electrike",20,"11-13"],["Voltorb",20,"11-13"],["Drifloon",10,"11-13"],["Pachirisu",10,"11-13"]]},{"m":"Noche","s":[["Magnemite",20,"11-13"],["Elekid",20,"11-13"],["Electrike",20,"11-13"],["Voltorb",20,"11-13"],["Drifloon",10,"11-13"],["Pachirisu",10,"11-13"]]},{"m":"Poké Radar","s":[["Plusle",11,"11-13"],["Minun",11,"11-13"]]},{"m":"Surf","s":[["Shellos",60,"20-40"],["Tentacool",30,"20-40"],["Gastrodon",5,"20-40"],["Tentacruel",5,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Shellder",30,"10"],["Chinchou",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Shellder",30,"25"],["Chinchou",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Cloyster",30,"50"],["Lanturn",10,"50"]]},{"m":"Árbol de miel","s":[["Aipom",30,"12"],["Slakoth",20,"12"],["Caterpie",20,"12"],["Weedle",20,"12"],["Munchlax",10,"12"]]}]},{"name":"Floaroma Meadow","g":[{"m":"Árbol de miel","s":[["Cherubi",30,"12"],["Shroomish",20,"12"],["Exeggcute",20,"12"],["Seedot",20,"12"],["Tangela",10,"12"]]}]},{"name":"Route 205 ~ South","g":[{"m":"Mañana","s":[["Shellos",30,"11-13"],["Mareep",20,"11-13"],["Buizel",20,"11-13"],["Hoppip",20,"11-13"],["Pachirisu",10,"11-13"]]},{"m":"Día","s":[["Shellos",30,"11-13"],["Mareep",20,"11-13"],["Buizel",20,"11-13"],["Hoppip",20,"11-13"],["Pachirisu",10,"11-13"]]},{"m":"Noche","s":[["Shellos",30,"11-13"],["Mareep",20,"11-13"],["Buizel",20,"11-13"],["Venonat",20,"11-13"],["Pachirisu",10,"11-13"]]},{"m":"Poké Radar","s":[["Plusle",11,"11-13"],["Minun",11,"11-13"]]},{"m":"Surf","s":[["Shellos",60,"20-40"],["Tentacool",30,"20-40"],["Gastrodon",5,"20-40"],["Tentacruel",5,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Shellder",30,"10"],["Chinchou",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Shellder",30,"25"],["Chinchou",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Cloyster",30,"50"],["Lanturn",10,"50"]]},{"m":"Árbol de miel","s":[["Combee",30,"12"],["Burmy",20,"12"],["Pineco",20,"12"],["Wurmple",20,"12"],["Heracross",10,"12"]]}]},{"name":"Eterna Forest","g":[{"m":"Mañana","s":[["Buneary",30,"14-16"],["Shroomish",20,"14-16"],["Paras",20,"14-16"],["Slakoth",10,"14-16"],["Nincada",10,"14-16"],["Taillow",10,"14-16"]]},{"m":"Día","s":[["Buneary",30,"14-16"],["Shroomish",20,"14-16"],["Paras",20,"14-16"],["Slakoth",10,"14-16"],["Nincada",10,"14-16"],["Taillow",10,"14-16"]]},{"m":"Noche","s":[["Buneary",30,"14-16"],["Shroomish",20,"14-16"],["Murkrow",10,"14-16"],["Misdreavus",10,"14-16"],["Slakoth",10,"14-16"],["Nincada",10,"14-16"],["Taillow",10,"14-16"]]},{"m":"Poké Radar","s":[["Beautifly",11,"14-16"],["Dustox",11,"14-16"]]}]},{"name":"Eterna Forest (Outside)","g":[{"m":"Árbol de miel","s":[["Beedrill",100,"15"]]}]},{"name":"Old Chateau (All Rooms)","g":[{"m":"Mañana","s":[["Gastly",40,"15-18"],["Rattata",30,"15-18"],["Duskull",10,"15-18"],["Shuppet",10,"15-18"],["Raticate",5,"15-18"],["Haunter",5,"15-18"]]},{"m":"Día","s":[["Gastly",40,"15-18"],["Rattata",30,"15-18"],["Duskull",10,"15-18"],["Shuppet",10,"15-18"],["Raticate",5,"15-18"],["Haunter",5,"15-18"]]},{"m":"Noche","s":[["Gastly",40,"15-18"],["Rattata",30,"15-18"],["Duskull",10,"15-18"],["Shuppet",10,"15-18"],["Raticate",5,"15-18"],["Haunter",5,"15-18"]]}]},{"name":"Route 205 ~ North","g":[{"m":"Mañana","s":[["Bidoof",20,"15-17"],["Slowpoke",20,"15-17"],["Marill",20,"15-17"],["Croagunk",10,"15-17"],["Exeggcute",10,"15-17"],["Volbeat",10,"15-17"],["Illumise",10,"15-17"]]},{"m":"Día","s":[["Bidoof",20,"15-17"],["Slowpoke",20,"15-17"],["Marill",20,"15-17"],["Croagunk",10,"15-17"],["Exeggcute",10,"15-17"],["Volbeat",10,"15-17"],["Illumise",10,"15-17"]]},{"m":"Noche","s":[["Bidoof",20,"15-17"],["Slowpoke",20,"15-17"],["Marill",20,"15-17"],["Croagunk",10,"15-17"],["Exeggcute",10,"15-17"],["Volbeat",10,"15-17"],["Illumise",10,"15-17"]]},{"m":"Poké Radar","s":[["Yanma",22,"15-17"]]},{"m":"Surf","s":[["Marill",90,"20-40"],["Azumarill",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Corphish",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Corphish",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Crawdaunt",35,"50"]]},{"m":"Árbol de miel","s":[["Starly",30,"16"],["Pidgey",20,"16"],["Hoothoot",20,"16"],["Taillow",20,"16"],["Farfetch’d",10,"16"]]}]},{"name":"Eterna City","g":[{"m":"Surf","s":[["Psyduck",90,"20-40"],["Golduck",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Poliwag",30,"10"],["Dratini",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Poliwag",30,"25"],["Dratini",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Poliwhirl",30,"50"],["Dragonair",10,"50"]]}]},{"name":"Route 211 ~ West","g":[{"m":"Mañana","s":[["Meditite",30,"16-18"],["Machop",20,"16-18"],["Swablu",20,"16-18"],["Teddiursa",10,"16-18"],["Natu",10,"16-18"],["Chingling",10,"16-18"]]},{"m":"Día","s":[["Meditite",30,"16-18"],["Machop",20,"16-18"],["Swablu",20,"16-18"],["Teddiursa",10,"16-18"],["Natu",10,"16-18"],["Chingling",10,"16-18"]]},{"m":"Noche","s":[["Meditite",30,"16-18"],["Machop",20,"16-18"],["Swablu",20,"16-18"],["Teddiursa",10,"16-18"],["Natu",10,"16-18"],["Chingling",10,"16-18"]]},{"m":"Poké Radar","s":[["Tyrogue",22,"16-18"]]}]},{"name":"Mt. Coronet ~ Route 211 Entrance","g":[{"m":"Mañana","s":[["Geodude",20,"16-18"],["Bronzor",20,"16-18"],["Cleffa",10,"16-18"],["Nosepass",10,"16-18"],["Chingling",10,"16-18"],["Zubat",10,"16-18"],["Beldum",10,"16-18"],["Solrock",5,"16-18"],["Lunatone",5,"16-18"]]},{"m":"Día","s":[["Geodude",20,"16-18"],["Bronzor",20,"16-18"],["Cleffa",10,"16-18"],["Nosepass",10,"16-18"],["Chingling",10,"16-18"],["Zubat",10,"16-18"],["Beldum",10,"16-18"],["Solrock",5,"16-18"],["Lunatone",5,"16-18"]]},{"m":"Noche","s":[["Geodude",20,"16-18"],["Bronzor",20,"16-18"],["Cleffa",10,"16-18"],["Nosepass",10,"16-18"],["Chingling",10,"16-18"],["Zubat",10,"16-18"],["Beldum",10,"16-18"],["Solrock",5,"16-18"],["Lunatone",5,"16-18"]]}]},{"name":"Route 211 ~ East","g":[{"m":"Mañana","s":[["Meditite",30,"18-19"],["Machop",20,"18-19"],["Swablu",20,"18-19"],["Teddiursa",10,"18-19"],["Natu",10,"18-19"],["Bagon",10,"18-19"]]},{"m":"Día","s":[["Meditite",30,"18-19"],["Machop",20,"18-19"],["Swablu",20,"18-19"],["Teddiursa",10,"18-19"],["Natu",10,"18-19"],["Bagon",10,"18-19"]]},{"m":"Noche","s":[["Meditite",30,"18-19"],["Machop",20,"18-19"],["Swablu",20,"18-19"],["Teddiursa",10,"18-19"],["Natu",10,"18-19"],["Bagon",10,"18-19"]]},{"m":"Poké Radar","s":[["Tyrogue",22,"18-19"]]},{"m":"Árbol de miel","s":[["Aipom",30,"18"],["Slakoth",20,"18"],["Metapod",20,"18"],["Kakuna",20,"18"],["Munchlax",10,"18"]]}]},{"name":"Mt. Coronet ~ Tunnel to Route 211 Entrance","g":[{"m":"Mañana","s":[["Geodude",20,"18-19"],["Bronzor",20,"18-19"],["Clefairy",10,"18-19"],["Nosepass",10,"18-19"],["Chimecho",10,"18-19"],["Zubat",10,"18-19"],["Beldum",10,"18-19"],["Solrock",5,"18-19"],["Lunatone",5,"18-19"]]},{"m":"Día","s":[["Geodude",20,"18-19"],["Bronzor",20,"18-19"],["Clefairy",10,"18-19"],["Nosepass",10,"18-19"],["Chimecho",10,"18-19"],["Zubat",10,"18-19"],["Beldum",10,"18-19"],["Solrock",5,"18-19"],["Lunatone",5,"18-19"]]},{"m":"Noche","s":[["Geodude",20,"18-19"],["Bronzor",20,"18-19"],["Clefairy",10,"18-19"],["Nosepass",10,"18-19"],["Chimecho",10,"18-19"],["Zubat",10,"18-19"],["Beldum",10,"18-19"],["Solrock",5,"18-19"],["Lunatone",5,"18-19"]]}]},{"name":"Mt. Coronet ~ B1F","g":[{"m":"Mañana","s":[["Geodude",20,"18-20"],["Bronzor",20,"18-20"],["Clefairy",10,"18-20"],["Nosepass",10,"18-20"],["Chimecho",10,"18-20"],["Zubat",10,"18-20"],["Metang",10,"18-20"],["Solrock",5,"18-20"],["Lunatone",5,"18-20"]]},{"m":"Día","s":[["Geodude",20,"18-20"],["Bronzor",20,"18-20"],["Clefairy",10,"18-20"],["Nosepass",10,"18-20"],["Chimecho",10,"18-20"],["Zubat",10,"18-20"],["Metang",10,"18-20"],["Solrock",5,"18-20"],["Lunatone",5,"18-20"]]},{"m":"Noche","s":[["Geodude",20,"18-20"],["Bronzor",20,"18-20"],["Clefairy",10,"18-20"],["Nosepass",10,"18-20"],["Chimecho",10,"18-20"],["Zubat",10,"18-20"],["Metang",10,"18-20"],["Solrock",5,"18-20"],["Lunatone",5,"18-20"]]},{"m":"Surf","s":[["Spheal",60,"30-45"],["Seel",30,"30-45"],["Sealeo",10,"30-45"]]},{"m":"Caña vieja","s":[["Feebas",100,"10"]]},{"m":"Caña buena","s":[["Feebas",100,"25"]]},{"m":"Súper caña","s":[["Feebas",100,"50"]]}]},{"name":"Mt. Coronet ~ Route 216 Entrance","g":[{"m":"Mañana","s":[["Geodude",20,"18-19"],["Bronzor",20,"18-19"],["Clefairy",10,"18-19"],["Nosepass",10,"18-19"],["Chimecho",10,"18-19"],["Zubat",10,"18-19"],["Beldum",10,"18-19"],["Solrock",5,"18-19"],["Lunatone",5,"18-19"]]},{"m":"Día","s":[["Geodude",20,"18-19"],["Bronzor",20,"18-19"],["Clefairy",10,"18-19"],["Nosepass",10,"18-19"],["Chimecho",10,"18-19"],["Zubat",10,"18-19"],["Beldum",10,"18-19"],["Solrock",5,"18-19"],["Lunatone",5,"18-19"]]},{"m":"Noche","s":[["Geodude",20,"18-19"],["Bronzor",20,"18-19"],["Clefairy",10,"18-19"],["Nosepass",10,"18-19"],["Chimecho",10,"18-19"],["Zubat",10,"18-19"],["Beldum",10,"18-19"],["Solrock",5,"18-19"],["Lunatone",5,"18-19"]]}]},{"name":"Route 216","g":[{"m":"Mañana","s":[["Snover",30,"18-20"],["Swinub",25,"18-20"],["Smoochum",20,"18-20"],["Snorunt",15,"18-20"],["Sneasel",10,"18-20"]]},{"m":"Día","s":[["Snover",30,"18-20"],["Swinub",25,"18-20"],["Smoochum",20,"18-20"],["Snorunt",15,"18-20"],["Sneasel",10,"18-20"]]},{"m":"Noche","s":[["Snover",30,"18-20"],["Swinub",25,"18-20"],["Smoochum",20,"18-20"],["Snorunt",15,"18-20"],["Sneasel",10,"18-20"]]},{"m":"Poké Radar","s":[["Delibird",22,"18-20"]]}]},{"name":"Route 206","g":[{"m":"Mañana","s":[["Stunky",20,"20-22"],["Slugma",20,"20-22"],["Mankey",20,"20-22"],["Magby",10,"20-22"],["Spoink",10,"20-22"],["Numel",10,"20-22"],["Gligar",10,"20-22"]]},{"m":"Día","s":[["Stunky",20,"20-22"],["Slugma",20,"20-22"],["Mankey",20,"20-22"],["Magby",10,"20-22"],["Spoink",10,"20-22"],["Numel",10,"20-22"],["Gligar",10,"20-22"]]},{"m":"Noche","s":[["Stunky",20,"20-22"],["Slugma",20,"20-22"],["Mankey",20,"20-22"],["Magby",10,"20-22"],["Spoink",10,"20-22"],["Numel",10,"20-22"],["Gligar",10,"20-22"]]},{"m":"Poké Radar","s":[["Torkoal",22,"20-22"]]},{"m":"Árbol de miel","s":[["Combee",30,"21"],["Burmy",20,"21"],["Pineco",20,"21"],["Silcoon",10,"21"],["Cascoon",10,"21"],["Heracross",10,"21"]]}]},{"name":"Wayward Cave (Both)","g":[{"m":"Mañana","s":[["Zubat",20,"20-22"],["Geodude",20,"20-22"],["Gible",20,"20-22"],["Baltoy",10,"20-22"],["Sandshrew",10,"20-22"],["Onix",10,"20-22"],["Sableye",5,"20-22"],["Mawile",5,"20-22"]]},{"m":"Día","s":[["Zubat",20,"20-22"],["Geodude",20,"20-22"],["Gible",20,"20-22"],["Baltoy",10,"20-22"],["Sandshrew",10,"20-22"],["Onix",10,"20-22"],["Sableye",5,"20-22"],["Mawile",5,"20-22"]]},{"m":"Noche","s":[["Zubat",20,"20-22"],["Geodude",20,"20-22"],["Gible",20,"20-22"],["Baltoy",10,"20-22"],["Sandshrew",10,"20-22"],["Onix",10,"20-22"],["Sableye",5,"20-22"],["Mawile",5,"20-22"]]}]},{"name":"Mt. Coronet ~ Route 207 Entrance","g":[{"m":"Mañana","s":[["Geodude",20,"22-23"],["Bronzor",20,"22-23"],["Clefairy",10,"22-23"],["Nosepass",10,"22-23"],["Chimecho",10,"22-23"],["Golbat",10,"22-23"],["Metang",10,"22-23"],["Solrock",5,"22-23"],["Lunatone",5,"22-23"]]},{"m":"Día","s":[["Geodude",20,"22-23"],["Bronzor",20,"22-23"],["Clefairy",10,"22-23"],["Nosepass",10,"22-23"],["Chimecho",10,"22-23"],["Golbat",10,"22-23"],["Metang",10,"22-23"],["Solrock",5,"22-23"],["Lunatone",5,"22-23"]]},{"m":"Noche","s":[["Geodude",20,"22-23"],["Bronzor",20,"22-23"],["Clefairy",10,"22-23"],["Nosepass",10,"22-23"],["Chimecho",10,"22-23"],["Golbat",10,"22-23"],["Metang",10,"22-23"],["Solrock",5,"22-23"],["Lunatone",5,"22-23"]]},{"m":"Surf","s":[["Zubat",90,"20-40"],["Golbat",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Barboach",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Barboach",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Whiscash",35,"50"]]}]},{"name":"Route 208","g":[{"m":"Mañana","s":[["Bibarel",20,"23-24"],["Roselia",20,"23-24"],["Skitty",10,"23-24"],["Jigglypuff",10,"23-24"],["Kirlia",10,"23-24"],["Zangoose",10,"23-24"],["Seviper",10,"23-24"],["Smeargle",10,"23-24"]]},{"m":"Día","s":[["Bibarel",20,"23-24"],["Roselia",20,"23-24"],["Skitty",10,"23-24"],["Jigglypuff",10,"23-24"],["Kirlia",10,"23-24"],["Zangoose",10,"23-24"],["Seviper",10,"23-24"],["Smeargle",10,"23-24"]]},{"m":"Noche","s":[["Bibarel",20,"23-24"],["Roselia",20,"23-24"],["Skitty",10,"23-24"],["Jigglypuff",10,"23-24"],["Kirlia",10,"23-24"],["Zangoose",10,"23-24"],["Seviper",10,"23-24"],["Smeargle",10,"23-24"]]},{"m":"Poké Radar","s":[["Dunsparce",22,"23-24"]]},{"m":"Surf","s":[["Psyduck",90,"20-40"],["Golduck",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Goldeen",30,"10"],["Remoraid",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Goldeen",30,"25"],["Remoraid",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Seaking",30,"50"],["Octillery",10,"50"]]},{"m":"Árbol de miel","s":[["Cherubi",30,"23"],["Shroomish",20,"23"],["Exeggcute",20,"23"],["Seedot",20,"23"],["Tangela",10,"23"]]}]},{"name":"Route 212 ~ North","g":[{"m":"Mañana","s":[["Staravia",30,"24-26"],["Marill",20,"24-26"],["Roselia",10,"24-26"],["Weepinbell",10,"24-26"],["Gloom",10,"24-26"],["Kirlia",10,"24-26"],["Smeargle",10,"24-26"]]},{"m":"Día","s":[["Staravia",30,"24-26"],["Marill",20,"24-26"],["Roselia",10,"24-26"],["Weepinbell",10,"24-26"],["Gloom",10,"24-26"],["Kirlia",10,"24-26"],["Smeargle",10,"24-26"]]},{"m":"Noche","s":[["Staravia",30,"24-26"],["Marill",20,"24-26"],["Roselia",10,"24-26"],["Weepinbell",10,"24-26"],["Gloom",10,"24-26"],["Kirlia",10,"24-26"],["Smeargle",10,"24-26"]]},{"m":"Poké Radar","s":[["Farfetch’d",22,"24-26"]]},{"m":"Surf","s":[["Marill",90,"20-40"],["Azumarill",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Goldeen",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Goldeen",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Seaking",35,"50"]]},{"m":"Árbol de miel","s":[["Cherubi",30,"25"],["Shroomish",20,"25"],["Exeggcute",20,"25"],["Nuzleaf",20,"25"],["Tangela",10,"25"]]}]},{"name":"Trophy Garden","g":[{"m":"Mañana","s":[["Pichu",20,"24-26"],["Pikachu",20,"24-26"],["Cleffa",10,"24-26"],["Igglybuff",10,"24-26"],["Togepi",10,"24-26"],["Porygon",10,"24-26"],["Happiny",10,"24-26"],["Eevee",10,"24-26"]]},{"m":"Día","s":[["Pichu",20,"24-26"],["Pikachu",20,"24-26"],["Cleffa",10,"24-26"],["Igglybuff",10,"24-26"],["Togepi",10,"24-26"],["Porygon",10,"24-26"],["Happiny",10,"24-26"],["Eevee",10,"24-26"]]},{"m":"Noche","s":[["Pichu",20,"24-26"],["Pikachu",20,"24-26"],["Cleffa",10,"24-26"],["Igglybuff",10,"24-26"],["Togepi",10,"24-26"],["Porygon",10,"24-26"],["Happiny",10,"24-26"],["Eevee",10,"24-26"]]},{"m":"Poké Radar","s":[["Castform",22,"24-26"]]}]},{"name":"Route 209","g":[{"m":"Mañana","s":[["Staravia",20,"24-26"],["Glameow",20,"24-26"],["Vulpix",10,"24-26"],["Bonsly",10,"24-26"],["Mime Jr.",10,"24-26"],["Snubbull",10,"24-26"],["Meowth",10,"24-26"],["Chansey",10,"24-26"]]},{"m":"Día","s":[["Staravia",20,"24-26"],["Glameow",20,"24-26"],["Vulpix",10,"24-26"],["Bonsly",10,"24-26"],["Mime Jr.",10,"24-26"],["Snubbull",10,"24-26"],["Meowth",10,"24-26"],["Chansey",10,"24-26"]]},{"m":"Noche","s":[["Staravia",20,"24-26"],["Glameow",20,"24-26"],["Vulpix",10,"24-26"],["Bonsly",10,"24-26"],["Mime Jr.",10,"24-26"],["Snubbull",10,"24-26"],["Meowth",10,"24-26"],["Chansey",10,"24-26"]]},{"m":"Poké Radar","s":[["Purugly",22,"24-26"]]},{"m":"Surf","s":[["Psyduck",90,"20-40"],["Golduck",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Goldeen",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Goldeen",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Seaking",35,"50"]]},{"m":"Árbol de miel","s":[["Staravia",30,"27"],["Pidgeotto",20,"27"],["Noctowl",20,"27"],["Swellow",20,"27"],["Farfetch’d",10,"27"]]}]},{"name":"Lost Tower","g":[{"m":"Mañana","s":[["Shuppet",20,"26-30"],["Duskull",20,"26-30"],["Golbat",15,"26-30"],["Haunter",15,"26-30"],["Murkrow",10,"26-30"],["Misdreavus",10,"26-30"],["Dusclops",5,"26-30"],["Banette",5,"26-30"]]},{"m":"Día","s":[["Shuppet",20,"26-30"],["Duskull",20,"26-30"],["Golbat",15,"26-30"],["Haunter",15,"26-30"],["Murkrow",10,"26-30"],["Misdreavus",10,"26-30"],["Dusclops",5,"26-30"],["Banette",5,"26-30"]]},{"m":"Noche","s":[["Shuppet",20,"26-30"],["Duskull",20,"26-30"],["Golbat",15,"26-30"],["Haunter",15,"26-30"],["Murkrow",10,"26-30"],["Misdreavus",10,"26-30"],["Dusclops",5,"26-30"],["Banette",5,"26-30"]]}]},{"name":"Solaceon Ruins","g":[{"m":"Mañana","s":[["Unown",100,"20-30"]]},{"m":"Día","s":[["Unown",100,"20-30"]]},{"m":"Noche","s":[["Unown",100,"20-30"]]}]},{"name":"Route 210 ~ South","g":[{"m":"Mañana","s":[["Kricketune",20,"28-30"],["Nuzleaf",20,"28-30"],["Scyther",15,"28-30"],["Pinsir",10,"28-30"],["Miltank",10,"28-30"],["Tauros",10,"28-30"],["Pidgeotto",10,"28-30"],["Rapidash",5,"28-30"]]},{"m":"Día","s":[["Kricketune",20,"28-30"],["Nuzleaf",20,"28-30"],["Scyther",15,"28-30"],["Pinsir",10,"28-30"],["Miltank",10,"28-30"],["Tauros",10,"28-30"],["Pidgeotto",10,"28-30"],["Rapidash",5,"28-30"]]},{"m":"Noche","s":[["Kricketune",20,"28-30"],["Nuzleaf",20,"28-30"],["Scyther",15,"28-30"],["Pinsir",10,"28-30"],["Miltank",10,"28-30"],["Tauros",10,"28-30"],["Noctowl",10,"28-30"],["Rapidash",5,"28-30"]]},{"m":"Poké Radar","s":[["Kecleon",22,"28-30"]]},{"m":"Árbol de miel","s":[["Combee",30,"29"],["Pineco",20,"29"],["Silcoon",10,"29"],["Cascoon",10,"29"],["Wormadam",10,"29"],["Mothim",10,"29"],["Heracross",10,"29"]]}]},{"name":"Route 215","g":[{"m":"Mañana","s":[["Marill",25,"27-30"],["Drowzee",20,"27-30"],["Lickitung",15,"27-30"],["Kadabra",15,"27-30"],["Mightyena",10,"27-30"],["Linoone",10,"27-30"],["Hypno",5,"27-30"]]},{"m":"Día","s":[["Marill",25,"27-30"],["Drowzee",20,"27-30"],["Lickitung",15,"27-30"],["Kadabra",15,"27-30"],["Mightyena",10,"27-30"],["Linoone",10,"27-30"],["Hypno",5,"27-30"]]},{"m":"Noche","s":[["Marill",25,"27-30"],["Drowzee",20,"27-30"],["Lickitung",15,"27-30"],["Kadabra",15,"27-30"],["Mightyena",10,"27-30"],["Linoone",10,"27-30"],["Hypno",5,"27-30"]]},{"m":"Poké Radar","s":[["Absol",22,"27-30"]]},{"m":"Árbol de miel","s":[["Aipom",30,"28"],["Vigoroth",20,"28"],["Metapod",20,"28"],["Kakuna",20,"28"],["Munchlax",10,"28"]]}]},{"name":"Route 214","g":[{"m":"Mañana","s":[["Graveler",30,"28-32"],["Houndour",20,"28-32"],["Rhyhorn",15,"28-32"],["Numel",15,"28-32"],["Spoink",10,"28-32"],["Cacnea",10,"28-32"]]},{"m":"Día","s":[["Graveler",30,"28-32"],["Houndour",20,"28-32"],["Rhyhorn",15,"28-32"],["Numel",15,"28-32"],["Spoink",10,"28-32"],["Cacnea",10,"28-32"]]},{"m":"Noche","s":[["Graveler",30,"28-32"],["Houndour",20,"28-32"],["Rhyhorn",15,"28-32"],["Numel",15,"28-32"],["Spoink",10,"28-32"],["Cacnea",10,"28-32"]]},{"m":"Poké Radar","s":[["Spinda",22,"28-32"]]},{"m":"Surf","s":[["Psyduck",90,"20-40"],["Golduck",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Goldeen",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Goldeen",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Seaking",35,"50"]]},{"m":"Árbol de miel","s":[["Aipom",30,"30"],["Vigoroth",20,"30"],["Butterfree",20,"30"],["Beedrill",20,"30"],["Munchlax",10,"30"]]}]},{"name":"Maniac Tunnel","g":[{"m":"Mañana","s":[["Diglett",25,"28-32"],["Whismur",20,"28-32"],["Hippopotas",15,"28-32"],["Trapinch",15,"28-32"],["Loudred",10,"28-32"],["Ditto",10,"28-32"],["Dugtrio",5,"28-32"]]},{"m":"Día","s":[["Diglett",25,"28-32"],["Whismur",20,"28-32"],["Hippopotas",15,"28-32"],["Trapinch",15,"28-32"],["Loudred",10,"28-32"],["Ditto",10,"28-32"],["Dugtrio",5,"28-32"]]},{"m":"Noche","s":[["Diglett",25,"28-32"],["Whismur",20,"28-32"],["Hippopotas",15,"28-32"],["Trapinch",15,"28-32"],["Loudred",10,"28-32"],["Ditto",10,"28-32"],["Dugtrio",5,"28-32"]]}]},{"name":"Valor Lakefront","g":[{"m":"Mañana","s":[["Girafarig",30,"31-33"],["Bibarel",20,"31-33"],["Nidorina",20,"31-33"],["Nidorino",20,"31-33"],["Kricketune",10,"31-33"]]},{"m":"Día","s":[["Girafarig",30,"31-33"],["Bibarel",20,"31-33"],["Nidorina",20,"31-33"],["Nidorino",20,"31-33"],["Kricketune",10,"31-33"]]},{"m":"Noche","s":[["Girafarig",30,"31-33"],["Bibarel",20,"31-33"],["Nidorina",20,"31-33"],["Nidorino",20,"31-33"],["Kricketune",10,"31-33"]]},{"m":"Poké Radar","s":[["Venomoth",22,"31-33"]]}]},{"name":"Route 213","g":[{"m":"Mañana","s":[["Gastrodon",25,"32-34"],["Floatzel",20,"32-34"],["Pelipper",20,"32-34"],["Swellow",20,"32-34"],["Chatot",10,"32-34"],["Shuckle",5,"32-34"]]},{"m":"Día","s":[["Gastrodon",25,"32-34"],["Floatzel",20,"32-34"],["Pelipper",20,"32-34"],["Swellow",20,"32-34"],["Chatot",10,"32-34"],["Shuckle",5,"32-34"]]},{"m":"Noche","s":[["Gastrodon",35,"32-34"],["Floatzel",20,"32-34"],["Pelipper",20,"32-34"],["Swellow",20,"32-34"],["Shuckle",5,"32-34"]]},{"m":"Poké Radar","s":[["Absol",22,"32-34"]]},{"m":"Surf","s":[["Tentacool",60,"20-40"],["Wingull",30,"20-40"],["Tentacruel",5,"20-40"],["Pelipper",5,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Remoraid",30,"10"],["Wailmer",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Remoraid",30,"25"],["Wailmer",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Octillery",30,"50"],["Wailord",10,"50"]]},{"m":"Árbol de miel","s":[["Staravia",30,"33"],["Pidgeotto",20,"33"],["Noctowl",20,"33"],["Swellow",20,"33"],["Farfetch’d",10,"33"]]}]},{"name":"Pastoria City","g":[{"m":"Surf","s":[["Tentacool",60,"20-40"],["Shellos",30,"20-40"],["Tentacruel",5,"20-40"],["Gastrodon",5,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Poliwag",30,"10"],["Carvanha",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Poliwag",30,"25"],["Carvanha",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Poliwhirl",30,"50"],["Sharpedo",10,"50"]]}]},{"name":"Great Marsh ~ Area 1/2","g":[{"m":"Mañana","s":[["Bibarel",30,"33-36"],["Quagsire",20,"33-36"],["Tropius",20,"33-36"],["Tangela",20,"33-36"],["Carnivine",10,"33-36"]]},{"m":"Día","s":[["Bibarel",30,"33-36"],["Quagsire",20,"33-36"],["Tropius",20,"33-36"],["Tangela",20,"33-36"],["Carnivine",10,"33-36"]]},{"m":"Noche","s":[["Bibarel",30,"33-36"],["Quagsire",20,"33-36"],["Tropius",20,"33-36"],["Tangela",20,"33-36"],["Carnivine",10,"33-36"]]},{"m":"Surf","s":[["Wooper",90,"20-40"],["Quagsire",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Barboach",30,"10"],["Carvanha",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Barboach",30,"25"],["Carvanha",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Whiscash",30,"50"],["Sharpedo",10,"50"]]}]},{"name":"Great Marsh ~ Area 3/4","g":[{"m":"Mañana","s":[["Parasect",30,"33-36"],["Exeggcute",20,"33-36"],["Croagunk",20,"33-36"],["Toxicroak",10,"33-36"],["Kangaskhan",10,"33-36"],["Yanma",10,"33-36"]]},{"m":"Día","s":[["Parasect",30,"33-36"],["Exeggcute",20,"33-36"],["Croagunk",20,"33-36"],["Toxicroak",10,"33-36"],["Kangaskhan",10,"33-36"],["Yanma",10,"33-36"]]},{"m":"Noche","s":[["Parasect",30,"33-36"],["Exeggcute",20,"33-36"],["Croagunk",20,"33-36"],["Toxicroak",10,"33-36"],["Kangaskhan",10,"33-36"],["Yanma",10,"33-36"]]},{"m":"Surf","s":[["Wooper",90,"20-40"],["Quagsire",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Barboach",30,"10"],["Carvanha",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Barboach",30,"25"],["Carvanha",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Whiscash",30,"50"],["Sharpedo",10,"50"]]}]},{"name":"Great Marsh ~ Area 5/6","g":[{"m":"Mañana","s":[["Skorupi",30,"33-36"],["Gulpin",20,"33-36"],["Shroomish",20,"33-36"],["Swalot",10,"33-36"],["Breloom",10,"33-36"],["Drapion",10,"33-36"]]},{"m":"Día","s":[["Skorupi",30,"33-36"],["Gulpin",20,"33-36"],["Shroomish",20,"33-36"],["Swalot",10,"33-36"],["Breloom",10,"33-36"],["Drapion",10,"33-36"]]},{"m":"Noche","s":[["Skorupi",30,"33-36"],["Gulpin",20,"33-36"],["Shroomish",20,"33-36"],["Swalot",10,"33-36"],["Breloom",10,"33-36"],["Drapion",10,"33-36"]]},{"m":"Surf","s":[["Wooper",90,"20-40"],["Quagsire",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Barboach",30,"10"],["Carvanha",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Barboach",30,"25"],["Carvanha",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Whiscash",30,"50"],["Sharpedo",10,"50"]]}]},{"name":"Route 212 ~ South","g":[{"m":"Mañana","s":[["Croagunk",20,"33-36"],["Grimer",20,"33-36"],["Koffing",15,"33-36"],["Ekans",15,"33-36"],["Weepinbell",10,"33-36"],["Lombre",10,"33-36"],["Arbok",5,"33-36"],["Toxicroak",5,"33-36"]]},{"m":"Día","s":[["Croagunk",20,"33-36"],["Grimer",20,"33-36"],["Koffing",15,"33-36"],["Ekans",15,"33-36"],["Weepinbell",10,"33-36"],["Lombre",10,"33-36"],["Arbok",5,"33-36"],["Toxicroak",5,"33-36"]]},{"m":"Noche","s":[["Croagunk",20,"33-36"],["Grimer",20,"33-36"],["Koffing",15,"33-36"],["Ekans",15,"33-36"],["Weepinbell",10,"33-36"],["Lombre",10,"33-36"],["Arbok",5,"33-36"],["Toxicroak",5,"33-36"]]},{"m":"Poké Radar","s":[["Muk",11,"33-36"],["Weezing",11,"33-36"]]},{"m":"Surf","s":[["Shellos",60,"20-40"],["Wooper",30,"20-40"],["Gastrodon",5,"20-40"],["Quagsire",5,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Barboach",30,"10"],["Remoraid",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Barboach",30,"25"],["Remoraid",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Whiscash",30,"50"],["Octillery",10,"50"]]},{"m":"Árbol de miel","s":[["Cherrim",30,"33-36"],["Shroomish",20,"33-36"],["Exeggcute",20,"33-36"],["Nuzleaf",20,"33-36"],["Tangela",10,"33-36"]]}]},{"name":"Route 210 ~ North","g":[{"m":"Mañana","s":[["Swablu",20,"34-38"],["Fearow",20,"34-38"],["Machoke",10,"34-38"],["Drifblim",10,"34-38"],["Zangoose",10,"34-38"],["Seviper",10,"34-38"],["Skarmory",10,"34-38"],["Shelgon",10,"34-38"]]},{"m":"Día","s":[["Swablu",20,"34-38"],["Fearow",20,"34-38"],["Machoke",10,"34-38"],["Drifblim",10,"34-38"],["Zangoose",10,"34-38"],["Seviper",10,"34-38"],["Skarmory",10,"34-38"],["Shelgon",10,"34-38"]]},{"m":"Noche","s":[["Swablu",20,"34-38"],["Fearow",20,"34-38"],["Machoke",10,"34-38"],["Drifblim",10,"34-38"],["Zangoose",10,"34-38"],["Seviper",10,"34-38"],["Skarmory",10,"34-38"],["Shelgon",10,"34-38"]]},{"m":"Poké Radar","s":[["Altaria",22,"34-38"]]},{"m":"Surf","s":[["Psyduck",90,"20-40"],["Golduck",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Horsea",30,"10"],["Dratini",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Horsea",30,"25"],["Dratini",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Seadra",30,"50"],["Dragonair",10,"50"]]},{"m":"Árbol de miel","s":[["Staravia",30,"34-38"],["Pidgeotto",20,"34-38"],["Noctowl",20,"34-38"],["Swellow",20,"34-38"],["Farfetch’d",10,"34-38"]]}]},{"name":"Celestic Town","g":[{"m":"Surf","s":[["Psyduck",90,"20-40"],["Golduck",10,"20-40"]]},{"m":"Caña vieja","s":[["Magikarp",90,"10"],["Relicanth",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",90,"25"],["Relicanth",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",90,"50"],["Relicanth",10,"50"]]}]},{"name":"Route 219","g":[{"m":"Surf","s":[["Wingull",60,"30-45"],["Tentacool",30,"30-45"],["Pelipper",5,"30-45"],["Tentacruel",5,"30-45"]]},{"m":"Caña vieja","s":[["Krabby",60,"10"],["Horsea",30,"10"],["Clamperl",10,"10"]]},{"m":"Caña buena","s":[["Krabby",60,"25"],["Horsea",30,"25"],["Clamperl",10,"25"]]},{"m":"Súper caña","s":[["Kingler",60,"50"],["Horsea",30,"50"],["Huntail",5,"50"],["Gorebyss",5,"50"]]}]},{"name":"Route 220","g":[{"m":"Surf","s":[["Wingull",60,"30-45"],["Mantyke",30,"30-45"],["Pelipper",5,"30-45"],["Mantine",5,"30-45"]]},{"m":"Caña vieja","s":[["Luvdisc",60,"10"],["Horsea",30,"10"],["Corsola",10,"10"]]},{"m":"Caña buena","s":[["Luvdisc",60,"25"],["Horsea",30,"25"],["Corsola",10,"25"]]},{"m":"Súper caña","s":[["Luvdisc",60,"50"],["Seadra",30,"50"],["Corsola",10,"50"]]}]},{"name":"Route 221","g":[{"m":"Mañana","s":[["Sudowoodo",20,"38-40"],["Skuntank",20,"38-40"],["Nidorina",15,"38-40"],["Nidorino",15,"38-40"],["Farfetch’d",10,"38-40"],["Girafarig",10,"38-40"],["Dodrio",10,"38-40"]]},{"m":"Día","s":[["Sudowoodo",20,"38-40"],["Skuntank",20,"38-40"],["Nidorina",15,"38-40"],["Nidorino",15,"38-40"],["Farfetch’d",10,"38-40"],["Girafarig",10,"38-40"],["Dodrio",10,"38-40"]]},{"m":"Noche","s":[["Sudowoodo",20,"38-40"],["Skuntank",20,"38-40"],["Nidorina",15,"38-40"],["Nidorino",15,"38-40"],["Farfetch’d",10,"38-40"],["Girafarig",10,"38-40"],["Dodrio",10,"38-40"]]},{"m":"Surf","s":[["Wingull",60,"30-45"],["Tentacool",30,"30-45"],["Pelipper",5,"30-45"],["Tentacruel",5,"30-45"]]},{"m":"Caña vieja","s":[["Krabby",60,"10"],["Horsea",30,"10"],["Clamperl",10,"10"]]},{"m":"Caña buena","s":[["Krabby",60,"25"],["Horsea",30,"25"],["Clamperl",10,"25"]]},{"m":"Súper caña","s":[["Kingler",60,"50"],["Horsea",30,"50"],["Huntail",5,"50"],["Gorebyss",5,"50"]]},{"m":"Árbol de miel","s":[["Cherrim",30,"39"],["Shroomish",20,"39"],["Exeggcute",20,"39"],["Nuzleaf",20,"39"],["Tangela",10,"39"]]}]},{"name":"Fuego Ironworks","g":[{"m":"Mañana","s":[["Magnemite",30,"36-40"],["Magmar",20,"36-40"],["Magneton",20,"36-40"],["Manectric",15,"36-40"],["Forretress",15,"36-40"]]},{"m":"Día","s":[["Magnemite",30,"36-40"],["Magmar",20,"36-40"],["Magneton",20,"36-40"],["Manectric",15,"36-40"],["Forretress",15,"36-40"]]},{"m":"Noche","s":[["Magnemite",30,"36-40"],["Magmar",20,"36-40"],["Magneton",20,"36-40"],["Manectric",15,"36-40"],["Forretress",15,"36-40"]]},{"m":"Poké Radar","s":[["Weezing",22,"36-40"]]},{"m":"Surf","s":[["Shellos",60,"30-45"],["Tentacool",30,"30-45"],["Gastrodon",5,"30-45"],["Tentacruel",5,"30-45"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Finneon",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Lumineon",35,"50"],["Shellder",5,"50"]]},{"m":"Árbol de miel","s":[["Combee",30,"40"],["Forretress",10,"40"],["Wormadam",10,"40"],["Mothim",10,"40"],["Beautifly",10,"40"],["Dustox",10,"40"],["Heracross",10,"40"],["Vespiquen",10,"40"]]}]},{"name":"Route 218","g":[{"m":"Mañana","s":[["Floatzel",20,"38-39"],["Gastrodon",20,"38-39"],["Purugly",10,"38-39"],["Mr. Mime",10,"38-39"],["Electrode",10,"38-39"],["Ditto",10,"38-39"],["Electabuzz",10,"38-39"],["Chatot",10,"38-39"]]},{"m":"Día","s":[["Floatzel",20,"38-39"],["Gastrodon",20,"38-39"],["Purugly",10,"38-39"],["Mr. Mime",10,"38-39"],["Electrode",10,"38-39"],["Ditto",10,"38-39"],["Electabuzz",10,"38-39"],["Chatot",10,"38-39"]]},{"m":"Noche","s":[["Floatzel",20,"38-39"],["Gastrodon",20,"38-39"],["Purugly",20,"38-39"],["Mr. Mime",10,"38-39"],["Electrode",10,"38-39"],["Ditto",10,"38-39"],["Electabuzz",10,"38-39"]]},{"m":"Surf","s":[["Tentacool",60,"20-45"],["Shellos",30,"20-45"],["Tentacruel",5,"20-45"],["Gastrodon",5,"20-45"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Finneon",30,"10"],["Staryu",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Finneon",30,"25"],["Staryu",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Lumineon",30,"50"],["Starmie",10,"50"]]},{"m":"Árbol de miel","s":[["Combee",30,"39"],["Forretress",10,"39"],["Wormadam",10,"39"],["Mothim",10,"39"],["Beautifly",10,"39"],["Dustox",10,"39"],["Heracross",10,"39"],["Vespiquen",10,"39"]]}]},{"name":"Canalave City","g":[{"m":"Surf","s":[["Tentacool",60,"30-45"],["Shellos",30,"30-45"],["Tentacruel",5,"30-45"],["Gastrodon",5,"30-45"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Finneon",30,"10"],["Staryu",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Finneon",30,"25"],["Staryu",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Lumineon",30,"50"],["Starmie",10,"50"]]}]},{"name":"Iron Island ~ Outside","g":[{"m":"Surf","s":[["Wingull",60,"30-45"],["Tentacool",30,"30-45"],["Pelipper",5,"30-45"],["Tentacruel",5,"30-45"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Finneon",30,"10"],["Qwilfish",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Finneon",30,"25"],["Qwilfish",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Lumineon",30,"50"],["Qwilfish",10,"50"]]}]},{"name":"Iron Island ~ Inside ~ 1F, B1F","g":[{"m":"Mañana","s":[["Graveler",25,"41-43"],["Golbat",20,"41-43"],["Lairon",15,"41-43"],["Mawile",10,"41-43"],["Sableye",10,"41-43"],["Nosepass",10,"41-43"],["Rhydon",5,"41-43"],["Steelix",5,"41-43"]]},{"m":"Día","s":[["Graveler",25,"41-43"],["Golbat",20,"41-43"],["Lairon",15,"41-43"],["Mawile",10,"41-43"],["Sableye",10,"41-43"],["Nosepass",10,"41-43"],["Rhydon",5,"41-43"],["Steelix",5,"41-43"]]},{"m":"Noche","s":[["Graveler",25,"41-43"],["Golbat",20,"41-43"],["Lairon",15,"41-43"],["Mawile",10,"41-43"],["Sableye",10,"41-43"],["Nosepass",10,"41-43"],["Rhydon",5,"41-43"],["Steelix",5,"41-43"]]}]},{"name":"Iron Island ~ Inside ~ B2F, B3F","g":[{"m":"Mañana","s":[["Graveler",25,"43-45"],["Golbat",20,"43-45"],["Lairon",15,"43-45"],["Mawile",10,"43-45"],["Sableye",10,"43-45"],["Nosepass",10,"43-45"],["Rhydon",5,"43-45"],["Steelix",5,"43-45"]]},{"m":"Día","s":[["Graveler",25,"43-45"],["Golbat",20,"43-45"],["Lairon",15,"43-45"],["Mawile",10,"43-45"],["Sableye",10,"43-45"],["Nosepass",10,"43-45"],["Rhydon",5,"43-45"],["Steelix",5,"43-45"]]},{"m":"Noche","s":[["Graveler",25,"43-45"],["Golbat",20,"43-45"],["Lairon",15,"43-45"],["Mawile",10,"43-45"],["Sableye",10,"43-45"],["Nosepass",10,"43-45"],["Rhydon",5,"43-45"],["Steelix",5,"43-45"]]}]},{"name":"Route 217","g":[{"m":"Mañana","s":[["Piloswine",30,"44-48"],["Snorunt",20,"44-48"],["Sneasel",10,"44-48"],["Jynx",10,"44-48"],["Abomasnow",10,"44-48"],["Glalie",10,"44-48"],["Delibird",10,"44-48"]]},{"m":"Día","s":[["Piloswine",30,"44-48"],["Snorunt",20,"44-48"],["Sneasel",10,"44-48"],["Jynx",10,"44-48"],["Abomasnow",10,"44-48"],["Glalie",10,"44-48"],["Delibird",10,"44-48"]]},{"m":"Noche","s":[["Piloswine",30,"44-48"],["Snorunt",20,"44-48"],["Sneasel",10,"44-48"],["Jynx",10,"44-48"],["Abomasnow",10,"44-48"],["Glalie",10,"44-48"],["Delibird",10,"44-48"]]},{"m":"Poké Radar","s":[["Froslass",22,"44-48"]]}]},{"name":"Acuity Lakefront","g":[{"m":"Mañana","s":[["Piloswine",30,"45-49"],["Snorunt",20,"45-49"],["Sneasel",10,"45-49"],["Jynx",10,"45-49"],["Abomasnow",10,"45-49"],["Glalie",10,"45-49"],["Delibird",10,"45-49"]]},{"m":"Día","s":[["Piloswine",30,"45-49"],["Snorunt",20,"45-49"],["Sneasel",10,"45-49"],["Jynx",10,"45-49"],["Abomasnow",10,"45-49"],["Glalie",10,"45-49"],["Delibird",10,"45-49"]]},{"m":"Noche","s":[["Piloswine",30,"45-49"],["Snorunt",20,"45-49"],["Sneasel",10,"45-49"],["Jynx",10,"45-49"],["Abomasnow",10,"45-49"],["Glalie",10,"45-49"],["Delibird",10,"45-49"]]},{"m":"Poké Radar","s":[["Froslass",22,"45-49"]]}]},{"name":"Snowpoint Temple","g":[{"m":"Mañana","s":[["Golbat",25,"47-50"],["Graveler",20,"47-50"],["Sneasel",20,"47-50"],["Steelix",10,"47-50"],["Jynx",10,"47-50"],["Glalie",5,"47-50"],["Froslass",5,"47-50"],["Weavile",5,"47-50"]]},{"m":"Día","s":[["Golbat",25,"47-50"],["Graveler",20,"47-50"],["Sneasel",20,"47-50"],["Steelix",10,"47-50"],["Jynx",10,"47-50"],["Glalie",5,"47-50"],["Froslass",5,"47-50"],["Weavile",5,"47-50"]]},{"m":"Noche","s":[["Golbat",25,"47-50"],["Graveler",20,"47-50"],["Sneasel",20,"47-50"],["Steelix",10,"47-50"],["Jynx",10,"47-50"],["Glalie",5,"47-50"],["Froslass",5,"47-50"],["Weavile",5,"47-50"]]}]},{"name":"Lake Acuity","g":[{"m":"Mañana","s":[["Sneasel",30,"49-51"],["Abomasnow",25,"49-51"],["Piloswine",20,"49-51"],["Jynx",15,"49-51"],["Glalie",10,"49-51"]]},{"m":"Día","s":[["Sneasel",30,"49-51"],["Abomasnow",25,"49-51"],["Piloswine",20,"49-51"],["Jynx",15,"49-51"],["Glalie",10,"49-51"]]},{"m":"Noche","s":[["Sneasel",30,"49-51"],["Abomasnow",25,"49-51"],["Piloswine",20,"49-51"],["Jynx",15,"49-51"],["Glalie",10,"49-51"]]},{"m":"Poké Radar","s":[["Wobbuffet",22,"49-51"]]},{"m":"Surf","s":[["Sealeo",60,"45-50"],["Dewgong",35,"45-50"],["Lapras",5,"45-50"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10"]]},{"m":"Caña buena","s":[["Magikarp",100,"25"]]},{"m":"Súper caña","s":[["Gyarados",100,"50"]]}]},{"name":"Mt. Coronet ~ 2F","g":[{"m":"Mañana","s":[["Graveler",20,"49-51"],["Bronzong",20,"49-51"],["Clefairy",10,"49-51"],["Nosepass",10,"49-51"],["Chimecho",10,"49-51"],["Golbat",10,"49-51"],["Metang",10,"49-51"],["Solrock",5,"49-51"],["Lunatone",5,"49-51"]]},{"m":"Día","s":[["Graveler",20,"49-51"],["Bronzong",20,"49-51"],["Clefairy",10,"49-51"],["Nosepass",10,"49-51"],["Chimecho",10,"49-51"],["Golbat",10,"49-51"],["Metang",10,"49-51"],["Solrock",5,"49-51"],["Lunatone",5,"49-51"]]},{"m":"Noche","s":[["Graveler",20,"49-51"],["Bronzong",20,"49-51"],["Clefairy",10,"49-51"],["Nosepass",10,"49-51"],["Chimecho",10,"49-51"],["Golbat",10,"49-51"],["Metang",10,"49-51"],["Solrock",5,"49-51"],["Lunatone",5,"49-51"]]}]},{"name":"Mt. Coronet ~ 3F","g":[{"m":"Mañana","s":[["Graveler",20,"49-51"],["Bronzong",20,"49-51"],["Clefairy",10,"49-51"],["Nosepass",10,"49-51"],["Chimecho",10,"49-51"],["Golbat",10,"49-51"],["Metang",10,"49-51"],["Solrock",5,"49-51"],["Lunatone",5,"49-51"]]},{"m":"Día","s":[["Graveler",20,"49-51"],["Bronzong",20,"49-51"],["Clefairy",10,"49-51"],["Nosepass",10,"49-51"],["Chimecho",10,"49-51"],["Golbat",10,"49-51"],["Metang",10,"49-51"],["Solrock",5,"49-51"],["Lunatone",5,"49-51"]]},{"m":"Noche","s":[["Graveler",20,"49-51"],["Bronzong",20,"49-51"],["Clefairy",10,"49-51"],["Nosepass",10,"49-51"],["Chimecho",10,"49-51"],["Golbat",10,"49-51"],["Metang",10,"49-51"],["Solrock",5,"49-51"],["Lunatone",5,"49-51"]]}]},{"name":"Mt. Coronet ~ Snow Area","g":[{"m":"Mañana","s":[["Abomasnow",30,"50-52"],["Medicham",20,"50-52"],["Loudred",20,"50-52"],["Absol",10,"50-52"],["Donphan",10,"50-52"],["Ursaring",10,"50-52"]]},{"m":"Día","s":[["Abomasnow",30,"50-52"],["Medicham",20,"50-52"],["Loudred",20,"50-52"],["Absol",10,"50-52"],["Donphan",10,"50-52"],["Ursaring",10,"50-52"]]},{"m":"Noche","s":[["Abomasnow",30,"50-52"],["Medicham",20,"50-52"],["Loudred",20,"50-52"],["Absol",10,"50-52"],["Donphan",10,"50-52"],["Ursaring",10,"50-52"]]},{"m":"Poké Radar","s":[["Clefable",22,"50-52"]]}]},{"name":"Mt. Coronet ~ 4F","g":[{"m":"Mañana","s":[["Graveler",20,"50-52"],["Bronzong",20,"50-52"],["Clefairy",10,"50-52"],["Nosepass",10,"50-52"],["Chimecho",10,"50-52"],["Golbat",10,"50-52"],["Metang",10,"50-52"],["Solrock",5,"50-52"],["Lunatone",5,"50-52"]]},{"m":"Día","s":[["Graveler",20,"50-52"],["Bronzong",20,"50-52"],["Clefairy",10,"50-52"],["Nosepass",10,"50-52"],["Chimecho",10,"50-52"],["Golbat",10,"50-52"],["Metang",10,"50-52"],["Solrock",5,"50-52"],["Lunatone",5,"50-52"]]},{"m":"Noche","s":[["Graveler",20,"50-52"],["Bronzong",20,"50-52"],["Clefairy",10,"50-52"],["Nosepass",10,"50-52"],["Chimecho",10,"50-52"],["Golbat",10,"50-52"],["Metang",10,"50-52"],["Solrock",5,"50-52"],["Lunatone",5,"50-52"]]},{"m":"Surf","s":[["Zubat",90,"35-55"],["Golbat",10,"35-55"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Horsea",30,"10"],["Dratini",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Horsea",30,"25"],["Dratini",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Seadra",30,"50"],["Dragonair",10,"50"]]}]},{"name":"Mt. Coronet ~ Summit","g":[{"m":"Mañana","s":[["Abomasnow",30,"51-53"],["Medicham",20,"51-53"],["Loudred",20,"51-53"],["Absol",10,"51-53"],["Donphan",10,"51-53"],["Ursaring",10,"51-53"]]},{"m":"Día","s":[["Abomasnow",30,"51-53"],["Medicham",20,"51-53"],["Loudred",20,"51-53"],["Absol",10,"51-53"],["Donphan",10,"51-53"],["Ursaring",10,"51-53"]]},{"m":"Noche","s":[["Abomasnow",30,"51-53"],["Medicham",20,"51-53"],["Loudred",20,"51-53"],["Absol",10,"51-53"],["Donphan",10,"51-53"],["Ursaring",10,"51-53"]]},{"m":"Poké Radar","s":[["Clefable",22,"51-53"]]}]},{"name":"Mt. Coronet ~ 5F","g":[{"m":"Mañana","s":[["Graveler",20,"51-53"],["Bronzong",20,"51-53"],["Clefairy",10,"51-53"],["Nosepass",10,"51-53"],["Chimecho",10,"51-53"],["Golbat",10,"51-53"],["Metang",10,"51-53"],["Solrock",5,"51-53"],["Lunatone",5,"51-53"]]},{"m":"Día","s":[["Graveler",20,"51-53"],["Bronzong",20,"51-53"],["Clefairy",10,"51-53"],["Nosepass",10,"51-53"],["Chimecho",10,"51-53"],["Golbat",10,"51-53"],["Metang",10,"51-53"],["Solrock",5,"51-53"],["Lunatone",5,"51-53"]]},{"m":"Noche","s":[["Graveler",20,"51-53"],["Bronzong",20,"51-53"],["Clefairy",10,"51-53"],["Nosepass",10,"51-53"],["Chimecho",10,"51-53"],["Golbat",10,"51-53"],["Metang",10,"51-53"],["Solrock",5,"51-53"],["Lunatone",5,"51-53"]]}]},{"name":"Mt. Coronet ~ 6F","g":[{"m":"Mañana","s":[["Graveler",20,"51-53"],["Bronzong",20,"51-53"],["Clefairy",10,"51-53"],["Nosepass",10,"51-53"],["Chimecho",10,"51-53"],["Golbat",10,"51-53"],["Metang",10,"51-53"],["Solrock",5,"51-53"],["Lunatone",5,"51-53"]]},{"m":"Día","s":[["Graveler",20,"51-53"],["Bronzong",20,"51-53"],["Clefairy",10,"51-53"],["Nosepass",10,"51-53"],["Chimecho",10,"51-53"],["Golbat",10,"51-53"],["Metang",10,"51-53"],["Solrock",5,"51-53"],["Lunatone",5,"51-53"]]},{"m":"Noche","s":[["Graveler",20,"51-53"],["Bronzong",20,"51-53"],["Clefairy",10,"51-53"],["Nosepass",10,"51-53"],["Chimecho",10,"51-53"],["Golbat",10,"51-53"],["Metang",10,"51-53"],["Solrock",5,"51-53"],["Lunatone",5,"51-53"]]}]},{"name":"Mt. Coronet ~ 7F","g":[{"m":"Mañana","s":[["Graveler",20,"51-53"],["Bronzong",20,"51-53"],["Clefairy",10,"51-53"],["Nosepass",10,"51-53"],["Chimecho",10,"51-53"],["Golbat",10,"51-53"],["Metang",10,"51-53"],["Solrock",5,"51-53"],["Lunatone",5,"51-53"]]},{"m":"Día","s":[["Graveler",20,"51-53"],["Bronzong",20,"51-53"],["Clefairy",10,"51-53"],["Nosepass",10,"51-53"],["Chimecho",10,"51-53"],["Golbat",10,"51-53"],["Metang",10,"51-53"],["Solrock",5,"51-53"],["Lunatone",5,"51-53"]]},{"m":"Noche","s":[["Graveler",20,"51-53"],["Bronzong",20,"51-53"],["Clefairy",10,"51-53"],["Nosepass",10,"51-53"],["Chimecho",10,"51-53"],["Golbat",10,"51-53"],["Metang",10,"51-53"],["Solrock",5,"51-53"],["Lunatone",5,"51-53"]]}]},{"name":"Sendoff Spring","g":[{"m":"Mañana","s":[["Staravia",30,"53-54"],["Bibarel",20,"53-54"],["Chimecho",20,"53-54"],["Solrock",10,"53-54"],["Lunatone",10,"53-54"],["Dusclops",10,"53-54"]]},{"m":"Día","s":[["Staravia",30,"53-54"],["Bibarel",20,"53-54"],["Chimecho",20,"53-54"],["Solrock",10,"53-54"],["Lunatone",10,"53-54"],["Dusclops",10,"53-54"]]},{"m":"Noche","s":[["Staravia",30,"53-54"],["Bibarel",20,"53-54"],["Chimecho",20,"53-54"],["Solrock",10,"53-54"],["Lunatone",10,"53-54"],["Dusclops",10,"53-54"]]},{"m":"Poké Radar","s":[["Wobbuffet",22,"53-54"]]},{"m":"Surf","s":[["Golduck",100,"45-55"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10"]]},{"m":"Caña buena","s":[["Magikarp",100,"25"]]},{"m":"Súper caña","s":[["Gyarados",100,"50"]]}]},{"name":"Lake Valor","g":[{"m":"Mañana","s":[["Staravia",30,"53-54"],["Bibarel",30,"53-54"],["Masquerain",20,"53-54"],["Lickitung",10,"53-54"],["Golduck",10,"53-54"]]},{"m":"Día","s":[["Staravia",30,"53-54"],["Bibarel",30,"53-54"],["Masquerain",20,"53-54"],["Lickitung",10,"53-54"],["Golduck",10,"53-54"]]},{"m":"Noche","s":[["Staravia",30,"53-54"],["Bibarel",30,"53-54"],["Masquerain",20,"53-54"],["Lickitung",10,"53-54"],["Golduck",10,"53-54"]]},{"m":"Poké Radar","s":[["Wobbuffet",22,"53-54"]]},{"m":"Surf","s":[["Surskit",90,"35-55"],["Masquerain",10,"35-55"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10"]]},{"m":"Caña buena","s":[["Magikarp",100,"25"]]},{"m":"Súper caña","s":[["Gyarados",100,"50"]]}]},{"name":"Turnback Cave","g":[{"m":"Mañana","s":[["Haunter",30,""],["Golbat",25,""],["Bronzong",15,""],["Chimecho",10,""],["Dusclops",10,""],["Banette",10,""]]},{"m":"Día","s":[["Haunter",30,""],["Golbat",25,""],["Bronzong",15,""],["Chimecho",10,""],["Dusclops",10,""],["Banette",10,""]]},{"m":"Noche","s":[["Haunter",30,""],["Golbat",25,""],["Bronzong",15,""],["Chimecho",10,""],["Dusclops",10,""],["Banette",10,""]]}]},{"name":"Route 222","g":[{"m":"Mañana","s":[["Electabuzz",20,"53-54"],["Floatzel",20,"53-54"],["Luxio",10,"53-54"],["Purugly",10,"53-54"],["Pelipper",10,"53-54"],["Flaaffy",10,"53-54"],["Mr. Mime",10,"53-54"],["Chatot",10,"53-54"]]},{"m":"Día","s":[["Electabuzz",20,"53-54"],["Floatzel",20,"53-54"],["Luxio",10,"53-54"],["Purugly",10,"53-54"],["Pelipper",10,"53-54"],["Flaaffy",10,"53-54"],["Mr. Mime",10,"53-54"],["Chatot",10,"53-54"]]},{"m":"Noche","s":[["Electabuzz",20,"53-54"],["Floatzel",20,"53-54"],["Luxio",20,"53-54"],["Purugly",10,"53-54"],["Pelipper",10,"53-54"],["Flaaffy",10,"53-54"],["Mr. Mime",10,"53-54"]]},{"m":"Poké Radar","s":[["Delcatty",22,"53-54"]]},{"m":"Surf","s":[["Tentacool",60,"35-55"],["Wingull",30,"35-55"],["Tentacruel",5,"35-55"],["Pelipper",5,"35-55"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Remoraid",30,"10"],["Wailmer",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Remoraid",30,"25"],["Wailmer",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Wailmer",30,"50"],["Octillery",5,"50"],["Wailord",5,"50"]]},{"m":"Árbol de miel","s":[["Tangela",30,"54"],["Heracross",30,"54"],["Farfetch’d",30,"54"],["Snorlax",10,"54"]]}]},{"name":"Sunyshore City","g":[{"m":"Surf","s":[["Tentacruel",60,"50-60"],["Pelipper",30,"50-60"],["Mantine",10,"50-60"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Krabby",30,"10"],["Staryu",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Krabby",30,"25"],["Staryu",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Kingler",30,"50"],["Starmie",10,"50"]]}]},{"name":"Route 223","g":[{"m":"Surf","s":[["Tentacruel",60,"50-60"],["Pelipper",30,"50-60"],["Mantine",10,"50-60"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Remoraid",30,"10"],["Wailmer",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Remoraid",30,"25"],["Wailmer",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Wailmer",30,"50"],["Octillery",5,"50"],["Wailord",5,"50"]]}]},{"name":"Pokémon League","g":[{"m":"Surf","s":[["Tentacruel",60,"50-60"],["Pelipper",30,"50-60"],["Mantine",10,"50-60"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Luvdisc",30,"10"],["Corsola",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Luvdisc",30,"25"],["Corsola",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Luvdisc",30,"50"],["Corsola",10,"50"]]}]},{"name":"Victory Road ~ 1F","g":[{"m":"Mañana","s":[["Machoke",20,"59"],["Golbat",20,"59"],["Graveler",10,"59"],["Medicham",10,"59"],["Hariyama",10,"59"],["Gabite",10,"59"],["Rhydon",10,"59"],["Steelix",10,"59"]]},{"m":"Día","s":[["Machoke",20,"59"],["Golbat",20,"59"],["Graveler",10,"59"],["Medicham",10,"59"],["Hariyama",10,"59"],["Gabite",10,"59"],["Rhydon",10,"59"],["Steelix",10,"59"]]},{"m":"Noche","s":[["Machoke",20,"59"],["Golbat",20,"59"],["Graveler",10,"59"],["Medicham",10,"59"],["Hariyama",10,"59"],["Gabite",10,"59"],["Rhydon",10,"59"],["Steelix",10,"59"]]}]},{"name":"Victory Road ~ 2F","g":[{"m":"Mañana","s":[["Steelix",20,"59"],["Magneton",20,"59"],["Graveler",10,"59"],["Kadabra",10,"59"],["Lickitung",10,"59"],["Golbat",10,"59"],["Marowak",10,"59"],["Gabite",10,"59"]]},{"m":"Día","s":[["Steelix",20,"59"],["Magneton",20,"59"],["Graveler",10,"59"],["Kadabra",10,"59"],["Lickitung",10,"59"],["Golbat",10,"59"],["Marowak",10,"59"],["Gabite",10,"59"]]},{"m":"Noche","s":[["Steelix",20,"59"],["Magneton",20,"59"],["Graveler",10,"59"],["Kadabra",10,"59"],["Lickitung",10,"59"],["Golbat",10,"59"],["Marowak",10,"59"],["Gabite",10,"59"]]}]},{"name":"Victory Road ~ B1F","g":[{"m":"Mañana","s":[["Azumarill",20,"59"],["Floatzel",20,"59"],["Graveler",10,"59"],["Mawile",10,"59"],["Sableye",10,"59"],["Dewgong",10,"59"],["Golbat",10,"59"],["Gabite",10,"59"]]},{"m":"Día","s":[["Azumarill",20,"59"],["Floatzel",20,"59"],["Graveler",10,"59"],["Mawile",10,"59"],["Sableye",10,"59"],["Dewgong",10,"59"],["Golbat",10,"59"],["Gabite",10,"59"]]},{"m":"Noche","s":[["Azumarill",20,"59"],["Floatzel",20,"59"],["Graveler",10,"59"],["Mawile",10,"59"],["Sableye",10,"59"],["Dewgong",10,"59"],["Golbat",10,"59"],["Gabite",10,"59"]]},{"m":"Surf","s":[["Floatzel",65,"50-60"],["Golbat",35,"50-60"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10"]]},{"m":"Caña buena","s":[["Magikarp",100,"25"]]},{"m":"Súper caña","s":[["Gyarados",100,"50"]]}]},{"name":"Victory Road ~ 1F Back 1","g":[{"m":"Mañana","s":[["Azumarill",20,"59"],["Floatzel",20,"59"],["Graveler",10,"59"],["Machoke",10,"59"],["Medicham",10,"59"],["Steelix",10,"59"],["Golbat",10,"59"],["Gabite",10,"59"]]},{"m":"Día","s":[["Azumarill",20,"59"],["Floatzel",20,"59"],["Graveler",10,"59"],["Machoke",10,"59"],["Medicham",10,"59"],["Steelix",10,"59"],["Golbat",10,"59"],["Gabite",10,"59"]]},{"m":"Noche","s":[["Azumarill",20,"59"],["Floatzel",20,"59"],["Graveler",10,"59"],["Machoke",10,"59"],["Medicham",10,"59"],["Steelix",10,"59"],["Golbat",10,"59"],["Gabite",10,"59"]]}]},{"name":"Victory Road ~ 1F Back 2","g":[{"m":"Mañana","s":[["Azumarill",20,"59"],["Floatzel",20,"59"],["Graveler",10,"59"],["Machoke",10,"59"],["Medicham",10,"59"],["Dewgong",10,"59"],["Golbat",10,"59"],["Gabite",10,"59"]]},{"m":"Día","s":[["Azumarill",20,"59"],["Floatzel",20,"59"],["Graveler",10,"59"],["Machoke",10,"59"],["Medicham",10,"59"],["Dewgong",10,"59"],["Golbat",10,"59"],["Gabite",10,"59"]]},{"m":"Noche","s":[["Azumarill",20,"59"],["Floatzel",20,"59"],["Graveler",10,"59"],["Machoke",10,"59"],["Medicham",10,"59"],["Dewgong",10,"59"],["Golbat",10,"59"],["Gabite",10,"59"]]},{"m":"Surf","s":[["Sealeo",60,"50-60"],["Dewgong",30,"50-60"],["Lapras",10,"50-60"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10"]]},{"m":"Caña buena","s":[["Magikarp",100,"25"]]},{"m":"Súper caña","s":[["Gyarados",100,"50"]]}]},{"name":"Victory Road ~ 1F Back 3","g":[{"m":"Mañana","s":[["Azumarill",20,"59"],["Floatzel",20,"59"],["Graveler",10,"59"],["Machoke",10,"59"],["Medicham",10,"59"],["Steelix",10,"59"],["Golbat",10,"59"],["Gabite",10,"59"]]},{"m":"Día","s":[["Azumarill",20,"59"],["Floatzel",20,"59"],["Graveler",10,"59"],["Machoke",10,"59"],["Medicham",10,"59"],["Steelix",10,"59"],["Golbat",10,"59"],["Gabite",10,"59"]]},{"m":"Noche","s":[["Azumarill",20,"59"],["Floatzel",20,"59"],["Graveler",10,"59"],["Machoke",10,"59"],["Medicham",10,"59"],["Steelix",10,"59"],["Golbat",10,"59"],["Gabite",10,"59"]]}]},{"name":"Route 224","g":[{"m":"Mañana","s":[["Beautifly",20,"59"],["Dustox",20,"59"],["Weepinbell",10,"59"],["Chatot",10,"59"],["Roselia",10,"59"],["Gastrodon",10,"59"],["Shuckle",10,"59"],["Xatu",10,"59"]]},{"m":"Día","s":[["Beautifly",20,"59"],["Dustox",20,"59"],["Weepinbell",10,"59"],["Chatot",10,"59"],["Roselia",10,"59"],["Gastrodon",10,"59"],["Shuckle",10,"59"],["Xatu",10,"59"]]},{"m":"Noche","s":[["Beautifly",20,"59"],["Dustox",20,"59"],["Weepinbell",10,"59"],["Gloom",10,"59"],["Roselia",10,"59"],["Gastrodon",10,"59"],["Shuckle",10,"59"],["Xatu",10,"59"]]},{"m":"Surf","s":[["Tentacruel",60,"50-60"],["Pelipper",30,"50-60"],["Gastrodon",10,"50-60"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Luvdisc",30,"10"],["Corsola",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Luvdisc",30,"25"],["Corsola",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Luvdisc",30,"50"],["Corsola",10,"50"]]}]},{"name":"Turnback Cave","g":[{"m":"Mañana","s":[["Golbat",20,"65-66"],["Haunter",20,"65-66"],["Dusclops",10,"65-66"],["Banette",10,"65-66"],["Bronzong",10,"65-66"],["Chimecho",10,"65-66"],["Lunatone",10,"65-66"],["Solrock",10,"65-66"]]},{"m":"Día","s":[["Golbat",20,"65-66"],["Haunter",20,"65-66"],["Dusclops",10,"65-66"],["Banette",10,"65-66"],["Bronzong",10,"65-66"],["Chimecho",10,"65-66"],["Lunatone",10,"65-66"],["Solrock",10,"65-66"]]},{"m":"Noche","s":[["Golbat",20,"65-66"],["Haunter",20,"65-66"],["Dusclops",10,"65-66"],["Banette",10,"65-66"],["Bronzong",10,"65-66"],["Chimecho",10,"65-66"],["Lunatone",10,"65-66"],["Solrock",10,"65-66"]]}]},{"name":"Route 225","g":[{"m":"Mañana","s":[["Fearow",20,"65-67"],["Machoke",20,"65-67"],["Graveler",20,"65-67"],["Raticate",15,"65-67"],["Primeape",15,"65-67"],["Hariyama",5,"65-67"],["Grumpig",5,"65-67"]]},{"m":"Día","s":[["Fearow",20,"65-67"],["Machoke",20,"65-67"],["Graveler",20,"65-67"],["Raticate",15,"65-67"],["Primeape",15,"65-67"],["Hariyama",5,"65-67"],["Grumpig",5,"65-67"]]},{"m":"Noche","s":[["Fearow",20,"65-67"],["Machoke",20,"65-67"],["Graveler",20,"65-67"],["Raticate",15,"65-67"],["Primeape",15,"65-67"],["Hariyama",5,"65-67"],["Grumpig",5,"65-67"]]},{"m":"Surf","s":[["Poliwhirl",60,"65-67"],["Golduck",40,"65-67"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Barboach",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Barboach",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Whiscash",35,"50"]]}]},{"name":"Route 226","g":[{"m":"Mañana","s":[["Raticate",20,"65-67"],["Fearow",20,"65-67"],["Arbok",15,"65-67"],["Sandslash",15,"65-67"],["Rapidash",10,"65-67"],["Dodrio",10,"65-67"],["Kingler",10,"65-67"]]},{"m":"Día","s":[["Raticate",20,"65-67"],["Fearow",20,"65-67"],["Arbok",15,"65-67"],["Sandslash",15,"65-67"],["Rapidash",10,"65-67"],["Dodrio",10,"65-67"],["Kingler",10,"65-67"]]},{"m":"Noche","s":[["Raticate",20,"65-67"],["Fearow",20,"65-67"],["Arbok",15,"65-67"],["Sandslash",15,"65-67"],["Rapidash",10,"65-67"],["Dodrio",10,"65-67"],["Kingler",10,"65-67"]]},{"m":"Surf","s":[["Pelipper",60,"65-67"],["Tentacruel",40,"65-67"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Horsea",30,"10"],["Relicanth",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",60,"25"],["Horsea",30,"25"],["Relicanth",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",60,"50"],["Seadra",30,"50"],["Relicanth",10,"50"]]}]},{"name":"Route 227","g":[{"m":"Mañana","s":[["Rhydon",20,"65-67"],["Camerupt",20,"65-67"],["Skarmory",15,"65-67"],["Gligar",15,"65-67"],["Weezing",10,"65-67"],["Torkoal",10,"65-67"],["Spinda",10,"65-67"]]},{"m":"Día","s":[["Rhydon",20,"65-67"],["Camerupt",20,"65-67"],["Skarmory",15,"65-67"],["Gligar",15,"65-67"],["Weezing",10,"65-67"],["Torkoal",10,"65-67"],["Spinda",10,"65-67"]]},{"m":"Noche","s":[["Rhydon",20,"65-67"],["Camerupt",20,"65-67"],["Skarmory",15,"65-67"],["Gligar",15,"65-67"],["Weezing",10,"65-67"],["Torkoal",10,"65-67"],["Spinda",10,"65-67"]]},{"m":"Surf","s":[["Poliwhirl",100,"65-67"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Barboach",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Barboach",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Whiscash",35,"50"]]}]},{"name":"Route 228","g":[{"m":"Mañana","s":[["Cacturne",20,"65-67"],["Sandslash",20,"65-67"],["Dugtrio",20,"65-67"],["Vibrava",10,"65-67"],["Claydol",10,"65-67"],["Hippowdon",10,"65-67"],["Metang",5,"65-67"],["Gabite",5,"65-67"]]},{"m":"Día","s":[["Cacturne",20,"65-67"],["Sandslash",20,"65-67"],["Dugtrio",20,"65-67"],["Vibrava",10,"65-67"],["Claydol",10,"65-67"],["Hippowdon",10,"65-67"],["Metang",5,"65-67"],["Gabite",5,"65-67"]]},{"m":"Noche","s":[["Cacturne",20,"65-67"],["Sandslash",20,"65-67"],["Dugtrio",20,"65-67"],["Vibrava",10,"65-67"],["Claydol",10,"65-67"],["Hippowdon",10,"65-67"],["Metang",5,"65-67"],["Gabite",5,"65-67"]]},{"m":"Surf","s":[["Poliwhirl",100,"65-67"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Barboach",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Barboach",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Whiscash",35,"50"]]}]},{"name":"Route 229","g":[{"m":"Mañana","s":[["Scyther",20,"65-67"],["Pinsir",20,"65-67"],["Ledian",20,"65-67"],["Roselia",15,"65-67"],["Venomoth",10,"65-67"],["Illumise",5,"65-67"],["Volbeat",5,"65-67"],["Weepinbell",5,"65-67"]]},{"m":"Día","s":[["Scyther",20,"65-67"],["Pinsir",20,"65-67"],["Sunkern",20,"65-67"],["Roselia",15,"65-67"],["Venomoth",10,"65-67"],["Illumise",5,"65-67"],["Volbeat",5,"65-67"],["Weepinbell",5,"65-67"]]},{"m":"Noche","s":[["Scyther",20,"65-67"],["Pinsir",20,"65-67"],["Ariados",20,"65-67"],["Roselia",15,"65-67"],["Venomoth",10,"65-67"],["Illumise",5,"65-67"],["Volbeat",5,"65-67"],["Weepinbell",5,"65-67"]]},{"m":"Surf","s":[["Masquerain",100,"65-67"]]},{"m":"Caña vieja","s":[["Magikarp",65,"10"],["Goldeen",35,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Goldeen",35,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Seaking",35,"50"]]}]},{"name":"Resort Area","g":[{"m":"Surf","s":[["Magikarp",100,"1-100"]]},{"m":"Caña vieja","s":[["Magikarp",100,"10"]]},{"m":"Caña buena","s":[["Magikarp",100,"25"]]},{"m":"Súper caña","s":[["Magikarp",100,"50"]]}]},{"name":"Route 230","g":[{"m":"Mañana","s":[["Pelipper",20,"65-67"],["Floatzel",20,"65-67"],["Gastrodon",15,"65-67"],["Golduck",10,"65-67"],["Tropius",10,"65-67"],["Zangoose",10,"65-67"],["Seviper",10,"65-67"],["Togetic",5,"65-67"]]},{"m":"Día","s":[["Pelipper",20,"65-67"],["Floatzel",20,"65-67"],["Gastrodon",15,"65-67"],["Golduck",10,"65-67"],["Tropius",10,"65-67"],["Zangoose",10,"65-67"],["Seviper",10,"65-67"],["Togetic",5,"65-67"]]},{"m":"Noche","s":[["Pelipper",20,"65-67"],["Floatzel",20,"65-67"],["Gastrodon",15,"65-67"],["Golduck",10,"65-67"],["Tropius",10,"65-67"],["Zangoose",10,"65-67"],["Seviper",10,"65-67"],["Togetic",5,"65-67"]]},{"m":"Surf","s":[["Sealeo",60,"65-67"],["Tentacruel",40,"65-67"]]},{"m":"Caña vieja","s":[["Magikarp",60,"10"],["Corsola",30,"10"],["Wailmer",10,"10"]]},{"m":"Caña buena","s":[["Magikarp",65,"25"],["Corsola",30,"25"],["Wailmer",10,"25"]]},{"m":"Súper caña","s":[["Gyarados",65,"50"],["Corsola",30,"50"],["Wailord",10,"50"]]}]},{"name":"Stark Mountain (Outside)","g":[{"m":"Mañana","s":[["Fearow",20,"66-68"],["Rhydon",20,"66-68"],["Camerupt",10,"66-68"],["Machoke",10,"66-68"],["Skarmory",10,"66-68"],["Gligar",10,"66-68"],["Magmar",10,"66-68"],["Torkoal",10,"66-68"]]},{"m":"Día","s":[["Fearow",20,"66-68"],["Rhydon",20,"66-68"],["Camerupt",10,"66-68"],["Machoke",10,"66-68"],["Skarmory",10,"66-68"],["Gligar",10,"66-68"],["Magmar",10,"66-68"],["Torkoal",10,"66-68"]]},{"m":"Noche","s":[["Fearow",20,"66-68"],["Rhydon",20,"66-68"],["Camerupt",10,"66-68"],["Machoke",10,"66-68"],["Skarmory",10,"66-68"],["Gligar",10,"66-68"],["Magmar",10,"66-68"],["Torkoal",10,"66-68"]]}]},{"name":"Stark Mountain (Entrance)","g":[{"m":"Mañana","s":[["Golbat",20,"67-69"],["Rhydon",20,"67-69"],["Magcargo",10,"67-69"],["Graveler",10,"67-69"],["Machoke",10,"67-69"],["Weezing",10,"67-69"],["Muk",10,"67-69"],["Torkoal",10,"67-69"]]},{"m":"Día","s":[["Golbat",20,"67-69"],["Rhydon",20,"67-69"],["Magcargo",10,"67-69"],["Graveler",10,"67-69"],["Machoke",10,"67-69"],["Weezing",10,"67-69"],["Muk",10,"67-69"],["Torkoal",10,"67-69"]]},{"m":"Noche","s":[["Golbat",20,"67-69"],["Rhydon",20,"67-69"],["Magcargo",10,"67-69"],["Graveler",10,"67-69"],["Machoke",10,"67-69"],["Weezing",10,"67-69"],["Muk",10,"67-69"],["Torkoal",10,"67-69"]]}]},{"name":"Stark Mountain (Interior)","g":[{"m":"Mañana","s":[["Magcargo",20,"67-69"],["Rhydon",20,"67-69"],["Golbat",10,"67-69"],["Graveler",10,"67-69"],["Machoke",10,"67-69"],["Weezing",10,"67-69"],["Muk",10,"67-69"],["Torkoal",10,"67-69"]]},{"m":"Día","s":[["Magcargo",20,"67-69"],["Rhydon",20,"67-69"],["Golbat",10,"67-69"],["Graveler",10,"67-69"],["Machoke",10,"67-69"],["Weezing",10,"67-69"],["Muk",10,"67-69"],["Torkoal",10,"67-69"]]},{"m":"Noche","s":[["Magcargo",20,"67-69"],["Rhydon",20,"67-69"],["Golbat",10,"67-69"],["Graveler",10,"67-69"],["Machoke",10,"67-69"],["Weezing",10,"67-69"],["Muk",10,"67-69"],["Torkoal",10,"67-69"]]}]}]};
+/* Ratios por defecto cuando la fuente no trae porcentaje explícito */
+const DEFRATES={Hierba:[20,15,15,10,10,10,10,5,5],Pesca:[20,20,10,10,10,10,5,5,4,4,2],
+ Surf:[30,30,20,10,10],Rocas:[30,30,20,20]};
+
+/* ---------- 4. ESTADO ---------- */
+/* La partida se guarda en localStorage bajo una clave derivada del id del juego,
+   NO del nombre del archivo: el navegador comparte el almacenamiento entre todos
+   los archivos abiertos con file://, así que la ruta y el nombre no influyen.
+   La "ranura" permite llevar varias partidas del mismo juego en paralelo.      */
+const BASEID=DATA.id||"default";
+let SLOT="";try{SLOT=localStorage.getItem("nztslot_"+BASEID)||"";}catch(e){}
+function storageKey(){return "nzt_"+BASEID+(SLOT?"__"+SLOT:"");}
+function freshState(){return{picks:{},manual:[],team:[],patch:"",
+  rules:{dupes:true,same:false,formFam:true,deadBlocks:true}};}
+let memOnly=false,SPECIES={},FAMILIES=[],FORMS={},ALIAS={};
+let S=freshState();
+let open=new Set(),hideBlocked=false,mid=1;
+
+const RULES=[
+ ["dupes","Cláusula de duplicados","Bloquea las especies de una línea evolutiva ya registrada."],
+ ["formFam","Las formas regionales son la misma línea","Vulpix-A cuenta como Vulpix. Desactívalo si tu hackrom las trata como especies independientes."],
+ ["deadBlocks","Los muertos siguen bloqueando","Lo normal en Nuzlocke: aunque muriera, su especie ya no vuelve a estar disponible."],
+ ["same","Bloquear dentro de la misma ubicación","Si una ruta repite una familia en varios slots, tacha los demás."]
+];
+
+function norm(s){return (s||"").toString().toLowerCase().normalize("NFD")
+  .replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]/g,"");}
+function esc(s){return (s||"").toString().replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("on");
+ clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("on"),1600);}
+
+/* --- construcción de la base, con fusión de familias --- */
+function buildDex(){
+  SPECIES={};FAMILIES=[];FORMS={};ALIAS={};
+  parseDexText(DEX_BASE);
+  /* formas: tipos propios + familia de su especie base */
+  FORMS_RAW.split(/[\n|]/).forEach(l=>{
+    l=l.trim(); if(!l) return;
+    const p=l.split(":"); if(p.length<3) return;
+    const nm=p[0].trim(),ty=p[1].trim().split("").map(c=>TCODE[c]).filter(Boolean),base=p[2].trim();
+    if(!nm||!ty.length) return;
+    FORMS[norm(nm)]={name:nm,types:ty,base:base};
+  });
+  ALIAS_RAW.split(/[\n|]/).forEach(l=>{
+    const p=l.split("="); if(p.length!==2) return;
+    ALIAS[norm(p[0])]=p[1].trim();
+  });
+  applyPatchText(S.patch||"");
+  registerForms();
+  const dl=document.getElementById("dexList");
+  if(dl) dl.innerHTML=Object.values(SPECIES).map(s=>'<option value="'+esc(s.name)+'">').join("");
+}
+function parseDexText(txt){
+  txt.replace(/\s*\n\s*/g,"").split("|").forEach(line=>{
+    line=line.trim(); if(!line) return;
+    const mem=[];
+    line.split(",").forEach(m=>{
+      m=m.trim();const i=m.lastIndexOf(":");if(i<1)return;
+      const nm=m.slice(0,i).trim();
+      const ty=m.slice(i+1).trim().split("").map(c=>TCODE[c]).filter(Boolean);
+      if(nm&&ty.length)mem.push({nm:nm,ty:ty});
+    });
+    mergeFamily(mem);
+  });
+}
+function mergeFamily(mem){
+  if(!mem.length)return -1;
+  const found=[...new Set(mem.map(x=>SPECIES[norm(x.nm)]).filter(Boolean).map(x=>x.fam))];
+  let fam;
+  if(found.length){
+    fam=Math.min.apply(null,found);
+    found.forEach(f=>{if(f===fam)return;
+      (FAMILIES[f]||[]).forEach(n=>{if(SPECIES[norm(n)])SPECIES[norm(n)].fam=fam;
+        if(FAMILIES[fam].indexOf(n)<0)FAMILIES[fam].push(n);});
+      FAMILIES[f]=[];});
+  }else{fam=FAMILIES.length;FAMILIES[fam]=[];}
+  mem.forEach(x=>{const k=norm(x.nm);
+    if(FAMILIES[fam].indexOf(x.nm)<0)FAMILIES[fam].push(x.nm);
+    SPECIES[k]={name:x.nm,types:x.ty,fam:fam};});
+  return fam;
+}
+/* Registra las formas como especies reales, con familia propia o compartida */
+function registerForms(){
+  for(const k in FORMS){
+    const f=FORMS[k],b=SPECIES[norm(f.base)];
+    let fam;
+    if(S.rules.formFam&&b) fam=b.fam;
+    else {fam=FAMILIES.length;FAMILIES[fam]=[];}
+    if(FAMILIES[fam].indexOf(f.name)<0)FAMILIES[fam].push(f.name);
+    SPECIES[k]={name:f.name,types:f.types,fam:fam,form:true,base:f.base};
+  }
+}
+/* Búsqueda tolerante: exacta -> alias -> forma -> quitar sufijos -> null */
+function look(name){
+  if(!name)return null;
+  const n=String(name).trim(),k=norm(n);
+  if(SPECIES[k])return SPECIES[k];
+  if(ALIAS[k])return look(ALIAS[k]);
+  let parts=n.split("-");
+  while(parts.length>1){
+    parts.pop();
+    const s=SPECIES[norm(parts.join("-"))];
+    if(s)return Object.assign({},s,{approx:true,shown:n});
+  }
+  return null;
+}
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;
+ let p=[],c=[];for(let j=0;j<=n;j++)p[j]=j;
+ for(let i=1;i<=m;i++){c[0]=i;for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));const t=p;p=c;c=t;}
+ return p[n];}
+function suggest(name){const t=norm(name);let best=null,bd=99;
+ for(const k in SPECIES){const d=lev(t,k);if(d<bd){bd=d;best=SPECIES[k].name;}}
+ return bd<=2?best:null;}
+
+/* --- parser de parches con errores detallados --- */
+function parseTypeList(str){
+  str=str.trim();
+  if(/^[0-9A-H]{1,2}$/.test(str)){
+    const t=str.split("").map(c=>TCODE[c]);
+    if(t.every(Boolean))return{types:t};
+  }
+  const out=[];
+  for(const raw of str.split(/[\/ ]+/)){
+    if(!raw)continue;
+    const w=norm(raw);
+    const hit=TYPES.find(t=>norm(t)===w)||TYPES.find(t=>norm(ES[t])===w);
+    if(!hit)return{err:'tipo desconocido: "'+raw+'"'};
+    out.push(hit);
+  }
+  if(!out.length)return{err:"no has indicado ningún tipo"};
+  if(out.length>2)return{err:"máximo 2 tipos"};
+  return{types:out};
+}
+function applyPatchText(txt){
+  const res=[];
+  (txt||"").split(/\n/).forEach((line,i)=>{
+    const raw=line;line=line.trim();
+    if(!line||line[0]==="#")return;
+    /* alias:  A = B   |   A -> B  */
+    const al=line.match(/^(.+?)\s*(?:=|->)\s*(.+)$/);
+    if(al&&line.indexOf(":")<0){
+      const from=al[1].trim(),to=al[2].trim();
+      if(!look(to)){res.push({n:i+1,ok:false,txt:raw,msg:'"'+to+'" no existe en la base'});return;}
+      ALIAS[norm(from)]=to;
+      res.push({n:i+1,ok:true,txt:raw,msg:'alias: '+from+' → '+look(to).name});
+      return;
+    }
+    /* familia / tipos:  A:tipos, B:tipos, ... */
+    if(line.indexOf(":")<0){res.push({n:i+1,ok:false,txt:raw,msg:'no reconozco la instrucción (falta ":" o "=")'});return;}
+    const mem=[],errs=[];
+    line.split(",").forEach(part=>{
+      part=part.trim(); if(!part)return;
+      const j=part.lastIndexOf(":");
+      if(j<1){errs.push('"'+part+'" sin tipos');return;}
+      const nm=part.slice(0,j).trim(),tl=parseTypeList(part.slice(j+1));
+      if(!nm){errs.push("falta el nombre");return;}
+      if(tl.err){errs.push(nm+": "+tl.err);return;}
+      mem.push({nm:nm,ty:tl.types});
+    });
+    if(errs.length){res.push({n:i+1,ok:false,txt:raw,msg:errs.join(" · ")});return;}
+    if(!mem.length){res.push({n:i+1,ok:false,txt:raw,msg:"línea vacía tras analizar"});return;}
+    mergeFamily(mem);
+    res.push({n:i+1,ok:true,txt:raw,msg:mem.length===1
+      ? mem[0].nm+" → "+mem[0].ty.map(t=>ES[t]).join("/")
+      : "familia unida: "+mem.map(m=>m.nm).join(" → ")});
+  });
+  return res;
+}
+
+/* --- persistencia --- */
+function save(){try{localStorage.setItem(storageKey(),JSON.stringify(S));}catch(e){memOnly=true;warnStore();}}
+function loadS(){try{const r=localStorage.getItem(storageKey());if(!r)return;const o=JSON.parse(r);
+  S=Object.assign(S,o,{rules:Object.assign({dupes:true,same:false,formFam:true,deadBlocks:true},o.rules||{})});
+  (S.manual||[]).forEach(m=>{if(m.id>=mid)mid=m.id+1;});
+ }catch(e){memOnly=true;}}
+function warnStore(){const el=document.getElementById("storeWarn");if(el)el.innerHTML=memOnly?
+ '<div class="alert err" style="margin-top:9px"><b>SIN GUARDADO AUTOMÁTICO.</b> El navegador ha bloqueado el almacenamiento local (pasa en vistas previas y en incógnito). Guarda la partida en JSON antes de cerrar.</div>':"";}
+
+/* ---------- 5. LÓGICA NUZLOCKE ---------- */
+/* Todo lo que "posees": elecciones de ruta + añadidos a mano */
+function ownedList(){
+  const out=[];
+  DATA.locs.forEach(L=>{const p=S.picks[L.name];
+    if(p&&!p.none&&p.sp)out.push({ref:"L|"+L.name,sp:p.sp,lv:p.lv,dead:!!p.dead,where:L.name,nick:p.nick||""});});
+  (S.manual||[]).forEach(m=>out.push({ref:"M|"+m.id,sp:m.sp,lv:m.lv,dead:!!m.dead,
+    where:m.origin,nick:m.nick||"",manual:true,nodupe:!!m.nodupe}));
+  return out;
+}
+function owned(){
+  const o={};
+  ownedList().forEach(x=>{
+    if(x.nodupe)return;
+    if(x.dead&&!S.rules.deadBlocks)return;
+    const sp=look(x.sp);if(!sp)return;
+    if(o[sp.fam]===undefined)o[sp.fam]={loc:x.where,sp:x.sp};
+  });
+  return o;
+}
+function blockedIn(locName,spName,own){
+  if(!S.rules.dupes)return null;
+  const sp=look(spName);if(!sp)return null;
+  const hit=own[sp.fam];if(!hit)return null;
+  if(hit.loc===locName){
+    if(!S.rules.same)return null;
+    const p=S.picks[locName];
+    if(p&&p.sp===spName)return null;
+  }
+  return hit;
+}
+
+/* ---------- 6. RENDER ---------- */
+function tb(t){return '<span class="type" style="background:'+TCOL[t]+'">'+ES[t]+'</span>';}
+function typesOf(n){const sp=look(n);
+  if(!sp)return '<span class="tag err">?</span>';
+  return '<span class="types">'+sp.types.map(tb).join("")+(sp.approx?'<span class="tag form" title="Forma no catalogada: uso los tipos de '+esc(sp.name)+'">~</span>':"")+'</span>';}
+function rateOf(g,i){
+  if(g.s[i][1]!=null&&g.s[i][1]!=="")return +g.s[i][1];
+  const d=DEFRATES[g.m];return d&&d[i]!=null?d[i]:null;
+}
+function renderLocs(){
+  const q=norm(document.getElementById("q").value),fm=document.getElementById("fmode").value,own=owned();
+  let html="";
+  DATA.locs.forEach(L=>{
+    const p=S.picks[L.name];
+    let tot=0,free=0;
+    L.g.forEach(g=>g.s.forEach(s=>{tot++;if(!blockedIn(L.name,s[0],own))free++;}));
+    if(q){let hit=norm(L.name).indexOf(q)>-1;
+      if(!hit)hit=L.g.some(g=>g.s.some(s=>norm(s[0]).indexOf(q)>-1));
+      if(!hit)return;}
+    if(fm==="pend"&&p)return;
+    if(fm==="done"&&!p)return;
+    if(fm==="stuck"&&(p||free>0||!tot))return;
+    const dead=p&&p.dead;
+    const cls=["loc",p?(p.none?"none":(dead?"rip":"done")):"",open.has(L.name)?"open":"",tot?"":"empty"].join(" ");
+    html+='<div class="'+cls+'" data-l="'+esc(L.name)+'"><div class="lh">';
+    html+='<div class="chk">'+(p?(p.none?"–":(dead?"✝":"✓")):"")+'</div>';
+    html+='<div class="lname">'+esc(L.name)+'</div>';
+    if(p&&!p.none)html+='<div class="pick'+(dead?" dead":"")+'">'+esc(p.nick?p.nick+" ("+p.sp+")":p.sp)+'</div>'+typesOf(p.sp);
+    else if(p)html+='<div class="pick no">Ninguno</div>';
+    html+='<div class="sp"></div><div class="avail">'+(tot?free+"/"+tot+" libres":"sin encuentros")+'</div>';
+    html+='<button class="mini" data-a="tog">'+(open.has(L.name)?"▲":"▼")+'</button></div><div class="lb">';
+    L.g.forEach((g,gi)=>{
+      let fn=0,fp=0,anyPc=false;
+      g.s.forEach((s,i)=>{const r=rateOf(g,i);if(r!=null)anyPc=true;
+        if(!blockedIn(L.name,s[0],own)){fn++;fp+=(r||0);}});
+      html+='<div class="meth"><h4>'+esc(g.m)+'<span>'+fn+'/'+g.s.length+' libres'+(anyPc?' · '+Math.round(fp)+'% útil':'')+'</span></h4><div class="slots">';
+      g.s.forEach((s,i)=>{
+        const bl=blockedIn(L.name,s[0],own);
+        const chosen=p&&!p.none&&p.gi===gi&&p.si===i;
+        if(hideBlocked&&bl&&!chosen)return;
+        const sp=look(s[0]),r=rateOf(g,i);
+        html+='<div class="slot'+(bl?" blocked":"")+(chosen?" chosen":"")+(sp?"":" unknown")+'"'+
+          (bl?' title="Bloqueado: ya tienes '+esc(bl.sp)+' en '+esc(bl.loc)+'"':"")+'>';
+        html+='<span class="pc">'+(r!=null?r+"%":"—")+'</span>';
+        html+='<span class="lv">Nv '+esc(s[2]||"?")+'</span>';
+        html+='<span class="nm">'+esc(s[0])+'</span>'+typesOf(s[0]);
+        if(!p)html+='<button class="mini" data-a="pick" data-gi="'+gi+'" data-si="'+i+'"'+(bl?" disabled":"")+'>Elegir</button>';
+        html+='</div>';
+      });
+      html+='</div></div>';
+    });
+    html+='<div class="locfoot">';
+    if(p){
+      html+='<button class="mini danger" data-a="undo">↺ Deshacer</button>';
+      if(!p.none)html+='<button class="mini" data-a="rip">'+(dead?"↺ Revivir":"✝ Ha muerto")+'</button>';
+    }else{
+      html+='<button class="mini" data-a="none">✖ Ningún Pokémon aquí</button>';
+      if(!tot)html+='<span class="muted">Sin tabla de encuentros para esta ubicación.</span>';
+    }
+    html+='</div></div></div>';
+  });
+  document.getElementById("locs").innerHTML=html||'<div class="alert info">Nada que mostrar con estos filtros.</div>';
+  counters();
+}
+function counters(){
+  const l=ownedList();
+  let mark=0;DATA.locs.forEach(L=>{if(S.picks[L.name])mark++;});
+  document.getElementById("cAlive").textContent=l.filter(x=>!x.dead).length;
+  document.getElementById("cDead").textContent=l.filter(x=>x.dead).length;
+  document.getElementById("cMark").textContent=mark;
+  document.getElementById("cLeft").textContent=DATA.locs.length-mark;
+  document.getElementById("cPct").textContent=DATA.locs.length?Math.round(mark/DATA.locs.length*100)+"%":"0%";
+  document.getElementById("hSub").textContent=DATA.locs.length+" ubicaciones · "+
+    DATA.locs.reduce((a,L)=>a+L.g.reduce((b,g)=>b+g.s.length,0),0)+" encuentros";
+}
+function monCard(x){
+  const inT=S.team.indexOf(x.ref)>-1;
+  let h='<div class="card'+(x.dead?" dead":(inT?" team":""))+'">';
+  h+='<div class="nm">'+esc(x.nick||x.sp)+'</div>';
+  h+='<div class="rt">'+esc(x.sp)+(x.lv?" · Nv "+esc(x.lv):"")+'</div>';
+  h+='<div class="rt">'+esc(x.where)+(x.manual?" (manual)":"")+(x.nodupe?" · sin dupes":"")+'</div>';
+  h+='<div style="margin:4px 0">'+typesOf(x.sp)+'</div><div class="btns">';
+  if(!x.dead)h+='<button class="mini" data-team="'+esc(x.ref)+'">'+(inT?"Quitar":"Equipo")+'</button>';
+  h+='<button class="mini '+(x.dead?"":"danger")+'" data-rip="'+esc(x.ref)+'">'+(x.dead?"↺ Revivir":"✝ Muerto")+'</button>';
+  if(x.manual)h+='<button class="mini" data-del="'+esc(x.ref)+'">Borrar</button>';
+  return h+'</div></div>';
+}
+function renderCap(){
+  const all=ownedList(),alive=all.filter(x=>!x.dead),dead=all.filter(x=>x.dead);
+  S.team=S.team.filter(r=>alive.some(x=>x.ref===r)).slice(0,6);
+  document.getElementById("capCount").textContent="("+alive.length+")";
+  document.getElementById("capGrid").innerHTML=alive.length?alive.map(monCard).join(""):'<div class="card">Nada capturado todavía.</div>';
+  document.getElementById("ripCount").textContent="("+dead.length+")";
+  document.getElementById("ripGrid").innerHTML=dead.length?dead.map(monCard).join(""):'<div class="card">Nadie ha caído. Que dure.</div>';
+  const mons=S.team.map(r=>{const x=all.find(y=>y.ref===r);return x?{n:x.nick||x.sp,sp:look(x.sp)}:null;}).filter(x=>x&&x.sp);
+  const t=document.getElementById("cov");
+  if(!mons.length){t.innerHTML='<tr><td style="padding:12px">Marca Pokémon como equipo para ver la cobertura.</td></tr>';return;}
+  let h='<tr><th class="colh" style="writing-mode:horizontal-tb;transform:none">Ataque</th>';
+  mons.forEach(m=>h+='<th class="colh">'+esc(m.n.slice(0,11))+'</th>');
+  h+='<th class="colh" style="writing-mode:horizontal-tb;transform:none">Débiles</th></tr>';
+  TYPES.forEach(a=>{
+    h+='<tr><th class="rowh"><span class="type" style="display:block;background:'+TCOL[a]+'">'+ES[a]+'</span></th>';
+    let w=0;
+    mons.forEach(m=>{const v=eff(a,m.sp.types);let c="m1",l="1";
+      if(v===4){c="m4";l="4";w++;}else if(v===2){c="m2";l="2";w++;}
+      else if(v===0.5){c="mh";l="½";}else if(v===0.25){c="mq";l="¼";}else if(v===0){c="m0";l="0";}
+      h+='<td class="'+c+'">'+l+'</td>';});
+    h+='<td class="sum'+(w>=3?" bad":(w===0?" good":""))+'">'+w+'</td></tr>';});
+  t.innerHTML=h;
+}
+function renderRules(){
+  document.getElementById("rules").innerHTML=RULES.map(r=>
+   '<label class="rule"><input type="checkbox" data-rule="'+r[0]+'"'+(S.rules[r[0]]?" checked":"")+'>'+
+   '<span><span class="t">'+r[1]+'</span><span class="d">'+r[2]+'</span></span></label>').join("");
+}
+function renderQuality(){
+  const unk={};
+  DATA.locs.forEach(L=>L.g.forEach(g=>g.s.forEach(s=>{if(!look(s[0]))(unk[s[0]]=unk[s[0]]||[]).push(L.name);})));
+  const approx={};
+  DATA.locs.forEach(L=>L.g.forEach(g=>g.s.forEach(s=>{const sp=look(s[0]);if(sp&&sp.approx)approx[s[0]]=1;})));
+  const keys=Object.keys(unk).sort(),ak=Object.keys(approx).sort();
+  let h="";
+  if(!keys.length)h='<div class="alert ok">Todos los nombres de la hoja se reconocen. '+Object.keys(SPECIES).length+' especies cargadas.</div>';
+  else h='<div class="alert warn"><b>'+keys.length+' nombre(s) sin reconocer</b> — no entran en la cláusula de duplicados.<ul>'+
+    keys.map(k=>{const s=suggest(k);return '<li><b>'+esc(k)+'</b> ('+unk[k].length+')'+
+      (s?' → ¿<b>'+esc(s)+'</b>? <button class="mini" data-fix="'+esc(k)+'" data-to="'+esc(s)+'">Corregir</button>':'')+'</li>';}).join("")+'</ul></div>';
+  if(ak.length)h+='<div class="alert info"><b>'+ak.length+' forma(s) sin catalogar</b> — uso los tipos de la especie base. Corrígelas con un parche si el hackrom les cambia el tipo.<br><span class="muted">'+ak.map(esc).join(" · ")+'</span></div>';
+  const empty=DATA.locs.filter(L=>!L.g.length);
+  if(empty.length)h+='<div class="alert info"><b>'+empty.length+' ubicaciones sin tabla</b><br><span class="muted">'+empty.map(e=>esc(e.name)).join(" · ")+'</span></div>';
+  document.getElementById("quality").innerHTML=h;
+}
+/* Devuelve las ranuras existentes de ESTE juego, con su recuento.
+   Se leen del propio localStorage: clave "nzt_<id>" la principal y
+   "nzt_<id>__<nombre>" las demás.                                    */
+function listSlots(){
+  const pre="nzt_"+BASEID,out=[];
+  try{
+    Object.keys(localStorage).forEach(k=>{
+      if(k===pre)out.push({name:"",key:k});
+      else if(k.indexOf(pre+"__")===0)out.push({name:k.slice(pre.length+2),key:k});
+    });
+  }catch(e){}
+  if(!out.some(s=>s.name===SLOT))out.push({name:SLOT,key:storageKey(),nueva:true});
+  out.forEach(s=>{
+    s.n=0;s.m=0;
+    try{const o=JSON.parse(localStorage.getItem(s.key)||"{}");
+      s.n=Object.keys(o.picks||{}).length;s.m=(o.manual||[]).length;}catch(e){}
+  });
+  out.sort((a,b)=>a.name.localeCompare(b.name));
+  return out;
+}
+function renderSlot(){
+  document.getElementById("slot").value="";
+  document.getElementById("slotList").innerHTML=listSlots().map(s=>{
+    const on=s.name===SLOT;
+    return '<div class="slotrow'+(on?" on":"")+'">'+
+      '<span class="nm">'+(s.name?esc(s.name):"principal")+'</span>'+
+      '<span class="ct">'+s.n+' rutas · '+s.m+' a mano'+(s.nueva?' · sin guardar aún':'')+'</span>'+
+      '<span class="spacer"></span>'+
+      (on?'<span class="tag ok">en uso</span>'
+         :'<button class="mini" data-slot="'+esc(s.name)+'">Abrir</button>')+
+      '<button class="mini danger" data-delslot="'+esc(s.name)+'">Borrar</button></div>';
+  }).join("");
+  document.getElementById("slotInfo").innerHTML=memOnly
+    ? "El navegador ha bloqueado el almacenamiento: no puedo listar ni guardar ranuras."
+    : "Guardando en <code>"+esc(storageKey())+"</code>";
+}
+
+/* --- rutas huérfanas -------------------------------------------------------
+   Si regeneras el tracker y una ruta cambia de nombre o desaparece, la elección
+   que hiciste en ella sigue guardada pero ya no tiene dónde enseñarse. No se
+   borra nunca: se avisa y tú decides si pasarla a captura manual u olvidarla. */
+function huerfanas(){
+  const vivas=new Set(DATA.locs.map(L=>L.name));
+  return Object.keys(S.picks||{}).filter(k=>!vivas.has(k)&&S.picks[k]&&!S.picks[k].none&&S.picks[k].sp);
+}
+function renderHuerf(){
+  const el=document.getElementById("huerfWarn");if(!el)return;
+  const h=huerfanas();
+  if(!h.length){el.innerHTML="";return;}
+  el.innerHTML='<div class="alert warn" style="margin-top:9px"><b>'+h.length+
+    (h.length===1?' ruta guardada ya no existe':' rutas guardadas ya no existen')+
+    ' en este tracker.</b> Seguramente el hackrom se ha regenerado con otros nombres de zona. '+
+    'No he borrado nada: <ul style="margin:6px 0 8px 18px">'+
+    h.map(k=>'<li>'+esc(k)+' — <b>'+esc(S.picks[k].sp)+'</b>'+(S.picks[k].lv?' Nv '+esc(S.picks[k].lv):"")+
+      (S.picks[k].dead?' <span class="muted">(muerto)</span>':"")+'</li>').join("")+
+    '</ul><button id="bHuerfPasar">Pasarlas a capturas manuales</button> '+
+    '<button id="bHuerfOlvidar" class="danger">Olvidarlas</button></div>';
+  document.getElementById("bHuerfPasar").onclick=()=>{
+    huerfanas().forEach(k=>{const p=S.picks[k];
+      (S.manual=S.manual||[]).push({id:mid++,sp:p.sp,lv:p.lv||"",dead:!!p.dead,origin:k,nick:p.nick||"",nodupe:false});
+      delete S.picks[k];});
+    save();renderAll();toast("Rutas antiguas pasadas a capturas manuales");};
+  document.getElementById("bHuerfOlvidar").onclick=()=>{
+    if(!confirm("¿Seguro? Se pierden esas elecciones y no se pueden recuperar."))return;
+    huerfanas().forEach(k=>delete S.picks[k]);
+    save();renderAll();toast("Rutas antiguas olvidadas");};
+}
+function renderAll(){renderLocs();renderCap();renderRules();renderQuality();warnStore();renderSlot();renderHuerf();
+  document.getElementById("patch").value=S.patch||"";}
+
+/* ---------- 7. EVENTOS ---------- */
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav.tabs button").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll("section.tab").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");document.getElementById("tab-"+b.dataset.tab).classList.add("on");});
+document.getElementById("locs").addEventListener("click",ev=>{
+  const host=ev.target.closest(".loc");if(!host)return;
+  const ln=host.dataset.l,b=ev.target.closest("button");
+  if(!b){if(ev.target.closest(".lh")){open.has(ln)?open.delete(ln):open.add(ln);renderLocs();}return;}
+  const a=b.dataset.a,L=DATA.locs.find(x=>x.name===ln);
+  if(a==="tog"){open.has(ln)?open.delete(ln):open.add(ln);renderLocs();}
+  else if(a==="pick"){
+    const gi=+b.dataset.gi,si=+b.dataset.si,slot=L.g[gi].s[si];
+    S.picks[ln]={sp:slot[0],gi:gi,si:si,lv:slot[2]||"",nick:"",dead:false};
+    open.delete(ln);save();renderAll();toast(slot[0]+" registrado");
+  }
+  else if(a==="none"){S.picks[ln]={none:true};open.delete(ln);save();renderAll();}
+  else if(a==="undo"){delete S.picks[ln];open.add(ln);save();renderAll();}
+  else if(a==="rip"){S.picks[ln].dead=!S.picks[ln].dead;save();renderAll();
+    toast(S.picks[ln].dead?"✝ "+S.picks[ln].sp:"Revivido");}
+});
+function findRef(ref){
+  if(ref.indexOf("L|")===0)return{type:"L",key:ref.slice(2)};
+  return{type:"M",key:+ref.slice(2)};
+}
+function capClick(ev){
+  const t=ev.target.closest("[data-team]"),r=ev.target.closest("[data-rip]"),d=ev.target.closest("[data-del]");
+  if(t){const ref=t.dataset.team,i=S.team.indexOf(ref);
+    if(i>-1)S.team.splice(i,1);
+    else{if(S.team.length>=6){toast("Equipo lleno (6)");return;}S.team.push(ref);}
+    save();renderCap();return;}
+  if(r){const f=findRef(r.dataset.rip);
+    if(f.type==="L")S.picks[f.key].dead=!S.picks[f.key].dead;
+    else{const m=S.manual.find(x=>x.id===f.key);if(m)m.dead=!m.dead;}
+    save();renderAll();return;}
+  if(d){const f=findRef(d.dataset.del);
+    if(f.type==="M"&&confirm("¿Borrar esta entrada manual?")){
+      S.manual=S.manual.filter(x=>x.id!==f.key);save();renderAll();}}
+}
+document.getElementById("capGrid").addEventListener("click",capClick);
+document.getElementById("ripGrid").addEventListener("click",capClick);
+document.getElementById("mAdd").onclick=()=>{
+  const sp=document.getElementById("mSp").value.trim(),err=document.getElementById("mErr");
+  if(!sp){err.innerHTML='<div class="alert err">Escribe un Pokémon.</div>';return;}
+  const found=look(sp);
+  if(!found){
+    const s=suggest(sp);
+    err.innerHTML='<div class="alert err"><b>"'+esc(sp)+'" no está en la base.</b>'+
+      (s?' ¿Querías decir <b>'+esc(s)+'</b>?':' Revisa el nombre, o añádelo con un parche.')+
+      ' <button class="mini" id="mForce">Añadir igualmente</button></div>';
+    document.getElementById("mForce").onclick=()=>addManual(sp);
+    return;
+  }
+  addManual(found.name);
+};
+function addManual(sp){
+  S.manual.push({id:mid++,sp:sp,nick:document.getElementById("mNick").value.trim(),
+    lv:document.getElementById("mLv").value.trim(),origin:document.getElementById("mOri").value,
+    dead:false,nodupe:document.getElementById("mNoDupe").checked});
+  document.getElementById("mSp").value="";document.getElementById("mNick").value="";
+  document.getElementById("mLv").value="";document.getElementById("mErr").innerHTML="";
+  save();renderAll();toast(sp+" añadido");
+}
+document.getElementById("quality").addEventListener("click",ev=>{
+  const b=ev.target.closest("[data-fix]");if(!b)return;
+  S.patch=(S.patch?S.patch+"\n":"")+b.dataset.fix+" = "+b.dataset.to;
+  buildDex();save();renderAll();toast(b.dataset.fix+" → "+b.dataset.to);
+});
+document.getElementById("q").oninput=renderLocs;
+document.getElementById("fmode").onchange=renderLocs;
+document.getElementById("bHide").onclick=e=>{hideBlocked=!hideBlocked;
+  e.target.textContent="Ocultar bloqueados: "+(hideBlocked?"SÍ":"NO");renderLocs();};
+document.getElementById("bExpand").onclick=()=>{DATA.locs.forEach(L=>open.add(L.name));renderLocs();};
+document.getElementById("bCollapse").onclick=()=>{open.clear();renderLocs();};
+document.getElementById("rules").addEventListener("change",ev=>{
+  const el=ev.target;if(!el.dataset.rule)return;
+  S.rules[el.dataset.rule]=el.checked;buildDex();save();renderAll();});
+document.getElementById("bPatch").onclick=()=>{
+  S.patch=document.getElementById("patch").value;
+  buildDex();
+  const res=applyPatchTextReport(S.patch);
+  const ok=res.filter(r=>r.ok),bad=res.filter(r=>!r.ok);
+  let h="";
+  if(ok.length)h+='<div class="alert ok"><b>'+ok.length+' cambio(s) aplicados</b><ul>'+
+    ok.map(r=>'<li>línea '+r.n+': '+esc(r.msg)+'</li>').join("")+'</ul></div>';
+  if(bad.length)h+='<div class="alert err"><b>'+bad.length+' línea(s) con error</b> — se ignoran, el resto sí se aplica.<ul>'+
+    bad.map(r=>'<li>línea '+r.n+' <code>'+esc(r.txt)+'</code> → '+esc(r.msg)+'</li>').join("")+'</ul></div>';
+  if(!res.length)h='<div class="alert info">No había ninguna instrucción que aplicar.</div>';
+  document.getElementById("patchOut").innerHTML=h;
+  save();renderAll();
+};
+/* recalcula el informe sin volver a mutar dos veces */
+function applyPatchTextReport(txt){buildDexNoPatch();const r=applyPatchText(txt);registerForms();return r;}
+function buildDexNoPatch(){
+  SPECIES={};FAMILIES=[];FORMS={};ALIAS={};
+  parseDexText(DEX_BASE);
+  FORMS_RAW.split(/[\n|]/).forEach(l=>{l=l.trim();if(!l)return;const p=l.split(":");if(p.length<3)return;
+    const nm=p[0].trim(),ty=p[1].trim().split("").map(c=>TCODE[c]).filter(Boolean),base=p[2].trim();
+    if(nm&&ty.length)FORMS[norm(nm)]={name:nm,types:ty,base:base};});
+  ALIAS_RAW.split(/[\n|]/).forEach(l=>{const p=l.split("=");if(p.length===2)ALIAS[norm(p[0])]=p[1].trim();});
+}
+document.getElementById("bPatchClr").onclick=()=>{S.patch="";document.getElementById("patch").value="";
+  document.getElementById("patchOut").innerHTML="";buildDex();save();renderAll();toast("Parches eliminados");};
+document.getElementById("bReset").onclick=()=>{if(!confirm("¿Borrar todas tus elecciones de esta partida?"))return;
+  S.picks={};S.manual=[];S.team=[];save();renderAll();toast("Partida reiniciada");};
+function switchSlot(s){
+  if(s===SLOT){toast("Ya estás en esa ranura");return;}
+  save();                       /* guarda la ranura actual antes de saltar */
+  SLOT=s;
+  try{localStorage.setItem("nztslot_"+BASEID,SLOT);}catch(e){memOnly=true;}
+  S=freshState();mid=1;loadS();buildDex();renderAll();
+  toast(SLOT?"Ranura: "+SLOT:"Ranura principal");
+}
+function delSlot(name){
+  const n=name||"principal";
+  if(!confirm('¿Borrar la ranura "'+n+'" y toda su partida?\nEsto no se puede deshacer.'))return;
+  try{localStorage.removeItem("nzt_"+BASEID+(name?"__"+name:""));}catch(e){}
+  if(name===SLOT){                /* si borras en la que estás, te saca de ella */
+    S=freshState();mid=1;
+    if(name){SLOT="";try{localStorage.setItem("nztslot_"+BASEID,"");}catch(e){}loadS();}
+    buildDex();
+  }
+  renderAll();toast('Ranura "'+n+'" borrada');
+}
+document.getElementById("bSlot").onclick=()=>{
+  const raw=document.getElementById("slot").value.trim();
+  const s=raw.replace(/[^A-Za-z0-9_-]/g,"");
+  if(raw&&!s){alert("El nombre de la ranura solo admite letras, números, guion y guion bajo.");return;}
+  if(!raw){toast("Escribe un nombre, o pulsa Abrir en la lista");return;}
+  switchSlot(s);
+};
+document.getElementById("slot").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("bSlot").click();});
+document.getElementById("slotList").addEventListener("click",ev=>{
+  const a=ev.target.closest("[data-slot]"),d=ev.target.closest("[data-delslot]");
+  if(a)switchSlot(a.dataset.slot);
+  else if(d)delSlot(d.dataset.delslot);
+});
+
+/* ---------- 8. EXPORTACIÓN ---------- */
+function dl(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;
+ document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},600);}
+document.getElementById("bSaveJ").onclick=()=>{dl(new Blob([JSON.stringify(S,null,1)],{type:"application/json"}),
+ "partida-"+norm(DATA.game).slice(0,18)+".json");toast("Partida guardada");};
+document.getElementById("bLoadJ").onclick=()=>document.getElementById("fj").click();
+document.getElementById("fj").onchange=ev=>{const f=ev.target.files[0];if(!f)return;const rd=new FileReader();
+ rd.onload=()=>{try{const o=JSON.parse(rd.result);
+   if(!o||typeof o!=="object"||(!o.picks&&!o.manual))throw new Error("no parece una partida de este tracker");
+   S=Object.assign(S,o,{rules:Object.assign(S.rules,o.rules||{})});
+   (S.manual||[]).forEach(m=>{if(m.id>=mid)mid=m.id+1;});
+   buildDex();save();renderAll();toast("Partida cargada");
+ }catch(e){alert("No he podido cargar el archivo:\n"+e.message);}ev.target.value="";};
+ rd.readAsText(f);};
+document.getElementById("bCsv").onclick=()=>{
+  let c="Ubicacion,Pokemon,Mote,Nivel,Metodo,Estado\n";
+  DATA.locs.forEach(L=>{const p=S.picks[L.name];
+    const mm=p&&p.gi!=null&&L.g[p.gi]?L.g[p.gi].m:"";
+    c+=[L.name,p?(p.none?"-":p.sp):"",p&&p.nick?p.nick:"",p&&p.lv?p.lv:"",mm,
+        p?(p.none?"Sin captura":(p.dead?"Muerto":"Vivo")):"Pendiente"]
+      .map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")+"\n";});
+  (S.manual||[]).forEach(m=>{c+=['(manual) '+m.origin,m.sp,m.nick||"",m.lv||"",m.origin,m.dead?"Muerto":"Vivo"]
+    .map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")+"\n";});
+  dl(new Blob(["﻿"+c],{type:"text/csv;charset=utf-8"}),"resumen.csv");toast("CSV exportado");};
+
+/* ---------- ARRANQUE ---------- */
+loadS();buildDex();renderAll();
+window.NZ={S:()=>S,DATA:()=>DATA,SPECIES:()=>SPECIES,FAMILIES:()=>FAMILIES,look:look,eff:eff,
+ owned:owned,blockedIn:blockedIn,norm:norm,applyPatchText:applyPatchText,
+ parseTypeList:parseTypeList,buildDex:buildDex};
+</script>
+</body>
+</html>

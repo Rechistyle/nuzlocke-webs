@@ -61,7 +61,7 @@ if (!Function.prototype.bind) {
 			if (!options) options = {};
 			if (options.root) this.root = options.root;
 			if ((location.search || '').substr(0, 4) === '?_ga' && window.history) {
-				history.replaceState(null, null, '/');
+				history.replaceState(null, null, location.pathname);
 			}
 			for (var i in this.states) {
 				this.routePanel(i, this.states[i]);
@@ -78,7 +78,9 @@ if (!Function.prototype.bind) {
 
 			initialize.apply(this, arguments);
 
-			Backbone.history.start({root: this.root, pushState: true, hashChange: false});
+			// Navegación por #fragmento: la web vive en una subruta de GitHub Pages (/repo/juego/), así
+			// que pushState con raíz "/" llevaba a /moves/ y rompía todos los enlaces relativos.
+			Backbone.history.start({root: this.root, pushState: false, hashChange: true});
 			this.fragment = Backbone.history.fragment;
 			$(window).resize(function(){
 				this.resize();
